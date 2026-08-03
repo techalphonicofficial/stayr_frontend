@@ -9,17 +9,6 @@ import cloudinary from '../config/cloudinary.js';
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password, phone, profileImage, role } = req.body;
 
-  // Validate required fields
-  if (!name || !email || !password) {
-    res.status(400);
-    throw new Error('Please provide name, email and password');
-  }
-
-  if (password.length < 8) {
-    res.status(400);
-    throw new Error('Password must be at least 8 characters');
-  }
-
   // Check if user exists
   const userExists = await User.findOne({ email: email.toLowerCase() });
 
@@ -66,12 +55,6 @@ export const register = asyncHandler(async (req, res) => {
 // @access  Public
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
-  // Validate email & password
-  if (!email || !password) {
-    res.status(400);
-    throw new Error('Please provide an email and password');
-  }
 
   // Check for user
   const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
@@ -133,6 +116,7 @@ export const logout = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
+    data: {},
     message: 'User logged out successfully',
   });
 });
@@ -222,16 +206,6 @@ export const becomeHost = asyncHandler(async (req, res) => {
 export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword || !newPassword) {
-    res.status(400);
-    throw new Error('Please provide current and new password');
-  }
-  
-  if (newPassword.length < 8) {
-    res.status(400);
-    throw new Error('New password must be at least 8 characters');
-  }
-
   const user = await User.findById(req.user.id).select('+password');
 
   // Check current password
@@ -249,6 +223,7 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
+    data: {},
     message: 'Password changed successfully',
   });
 });

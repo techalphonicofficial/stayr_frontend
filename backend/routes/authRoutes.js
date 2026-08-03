@@ -10,18 +10,24 @@ import {
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
+import {
+  validateRegister,
+  validateLogin,
+  validateUpdateProfile,
+  validateChangePassword,
+} from '../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', validateRegister, register);
+router.post('/login', validateLogin, login);
 router.post('/logout', logout);
 
 // Protected routes
 router.use(protect); // Applies protect middleware to all routes below this line
 router.get('/me', getMe);
-router.put('/profile', upload.single('profileImage'), updateProfile);
-router.put('/change-password', changePassword);
+router.put('/profile', upload.single('profileImage'), validateUpdateProfile, updateProfile);
+router.put('/change-password', validateChangePassword, changePassword);
 router.put('/become-host', becomeHost);
 
 export default router;

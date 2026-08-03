@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import propertyRoutes from './routes/propertyRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
@@ -51,6 +52,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/properties', propertyRoutes);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
