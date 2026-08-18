@@ -9,6 +9,18 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import webhookRoutes from './routes/webhookRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import cmsRoutes from './routes/cmsRoutes.js';
+import footerRoutes from './routes/footerRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
+import crmSettingsRoutes from './routes/crmSettingsRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
@@ -36,23 +48,41 @@ if (process.env.NODE_ENV === 'development') {
 
 // Limit requests from same API
 const limiter = rateLimit({
-  max: 100,
+  max: process.env.NODE_ENV === 'production' ? 500 : 10000,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!'
 });
+
 app.use('/api', limiter);
 
-// Body parser, reading data from body into req.body
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRoutes);
+
+// Body parser
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Cookie parser
 app.use(cookieParser());
+
+// Static folder
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/admin/crm/settings', crmSettingsRoutes);
+app.use('/api/admin/blogs', blogRoutes);
+app.use('/api/admin/pages', cmsRoutes);
+app.use('/api/admin/footer', footerRoutes);
+app.use('/api/public', publicRoutes);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

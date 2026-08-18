@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import User from '../models/User.js';
+import prisma from '../config/prisma.js';
 
 // Protect routes
 export const protect = asyncHandler(async (req, res, next) => {
@@ -26,7 +26,9 @@ export const protect = asyncHandler(async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Fetch user and attach to request
-    req.user = await User.findById(decoded.id);
+    req.user = await prisma.user.findUnique({
+      where: { id: decoded.id }
+    });
     
     if (!req.user) {
       res.status(401);

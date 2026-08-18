@@ -7,12 +7,11 @@ import { motion } from "framer-motion";
 import ListingCard from "./ListingCard";
 import Container from "../common/Container";
 
-import { NOIDA_LISTINGS } from "@/data/listings";
+import { useState, useEffect } from "react";
 
 export default function ListingCarousel({ 
   title = "Popular homes in Noida", 
-  location = "Noida", 
-  listings = NOIDA_LISTINGS 
+  location = "Noida"
 }) {
   const scrollRef = useRef(null);
 
@@ -22,6 +21,25 @@ export default function ListingCarousel({
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
+
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProps = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${baseUrl}/api/properties?limit=6`);
+        const json = await res.json();
+        if (json.success) setListings(json.data);
+      } catch (err) {
+        console.error("Failed to fetch carousel properties:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProps();
+  }, []);
 
   return (
     <section className="w-full py-6 md:py-12">
@@ -65,9 +83,18 @@ export default function ListingCarousel({
           ref={scrollRef}
           className="flex flex-row gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
-          {listings.map((listing) => (
+          {loading ? (
+            <div className="text-gray-500 py-4 px-4">Loading properties...</div>
+          ) : listings.map((listing) => (
             <div key={listing.id} className="snap-start shrink-0 w-[42vw] sm:w-[45vw] md:w-[30vw] lg:w-[calc(16.666%-20px)]">
-              <ListingCard {...listing} />
+              <ListingCard 
+                id={listing.id}
+                title={listing.title}
+                price={"₹" + (listing.pricePerNight || 0).toLocaleString("en-IN")}
+                image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
+                nights={3}
+                rating={listing.averageRating || 4.9}
+              />
             </div>
           ))}
           
@@ -77,13 +104,13 @@ export default function ListingCarousel({
               <div className="relative w-32 h-20">
                 {/* Decorative overlapping images */}
                 <div className="absolute top-2 left-0 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-sm transform -rotate-6 overflow-hidden">
-                   <img src={listings[0].image} className="w-full h-full object-cover opacity: 1,y-80" />
+                   <img src={listings[0]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />
                 </div>
                 <div className="absolute top-0 right-0 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-sm transform rotate-12 overflow-hidden z-10">
-                   <img src={listings[1].image} className="w-full h-full object-cover opacity: 1,y-80" />
+                   <img src={listings[1]?.images?.[0]?.url || listings[1]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />
                 </div>
                 <div className="absolute bottom-0 left-8 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-md z-20 overflow-hidden">
-                   <img src={listings[3]?.image || listings[0].image} className="w-full h-full object-cover" />
+                   <img src={listings[3]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover" />
                 </div>
               </div>
               <span className="font-bold text-[#2B2B2B] group-hover:underline">See all</span>

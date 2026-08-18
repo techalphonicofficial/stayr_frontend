@@ -66,7 +66,14 @@ export default function UserMenu() {
               className="absolute rounded-theme shadow-lg border border-border w-[40vw] md:w-3/4 bg-white overflow-hidden right-0 top-14 text-sm flex flex-col cursor-pointer z-[100]"
             >
               <div className="flex flex-col cursor-pointer pb-2 pt-2">
-                <div onClick={openAuthModal} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Sign up</div>
+                <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-[var(--color-muted)] uppercase tracking-wider">My Account</div>
+                <div onClick={() => { setIsOpen(false); router.push('/wishlists'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Wishlists</div>
+                <div onClick={() => { setIsOpen(false); router.push('/trips'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Trips</div>
+                <div onClick={() => { setIsOpen(false); router.push('/messages'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Messages</div>
+                <div onClick={() => { setIsOpen(false); router.push('/profile'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Profile</div>
+                <hr className="border-border my-2" />
+                <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-[var(--color-muted)] uppercase tracking-wider">Account Access</div>
+                <div onClick={openAuthModal} className="px-4 py-3 hover:bg-secondary transition text-primary">Sign up</div>
                 <div onClick={openAuthModal} className="px-4 py-3 hover:bg-secondary transition text-primary">Log in</div>
                 <hr className="border-border my-1" />
                 <div 

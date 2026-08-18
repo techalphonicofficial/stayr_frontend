@@ -1,0 +1,550 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+// --------------------------------------------------
+// ENUMS
+// --------------------------------------------------
+enum Role {
+  Guest
+  Host
+  Admin
+  Vendor
+  Employee
+}
+
+enum PropertyCategory {
+  Apartment
+  House
+  Villa
+  Cabin
+  Hotel
+  Resort
+  Farmhouse
+  Cottage
+}
+
+enum PropertyStatus {
+  Draft
+  Published
+}
+
+enum BookingStatus {
+  Pending
+  Confirmed
+  Cancelled
+  Completed
+}
+
+enum PaymentStatus {
+  Pending
+  Paid
+  Failed
+  Refunded
+}
+
+enum RefundStatus {
+  None
+  Partial
+  Full
+}
+
+enum NotificationType {
+  BOOKING_CREATED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  PAYMENT_SUCCESS
+  PAYMENT_REFUND
+  NEW_REVIEW
+  PROPERTY_CREATED
+  PROPERTY_UPDATED
+  PROPERTY_APPROVED
+  PROPERTY_REJECTED
+  SYSTEM
+}
+
+// --------------------------------------------------
+// MODELS
+// --------------------------------------------------
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  password     String
+  phone        String?
+  profileImage String?
+  role         Role      @default(Guest)
+  isVerified   Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  hostedProperties  Property[]     @relation("HostProperties")
+  guestBookings     Booking[]      @relation("GuestBookings")
+  hostBookings      Booking[]      @relation("HostBookings")
+  reviews           Review[]       @relation("GuestReviews")
+  guestPayments     Payment[]      @relation("GuestPayments")
+  hostPayments      Payment[]      @relation("HostPayments")
+  notifications     Notification[] @relation("UserNotifications")
+  sentNotifications Notification[] @relation("SentNotifications")
+
+  accessRoleId      String?
+  accessRole        AccessRole?    @relation(fields: [accessRoleId], references: [id], onDelete: SetNull)
+}
+
+model Property {
+  id              String           @id @default(uuid())
+  hostId          String
+  title           String
+  slug            String           @unique
+  description     String           @db.Text
+  category        PropertyCategory
+  propertyType    String?
+  status          PropertyStatus   @default(Published)
+  address         String
+  city            String
+  state           String
+  country         String
+  postalCode      String?
+  latitude        Float?
+  longitude       Float?
+  pricePerNight   Float
+  cleaningFee     Float            @default(0)
+  serviceFee      Float            @default(0)
+  currency        String           @default("USD")
+  maxGuests       Int
+  bedrooms        Int
+  beds            Int              @default(1)
+  bathrooms       Int
+  featuredImage   String?
+  averageRating   Float            @default(0)
+  totalReviews    Int              @default(0)
+  totalBookings   Int              @default(0)
+  isFeatured      Boolean          @default(false)
+  isActive        Boolean          @default(true)
+  isApproved      Boolean          @default(true)
+  rejectionReason String?          @db.Text
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Dynamic JSON fields for Property Detail UI
+  roomsAndBeds         Json?
+  houseRules           Json?
+  cancellationPolicy   Json?
+  importantInformation Json?
+  nearbyPlaces         Json?
+  bookingSettings      Json?
+  damagePolicy         Json?
+  aboutProperty        Json?
+
+  // Relations
+  host      User            @relation("HostProperties", fields: [hostId], references: [id])
+  images    PropertyImage[]
+  amenities Amenity[]
+  bookings  Booking[]
+  reviews   Review[]
+  payments  Payment[]
+
+  @@index([pricePerNight])
+  @@index([category])
+  @@index([maxGuests])
+  @@index([bedrooms])
+  @@index([bathrooms])
+  // Prisma doesn't natively support fulltext index on multiple columns seamlessly across all DBs without raw SQL in older versions, 
+  // but MySQL supports it:
+  @@fulltext([title, description, city, country])
+}
+
+model PropertyImage {
+  id         String   @id @default(uuid())
+  url        String
+  publicId   String?
+  alt        String?
+  caption    String?
+  isPrimary  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Amenity {
+  id         String   @id @default(uuid())
+  name       String
+  icon       String?
+  available  Boolean  @default(true)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id              String        @id @default(uuid())
+  propertyId      String
+  guestId         String
+  hostId          String
+  checkIn         DateTime
+  checkOut        DateTime
+  nights          Int
+  guestsCount     Int
+  pricePerNight   Float
+  cleaningFee     Float
+  serviceFee      Float
+  subtotal        Float
+  taxes           Float
+  totalPrice      Float
+  status          BookingStatus @default(Pending)
+  paymentStatus   PaymentStatus @default(Pending)
+  specialRequests String?       @db.Text
+  bookingNotes    String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  property Property  @relation(fields: [propertyId], references: [id])
+  guest    User      @relation("GuestBookings", fields: [guestId], references: [id])
+  host     User      @relation("HostBookings", fields: [hostId], references: [id])
+  payments Payment[]
+  reviews  Review[]
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String
+  propertyId        String
+  guestId           String
+  hostId            String
+  razorpayOrderId   String
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount            Float
+  currency          String        @default("INR")
+  paymentMethod     String?
+  status            PaymentStatus @default(Pending)
+  refundStatus      RefundStatus  @default(None)
+  refundedAmount    Float         @default(0)
+  transactionDate   DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  booking  Booking  @relation(fields: [bookingId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
+  guest    User     @relation("GuestPayments", fields: [guestId], references: [id])
+  host     User     @relation("HostPayments", fields: [hostId], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  propertyId String
+  guestId    String
+  bookingId  String
+  rating     Float
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id])
+  guest    User     @relation("GuestReviews", fields: [guestId], references: [id])
+  booking  Booking  @relation(fields: [bookingId], references: [id])
+
+  @@unique([bookingId, guestId])
+  @@index([propertyId])
+  @@index([guestId])
+  @@index([bookingId])
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  recipientId String
+  senderId    String?
+  title       String
+  message     String           @db.Text
+  type        NotificationType
+  entityType  String? // e.g., 'Booking', 'Payment', 'Property', 'Review'
+  entityId    String?
+  isRead      Boolean          @default(false)
+  metadata    Json? // Stores extra data (e.g. { amount: 1200, currency: 'USD' })
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  recipient User  @relation("UserNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender    User? @relation("SentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+enum CmsPageStatus {
+  Draft
+  Published
+}
+
+model CmsPage {
+  id          String  @id @default(uuid())
+  title       String
+  slug        String  @unique
+  description String? @db.Text
+  pageType    String  @default("standard")
+  content     Json?
+
+  // SEO & Social Meta
+  seoTitle           String?
+  seoDescription     String? @db.Text
+  seoKeywords        String?
+  canonicalUrl       String?
+  robots             String?
+  ogTitle            String?
+  ogDescription      String? @db.Text
+  ogImage            String?
+  twitterTitle       String?
+  twitterDescription String? @db.Text
+  jsonLd             String? @db.Text
+
+  status        CmsPageStatus @default(Draft)
+  isPublished   Boolean       @default(false)
+  featuredImage String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  createdBy     String?
+  updatedBy     String?
+}
+
+model FooterSetting {
+  id           String   @id @default(uuid())
+  companyLogo  String?
+  itsLogo      String?
+  currencyLogo String?
+  copyright    String?
+  updatedAt    DateTime @updatedAt
+}
+
+model FooterColumn {
+  id        String       @id @default(uuid())
+  title     String
+  sortOrder Int          @default(0)
+  links     FooterLink[]
+}
+
+model FooterLink {
+  id        String  @id @default(uuid())
+  columnId  String
+  title     String
+  url       String
+  icon      String?
+  target    String  @default("_self")
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  column FooterColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
+}
+
+// --------------------------------------------------
+// CRM SETTINGS
+// --------------------------------------------------
+
+model CrmSetting {
+  id              String   @id @default(uuid())
+  
+  // Automations
+  defaultAssignee String?
+  autoAssignRule  String   @default("Manual")
+  partialBooking  Boolean  @default(false)
+  partialPercent  Int      @default(0)
+  
+  // Email Credentials
+  smtpHost        String?
+  smtpPort        Int?
+  smtpSecure      Boolean  @default(true)
+  fromName        String?
+  fromEmail       String?
+  smtpUser        String?
+  smtpPassword    String?
+  
+  // Forex
+  baseCurrency    String   @default("USD")
+  forexEnabled    Boolean  @default(false)
+  forexProvider   String?
+  forexAutoMode   Boolean  @default(true)
+  forexMarkup     Float    @default(0)
+  
+  // Company Info
+  companyName     String?
+  razorpayKeyId   String?
+  razorpaySecret  String?
+  phone           String?
+  whatsapp        String?
+  email           String?
+  address         String?  @db.Text
+  mapUrl          String?  @db.Text
+  facebookLink    String?
+  twitterLink     String?
+  youtubeLink     String?
+  instagramLink   String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CrmTheme {
+  id              String   @id @default(uuid())
+  name            String   @default("Default Theme")
+  isActive        Boolean  @default(true)
+  variables       Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Tax {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  defaultPercentage Float
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CancellationRule {
+  id                String   @id @default(uuid())
+  minDays           Int
+  maxDays           Int
+  refundPercentage  Float
+  cancelPercentage  Float
+  description       String?  @db.Text
+  active            Boolean  @default(true)
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  name        String
+  keyPrefix   String
+  keyHash     String
+  active      Boolean   @default(true)
+  lastUsedAt  DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CategoryMapping {
+  id              String   @id @default(uuid())
+  sourceCategory  String
+  targetCategory  String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// --------------------------------------------------
+// ACCESS CONTROL
+// --------------------------------------------------
+
+model AccessRole {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  permissions RolePermission[]
+}
+
+model AccessModule {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions AccessPermission[]
+}
+
+model AccessPermission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  moduleId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  module      AccessModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         AccessRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   AccessPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+enum VendorRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model VendorRequest {
+  id           String              @id @default(uuid())
+  businessName String
+  ownerName    String
+  email        String
+  phone        String
+  city         String
+  pan          String?
+  gst          String?
+  bankDetails  String?             @db.Text
+  status       VendorRequestStatus @default(PENDING)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+}
+
+model BlogCategory {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  slug      String     @unique
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model BlogPost {
+  id              String       @id @default(uuid())
+  title           String
+  slug            String       @unique
+  content         String       @db.LongText
+  image           String?
+  status          String       @default("DRAFT") // PUBLISHED, DRAFT
+  isFeatured      Boolean      @default(false)
+  metaTitle       String?
+  metaDescription String?
+  author          String       @default("Admin")
+  
+  categoryId      String?
+  category        BlogCategory? @relation(fields: [categoryId], references: [id])
+  
+  shortSummary    String?      @db.Text
+  publishDate     DateTime?
+  metaKeywords    String?      @db.Text
+  schemaMarkup    String?      @db.Text
+  details         Json?
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}

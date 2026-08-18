@@ -1,7 +1,16 @@
-import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import prisma from '../config/prisma.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendTokenResponse } from '../utils/generateToken.js';
 import cloudinary from '../config/cloudinary.js';
+
+// Helper to generate JWT
+const getSignedJwtToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '7d',
+  });
+};
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -10,37 +19,45 @@ export const register = asyncHandler(async (req, res) => {
   const { name, email, password, phone, profileImage, role } = req.body;
 
   // Check if user exists
-  const userExists = await User.findOne({ email: email.toLowerCase() });
+  const userExists = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
 
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
   }
 
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
   // Create user
-  const user = await User.create({
-    name,
-    email,
-    password,
-    phone,
-    profileImage,
-    role,
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      phone,
+      profileImage,
+      role: role || 'Guest',
+    },
   });
 
   // Generate token and send response
-  const token = user.getSignedJwtToken();
+  const token = getSignedJwtToken(user.id);
   sendTokenResponse(res, token);
 
   const responsePayload = {
     success: true,
     data: {
-      _id: user._id,
+      _id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
       isVerified: user.isVerified,
       isActive: user.isActive,
-    }
+    },
   };
 
   if (process.env.NODE_ENV === 'development') {
@@ -57,45 +74,51 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   // Check for user
-  const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
 
   if (!user) {
+    console.warn(`[AUTH FAILED] Login attempt with non-existent email: ${email}`);
     res.status(401);
     throw new Error('Invalid credentials');
   }
 
   // Check if password matches
-  const isMatch = await user.matchPassword(password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
+    console.warn(`[AUTH FAILED] Incorrect password for email: ${email}`);
     res.status(401);
     throw new Error('Invalid credentials');
   }
-  
+
   if (!user.isActive) {
     res.status(403);
     throw new Error('Your account has been deactivated');
   }
 
   // Update last login
-  user.lastLogin = Date.now();
-  await user.save({ validateBeforeSave: false });
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLogin: new Date() },
+  });
 
   // Generate token and send response
-  const token = user.getSignedJwtToken();
+  const token = getSignedJwtToken(updatedUser.id);
   sendTokenResponse(res, token);
 
   const responsePayload = {
     success: true,
     data: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified,
-      isActive: user.isActive,
-      lastLogin: user.lastLogin,
-    }
+      _id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      isVerified: updatedUser.isVerified,
+      isActive: updatedUser.isActive,
+      lastLogin: updatedUser.lastLogin,
+    },
   };
 
   if (process.env.NODE_ENV === 'development') {
@@ -125,7 +148,11 @@ export const logout = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 export const getMe = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+  });
+
+  if (user) delete user.password;
 
   res.status(200).json({
     success: true,
@@ -138,24 +165,20 @@ export const getMe = asyncHandler(async (req, res) => {
 // @access  Private
 export const updateProfile = asyncHandler(async (req, res) => {
   const { name, phone } = req.body;
-  const user = await User.findById(req.user.id);
-
-  if (name) user.name = name;
-  if (phone) user.phone = phone;
+  
+  let updateData = {};
+  if (name) updateData.name = name;
+  if (phone) updateData.phone = phone;
 
   // Handle profile image upload
   if (req.file) {
-    // Wrap upload_stream in a promise
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: 'stayr/profiles' },
           (error, result) => {
-            if (result) {
-              resolve(result);
-            } else {
-              reject(error);
-            }
+            if (result) resolve(result);
+            else reject(error);
           }
         );
         stream.end(req.file.buffer);
@@ -163,10 +186,15 @@ export const updateProfile = asyncHandler(async (req, res) => {
     };
 
     const result = await streamUpload(req);
-    user.profileImage = result.secure_url;
+    updateData.profileImage = result.secure_url;
   }
 
-  await user.save();
+  const user = await prisma.user.update({
+    where: { id: req.user.id },
+    data: updateData,
+  });
+
+  if (user) delete user.password;
 
   res.status(200).json({
     success: true,
@@ -178,7 +206,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
 // @route   PUT /api/auth/become-host
 // @access  Private
 export const becomeHost = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
 
   if (user.role === 'Admin') {
     res.status(400);
@@ -190,13 +218,17 @@ export const becomeHost = asyncHandler(async (req, res) => {
     throw new Error('User is already a Host');
   }
 
-  user.role = 'Host';
-  await user.save();
+  const updatedUser = await prisma.user.update({
+    where: { id: req.user.id },
+    data: { role: 'Host' },
+  });
+
+  if (updatedUser) delete updatedUser.password;
 
   res.status(200).json({
     success: true,
     message: 'Successfully upgraded to Host role',
-    data: user,
+    data: updatedUser,
   });
 });
 
@@ -206,19 +238,27 @@ export const becomeHost = asyncHandler(async (req, res) => {
 export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  const user = await User.findById(req.user.id).select('+password');
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+  });
 
   // Check current password
-  if (!(await user.matchPassword(currentPassword))) {
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
     res.status(401);
     throw new Error('Incorrect current password');
   }
 
-  user.password = newPassword;
-  await user.save(); // pre-save hook will hash it
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  await prisma.user.update({
+    where: { id: req.user.id },
+    data: { password: hashedPassword },
+  });
 
   // Re-issue token
-  const token = user.getSignedJwtToken();
+  const token = getSignedJwtToken(user.id);
   sendTokenResponse(res, token);
 
   res.status(200).json({

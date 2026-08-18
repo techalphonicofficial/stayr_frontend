@@ -4,9 +4,27 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Container from "../common/Container";
 import ListingCard from "../listings/ListingCard";
-import { DISCOUNTED_LISTINGS } from "@/data/listings";
+import { useState, useEffect } from "react";
 
 export default function DiscountedStays() {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProps = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${baseUrl}/api/properties?limit=4`);
+        const json = await res.json();
+        if (json.success) setProperties(json.data);
+      } catch (err) {
+        console.error("Failed to fetch discounted properties:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProps();
+  }, []);
   return (
     <section className="w-full py-6 md:py-12 border-t border-[#EFE7D8] bg-[#FFFDF8]">
       <Container>
@@ -36,8 +54,20 @@ export default function DiscountedStays() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {DISCOUNTED_LISTINGS.map((listing) => (
-            <ListingCard key={listing.id} {...listing} />
+          {loading ? (
+            <div className="col-span-full text-center text-gray-500">Loading deals...</div>
+          ) : properties.map((listing) => (
+            <ListingCard 
+              key={listing.id} 
+              id={listing.id}
+              title={listing.title}
+              price={"₹" + (listing.pricePerNight || 0).toLocaleString("en-IN")}
+              originalPrice={"₹" + ((listing.pricePerNight || 0) + 2000).toLocaleString("en-IN")}
+              image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
+              discountText="20% off"
+              nights={3}
+              rating={listing.averageRating || 4.9}
+            />
           ))}
         </div>
         </motion.div>

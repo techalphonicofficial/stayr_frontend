@@ -8,14 +8,25 @@ export const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
-  // If Mongoose not found error, set to 404 and change message
-  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+  // Prisma specific error handling
+  if (err.code === 'P2025') {
     statusCode = 404;
     message = 'Resource not found';
   }
+  
+  if (err.code === 'P2002') {
+    statusCode = 400;
+    message = 'Duplicate field value entered';
+  }
+
+  if (statusCode === 500) {
+    console.error(`[CRITICAL ERROR] ${err.message}`, err.stack);
+  }
 
   res.status(statusCode).json({
+    success: false,
     message,
+    errors: err.errors || (err.message ? [err.message] : []),
     stack: process.env.NODE_ENV === 'production' ? null : err.stack,
   });
 };

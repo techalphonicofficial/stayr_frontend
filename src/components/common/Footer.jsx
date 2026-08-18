@@ -4,28 +4,28 @@ import Container from "./Container";
 
 export default function Footer() {
   const exploreLinks = [
-    { label: "List your property", href: "#" },
-    { label: "StayrCare", href: "#" },
-    { label: "Trust and safety", href: "#" },
-    { label: "Vacation rental guides", href: "#" },
-    { label: "Stayr Rewards credit cards", href: "#" },
-    { label: "Stayr Travel Insurance", href: "#" },
+    { label: "List your property", href: "/list-your-property" },
+    { label: "StayrCare", href: "/stayrcare" },
+    { label: "Trust and safety", href: "/trust-and-safety" },
+    { label: "Vacation rental guides", href: "/vacation-rental-guides" },
+    { label: "Stayr Rewards credit cards", href: "/stayr-rewards-credit-cards" },
+    { label: "Stayr Travel Insurance", href: "/stayr-travel-insurance" },
   ];
 
   const companyLinks = [
-    { label: "About", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Newsroom", href: "#" },
-    { label: "Stayr Rewards terms and conditions", href: "#" },
-    { label: "Terms and conditions", href: "#" },
-    { label: "Privacy policy", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Careers", href: "/careers" },
+    { label: "Newsroom", href: "/newsroom" },
+    { label: "Stayr Rewards terms and conditions", href: "/stayr-rewards-terms" },
+    { label: "Terms and conditions", href: "/terms-and-conditions" },
+    { label: "Privacy policy", href: "/privacy-policy" },
   ];
 
   const familyLinks = [
-    { label: "Stayr India", href: "#" },
-    { label: "Stayr Asia", href: "#" },
-    { label: "Stayr Europe", href: "#" },
-    { label: "Stayr US", href: "#" },
+    { label: "Stayr India", href: "/stayr-india" },
+    { label: "Stayr Asia", href: "/stayr-asia" },
+    { label: "Stayr Europe", href: "/stayr-europe" },
+    { label: "Stayr US", href: "/stayr-us" },
   ];
 
   return (

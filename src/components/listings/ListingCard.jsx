@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 
 export default function ListingCard({ id, image, title, price, originalPrice, discountText, nights, rating, guestFavourite = true }) {
   return (
-    <Link href={`/rooms/${id || 1}`} className="flex flex-col gap-3 w-full cursor-pointer group">
+    <Link href={`/property/${id}`} className="flex flex-col gap-3 w-full cursor-pointer group">
       {/* Image Container */}
       <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-200">
         <Image 
