@@ -136,7 +136,12 @@ export const getProperties = asyncHandler(async (req, res) => {
           select: { id: true, name: true, profileImage: true }
         },
         amenities: true,
-        images: true
+        images: true,
+        reviews: {
+          take: 1,
+          orderBy: { rating: 'desc' },
+          include: { guest: { select: { name: true, profileImage: true } } }
+        }
       }
     })
   ]);
@@ -168,14 +173,20 @@ export const getProperties = asyncHandler(async (req, res) => {
 // @access  Public
 export const getProperty = asyncHandler(async (req, res) => {
   const property = await prisma.property.findFirst({
-    where: { 
+    where: {
       id: req.params.id,
-      isApproved: true 
+      isApproved: true
     },
     include: {
       host: { select: { id: true, name: true, profileImage: true } },
       amenities: true,
       images: true,
+      reviews: {
+        include: {
+          guest: { select: { id: true, name: true, profileImage: true } }
+        },
+        orderBy: { createdAt: 'desc' }
+      }
     }
   });
 
@@ -341,3 +352,5 @@ export const checkAvailability = asyncHandler(async (req, res) => {
     conflictingBookings: overlappingBookings,
   });
 });
+
+// Trigger nodemon restart

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Container from "../common/Container";
 import ListingCard from "../listings/ListingCard";
 import { useState, useEffect } from "react";
+import { propertyApi } from "@/lib/api";
 
 export default function DiscountedStays() {
   const [properties, setProperties] = useState([]);
@@ -13,10 +14,9 @@ export default function DiscountedStays() {
   useEffect(() => {
     const fetchProps = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${baseUrl}/api/properties?limit=4`);
-        const json = await res.json();
-        if (json.success) setProperties(json.data);
+        const json = await propertyApi.getProperties({ limit: 4 });
+        if (json && json.success) setProperties(json.data);
+        else if (json && Array.isArray(json)) setProperties(json);
       } catch (err) {
         console.error("Failed to fetch discounted properties:", err);
       } finally {
@@ -66,7 +66,9 @@ export default function DiscountedStays() {
               image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
               discountText="20% off"
               nights={3}
-              rating={listing.averageRating || 4.9}
+              rating={listing.averageRating ? listing.averageRating.toFixed(2) : 4.9}
+              reviewCount={listing.totalReviews}
+              topReview={listing.reviews?.[0]}
             />
           ))}
         </div>

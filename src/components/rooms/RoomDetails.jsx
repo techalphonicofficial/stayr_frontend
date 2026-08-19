@@ -69,27 +69,11 @@ export default function RoomDetails({
         </div>
         <div>
           <div className="font-semibold text-[16px]">Hosted by {hostName}</div>
-          <div className="text-[14px] text-[#7B7468]">Superhost · 5 years hosting</div>
+          <div className="text-[14px] text-[#7B7468]">Host</div>
         </div>
       </div>
 
-      {/* Highlights (Static mock data) */}
-      <div className="py-6 border-b border-[#EFE7D8] flex flex-col gap-5">
-        <div className="flex items-start gap-4">
-          <Key size={26} strokeWidth={1.5} className="mt-0.5 text-[#2B2B2B]" />
-          <div>
-            <div className="font-semibold text-[16px]">Self check-in</div>
-            <div className="text-[14px] text-[#7B7468]">Check yourself in with the lockbox.</div>
-          </div>
-        </div>
-        <div className="flex items-start gap-4">
-          <Wifi size={26} strokeWidth={1.5} className="mt-0.5 text-[#2B2B2B]" />
-          <div>
-            <div className="font-semibold text-[16px]">Fast wifi</div>
-            <div className="text-[14px] text-[#7B7468]">At 250 Mbps, you can take video calls and stream videos for your whole group.</div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Description */}
       <div className="py-6 border-b border-[#EFE7D8]">

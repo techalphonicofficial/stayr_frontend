@@ -5,8 +5,6 @@ import ListingCarousel from "@/components/listings/ListingCarousel";
 import TrustBanner from "@/components/home/TrustBanner";
 import DiscountedStays from "@/components/home/DiscountedStays";
 import InspirationCards from "@/components/home/InspirationCards";
-import { GURGAON_LISTINGS, GOA_LISTINGS, DELHI_LISTINGS } from "@/data/listings";
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#FFFDF8]">
@@ -23,7 +21,6 @@ export default function Home() {
           <ListingCarousel
             title="Available in Gurgaon District this weekend"
             location="Gurgaon"
-            listings={GURGAON_LISTINGS}
           />
 
           <MemberBanner />
@@ -32,12 +29,10 @@ export default function Home() {
           <ListingCarousel
             title="Stay in North Goa"
             location="Goa"
-            listings={GOA_LISTINGS}
           />
           <ListingCarousel
             title="Available in New Delhi this weekend"
             location="Delhi"
-            listings={DELHI_LISTINGS}
           />
 
           {/* Trust Banner */}

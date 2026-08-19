@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/adminApi';
-import { Save, ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Plus, Trash2, Edit2, X, Star } from 'lucide-react';
 
 
 export default function PropertyForm({ initialData = null, isEdit = false }) {
@@ -40,8 +40,96 @@ export default function PropertyForm({ initialData = null, isEdit = false }) {
 
   const tabs = [
     'Basic', 'Location', 'Pricing', 'Capacity', 'Gallery', 
-    'Amenities', 'Rooms', 'Policies', 'Explore'
+    'Amenities', 'Rooms', 'Policies', 'Explore',
+    ...(isEdit ? ['Reviews'] : [])
   ];
+
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ isOpen: false, isEdit: false, id: null, rating: 5, comment: '', guestName: '', images: [] });
+  const [uploadingReviewImage, setUploadingReviewImage] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'Reviews' && isEdit) {
+      fetchReviews();
+    }
+  }, [activeTab]);
+
+  const fetchReviews = async () => {
+    setLoadingReviews(true);
+    try {
+      const res = await adminApi.getReviews(`?propertyId=${initialData.id}`);
+      setReviews(res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!reviewForm.rating || !reviewForm.comment) {
+      return alert('Rating and comment are required.');
+    }
+    
+    setLoadingReviews(true);
+    try {
+      if (reviewForm.isEdit) {
+        await adminApi.updateReview(reviewForm.id, {
+          rating: reviewForm.rating,
+          comment: reviewForm.comment,
+          guestProfileImage: reviewForm.guestProfileImage,
+          guestId: reviewForm.guestId
+        });
+      } else {
+        await adminApi.createReview({
+          propertyId: initialData.id,
+          rating: reviewForm.rating,
+          comment: reviewForm.comment,
+          guestName: reviewForm.guestName,
+          guestProfileImage: reviewForm.guestProfileImage
+        });
+      }
+      setReviewForm({ isOpen: false, isEdit: false, id: null, rating: 5, comment: '', guestName: '', guestProfileImage: null });
+      fetchReviews();
+    } catch (err) {
+      alert(err.message || 'Failed to save review');
+      setLoadingReviews(false);
+    }
+  };
+
+  const handleReviewImageUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    setUploadingReviewImage(true);
+    try {
+      const res = await adminApi.uploadReviewImage(files[0]);
+      setReviewForm(prev => ({
+        ...prev,
+        guestProfileImage: res.url
+      }));
+    } catch (err) {
+      alert(err.message || 'Failed to upload review image');
+    } finally {
+      setUploadingReviewImage(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleReviewImageDelete = () => {
+    setReviewForm(prev => ({ ...prev, guestProfileImage: null }));
+  };
+
+  const handleDeleteReview = async (id) => {
+    if (!confirm('Delete this review?')) return;
+    try {
+      await adminApi.deleteReview(id);
+      fetchReviews();
+    } catch (err) {
+      alert(err.message || 'Failed to delete review');
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -678,6 +766,166 @@ export default function PropertyForm({ initialData = null, isEdit = false }) {
                         ))}
                       </div>
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'Reviews' && isEdit && (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Guest Reviews</h3>
+                  <button 
+                    onClick={() => setReviewForm({ isOpen: true, isEdit: false, id: null, rating: 5, comment: '', guestName: '', images: [] })}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-md text-sm font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" /> Add Review
+                  </button>
+                </div>
+
+                {reviewForm.isOpen && (
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 space-y-4">
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                      <h4 className="font-semibold text-gray-800">{reviewForm.isEdit ? 'Edit Review' : 'Create New Review'}</h4>
+                      <button onClick={() => setReviewForm({ isOpen: false })} className="text-gray-500 hover:text-gray-700">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    {!reviewForm.isEdit && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Guest Name (Optional)</label>
+                        <input 
+                          type="text" 
+                          value={reviewForm.guestName}
+                          onChange={(e) => setReviewForm({...reviewForm, guestName: e.target.value})}
+                          placeholder="e.g. John Doe"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
+                        />
+                      </div>
+                    )}
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rating (1-5)</label>
+                      <input 
+                        type="number" 
+                        min="1" max="5" step="0.1"
+                        value={reviewForm.rating}
+                        onChange={(e) => setReviewForm({...reviewForm, rating: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                      <textarea 
+                        value={reviewForm.comment}
+                        onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
+                        placeholder="Write the review here..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="block text-sm font-medium text-gray-700">Reviewer Profile Picture</label>
+                        <div className="relative overflow-hidden">
+                          <button 
+                            disabled={uploadingReviewImage}
+                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                          >
+                            {uploadingReviewImage ? 'Uploading...' : 'Upload Image'}
+                          </button>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={handleReviewImageUpload}
+                            disabled={uploadingReviewImage}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                      
+                      {reviewForm.guestProfileImage && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            <div className="relative group w-20 h-20 rounded-full overflow-hidden border border-gray-200">
+                              <img src={reviewForm.guestProfileImage} alt="Guest Profile" className="w-full h-full object-cover" />
+                              <button 
+                                onClick={handleReviewImageDelete}
+                                className="absolute top-1 right-1 bg-red-600/90 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button 
+                        onClick={() => setReviewForm({ isOpen: false })}
+                        className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        onClick={handleReviewSubmit}
+                        className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90"
+                      >
+                        {reviewForm.isEdit ? 'Save Changes' : 'Publish Review'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {loadingReviews ? (
+                  <div className="py-8 text-center text-gray-500">Loading reviews...</div>
+                ) : reviews.length === 0 ? (
+                  <div className="py-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
+                    <p className="text-gray-500 text-sm">No reviews found for this property.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map(review => (
+                      <div key={review.id} className="p-4 border border-gray-200 rounded-lg flex flex-col gap-2">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            {review.guest?.profileImage ? (
+                              <img src={review.guest.profileImage} alt="Guest Avatar" className="w-8 h-8 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs">
+                                {review.guest?.name?.charAt(0) || 'U'}
+                              </div>
+                            )}
+                            <div>
+                              <div className="font-semibold text-gray-900">{review.guest?.name || 'Unknown Guest'}</div>
+                              <div className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="flex items-center text-[#E8B65B] text-sm font-bold bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100">
+                              <Star className="w-3.5 h-3.5 mr-1 fill-current" /> {review.rating}
+                            </span>
+                            <button 
+                              onClick={() => setReviewForm({ isOpen: true, isEdit: true, id: review.id, rating: review.rating, comment: review.comment, guestName: review.guest?.name || '', guestId: review.guest?.id, guestProfileImage: review.guest?.profileImage })}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                              title="Edit Review"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteReview(review.id)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Delete Review"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 text-sm mt-1">{review.comment}</p>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

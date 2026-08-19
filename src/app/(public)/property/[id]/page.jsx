@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Navbar from "@/components/navbar/Navbar";
 import Container from "@/components/common/Container";
 import { notFound } from "next/navigation";
+import { propertyApi } from "@/lib/api";
 
 // Import all our new components
 import PropertyGallery from "@/components/property/PropertyGallery";
@@ -33,11 +34,11 @@ export default function PropertyPage({ params }) {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${baseUrl}/api/properties/${unwrappedParams.id}`);
-        if (res.ok) {
-          const json = await res.json();
+        const json = await propertyApi.getPropertyById(unwrappedParams.id);
+        if (json && json.success) {
           setPropertyData(json.data);
+        } else if (json && json.id) {
+           setPropertyData(json);
         } else {
           setPropertyData(null);
         }
@@ -66,11 +67,11 @@ export default function PropertyPage({ params }) {
   const imagesForGallery = propertyData.images?.map(img => img.url) || 
                            (propertyData.featuredImage ? [propertyData.featuredImage] : []);
                            
-  const taxRate = propertyData.bookingSettings?.taxRate || 0.18; // Default 18% tax
+  const taxRate = propertyData.bookingSettings?.taxRate || 0; 
   
   const houseRules = propertyData.houseRules || [];
   const importantInfo = propertyData.importantInformation || [];
-  const cancellation = propertyData.cancellationPolicy || { fullRefundDays: 14, partialRefundDays: 7 };
+  const cancellation = propertyData.cancellationPolicy || null;
   const aboutProperty = propertyData.aboutProperty || {};
   
   const locationString = [propertyData.city, propertyData.state, propertyData.country].filter(Boolean).join(", ");
@@ -90,10 +91,7 @@ export default function PropertyPage({ params }) {
           <PropertyDetailLayout 
             sidebar={
               <BookingCard 
-                price={propertyData.pricePerNight} 
-                guests={propertyData.maxGuests}
-                rating={propertyData.averageRating}
-                reviewCount={propertyData.totalReviews}
+                property={propertyData}
                 taxRate={taxRate}
               />
             }
@@ -139,7 +137,14 @@ export default function PropertyPage({ params }) {
             <ReviewsSection 
               rating={propertyData.averageRating} 
               reviewCount={propertyData.totalReviews} 
-              reviews={propertyData.reviews || []} 
+              reviews={(propertyData.reviews || []).map(r => ({
+                rating: r.rating,
+                text: r.comment,
+                author: r.guest?.name || 'Anonymous',
+                date: new Date(r.createdAt).toLocaleDateString(),
+                images: r.images || [],
+                avatar: r.guest?.profileImage || null
+              }))} 
             />
 
             {/* Policies: Rules, Damage, Cancel, Important Info */}

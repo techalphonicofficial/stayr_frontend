@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 
-export default function ListingCard({ id, image, title, price, originalPrice, discountText, nights, rating, guestFavourite = true }) {
+export default function ListingCard({ id, image, title, price, originalPrice, discountText, nights, rating, reviewCount, topReview, guestFavourite = true }) {
   return (
     <Link href={`/property/${id}`} className="flex flex-col gap-3 w-full cursor-pointer group">
       {/* Image Container */}
@@ -46,7 +46,7 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
         <p className="text-[#7B7468] text-[14px]">
           {originalPrice && <span className="line-through mr-1 text-gray-400">{originalPrice}</span>}
           <span className={originalPrice ? "font-bold text-[#2B2B2B]" : ""}>{price}</span>
-          {" "}for {nights} nights • ★ {rating}
+          {" "}for {nights} nights • ★ {rating} {reviewCount ? `(${reviewCount})` : ''}
         </p>
       </div>
     </Link>

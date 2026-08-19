@@ -16,7 +16,7 @@ const getSignedJwtToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, phone, profileImage, role } = req.body;
+  const { name, email, password, phone, profileImage } = req.body;
 
   // Check if user exists
   const userExists = await prisma.user.findUnique({
@@ -40,7 +40,7 @@ export const register = asyncHandler(async (req, res) => {
       password: hashedPassword,
       phone,
       profileImage,
-      role: role || 'Guest',
+      role: 'Guest',
     },
   });
 

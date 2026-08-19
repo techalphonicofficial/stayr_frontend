@@ -5,7 +5,7 @@ import { adminApi } from '@/lib/adminApi';
 import DataTable from '@/components/admin/DataTable';
 import StatusBadge from '@/components/admin/StatusBadge';
 import Modal from '@/components/admin/Modal';
-import { CreditCard, DollarSign, Loader2 } from 'lucide-react';
+import { CreditCard, Loader2 } from 'lucide-react';
 
 export default function PaymentsPage() {
   const [data, setData] = useState([]);
@@ -73,7 +73,7 @@ export default function PaymentsPage() {
       accessor: 'amount',
       cell: (row) => (
         <span className="font-medium text-gray-900 flex items-center">
-          <DollarSign className="w-3 h-3" />{row.amount}
+          ₹{(row.amount / 100).toLocaleString('en-IN')}
         </span>
       )
     },
@@ -146,7 +146,7 @@ export default function PaymentsPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 mb-1">Amount</p>
-                  <p className="font-bold text-gray-900 text-lg">₹{selectedPayment.amount}</p>
+                  <p className="font-bold text-gray-900 text-lg">₹{(selectedPayment.amount / 100).toLocaleString('en-IN')}</p>
                 </div>
                 <div>
                   <p className="text-gray-500 mb-1">Status</p>

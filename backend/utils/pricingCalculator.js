@@ -3,10 +3,10 @@
  * @param {Object} property - Property object (must contain pricePerNight, cleaningFee, serviceFee)
  * @param {String|Date} checkIn - Check-in date
  * @param {String|Date} checkOut - Check-out date
- * @param {Number} taxPercentage - Tax percentage to apply (default 10%)
+ * @param {Number} taxPercentage - Tax percentage to apply (default 0%)
  * @returns {Object} - { nights, subtotal, tax, grandTotal }
  */
-export const calculateBookingPrice = (property, checkIn, checkOut, taxPercentage = 10) => {
+export const calculateBookingPrice = (property, checkIn, checkOut, taxPercentage = 0) => {
   const inDate = new Date(checkIn);
   const outDate = new Date(checkOut);
 

@@ -8,7 +8,7 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
   if (!reviews || reviews.length === 0) return null;
 
   return (
-    <div className="py-8 border-b border-gray-200">
+    <div id="reviews-section" className="py-8 border-b border-gray-200">
       <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-6">Reviews</h2>
       
       <div className="flex flex-col md:flex-row gap-10">
@@ -17,7 +17,7 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
         <div className="w-full md:w-1/3 flex flex-col gap-6">
           <div className="flex flex-col gap-1">
             <h3 className="text-[36px] font-bold text-[#128859] leading-none">
-              {rating}/10
+              {rating ? Number(rating).toFixed(2) : 0}/5
             </h3>
             <span className="font-bold text-[#2B2B2B] text-[15px]">Exceptional</span>
             <div className="flex items-center gap-1 text-[13px] text-[#7B7468]">
@@ -26,18 +26,18 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
             </div>
           </div>
           
-          <div className="flex gap-6">
+          <div className="grid grid-cols-3 divide-x divide-gray-200 mt-2">
             <div className="flex flex-col items-center">
-              <span className="font-bold text-[#2B2B2B]">10</span>
-              <span className="text-[13px] text-[#7B7468]">Cleanliness</span>
-            </div>
-            <div className="flex flex-col items-center border-l border-r border-gray-200 px-6">
-              <span className="font-bold text-[#2B2B2B]">10</span>
-              <span className="text-[13px] text-[#7B7468]">Communication</span>
+              <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
+              <span className="text-[11px] lg:text-[13px] text-[#7B7468] truncate w-full text-center px-1">Cleanliness</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="font-bold text-[#2B2B2B]">10</span>
-              <span className="text-[13px] text-[#7B7468]">Amenities</span>
+              <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
+              <span className="text-[11px] lg:text-[13px] text-[#7B7468] truncate w-full text-center px-1">Communication</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
+              <span className="text-[11px] lg:text-[13px] text-[#7B7468] truncate w-full text-center px-1">Amenities</span>
             </div>
           </div>
         </div>
@@ -51,7 +51,16 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
                 {review.text}
               </p>
               
-              <div className="mt-auto pt-4 flex justify-between items-end">
+
+              
+              <div className="mt-auto pt-4 flex items-center gap-3">
+                {review.avatar ? (
+                  <img src={review.avatar} alt={review.author} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                    {review.author?.charAt(0) || 'A'}
+                  </div>
+                )}
                 <div className="flex flex-col gap-0.5">
                   <span className="font-semibold text-[13px] text-[#2B2B2B]">{review.author}</span>
                   <span className="text-[12px] text-[#7B7468]">{review.date}</span>
@@ -80,7 +89,7 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
           <div className="w-full md:w-1/3 flex flex-col gap-6 sticky top-0">
             <div className="flex flex-col gap-1">
               <h3 className="text-[36px] font-bold text-[#128859] leading-none">
-                {rating}/10
+                {rating ? Number(rating).toFixed(2) : 0}/5
               </h3>
               <span className="font-bold text-[#2B2B2B] text-[15px]">Exceptional</span>
               <div className="flex items-center gap-1 text-[13px] text-[#7B7468]">
@@ -92,19 +101,19 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
               <div className="flex flex-col">
                 <span className="text-[14px] text-[#7B7468]">Cleanliness</span>
-                <span className="font-bold text-[#2B2B2B]">10</span>
+                <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[14px] text-[#7B7468]">Communication</span>
-                <span className="font-bold text-[#2B2B2B]">10</span>
+                <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[14px] text-[#7B7468]">Amenities</span>
-                <span className="font-bold text-[#2B2B2B]">10</span>
+                <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[14px] text-[#7B7468]">Property conditions</span>
-                <span className="font-bold text-[#2B2B2B]">10</span>
+                <span className="font-bold text-[#2B2B2B]">{rating ? Number(rating).toFixed(1) : 5}</span>
               </div>
             </div>
           </div>
@@ -120,10 +129,21 @@ export default function ReviewsSection({ rating, reviewCount, reviews = [] }) {
                     {review.text}
                   </p>
                   
-                  <div className="mt-2 flex flex-col gap-1">
-                    <span className="font-semibold text-[14px] text-[#2B2B2B]">{review.author}</span>
-                    <span className="text-[13px] text-[#7B7468]">{review.date}</span>
-                    <span className="text-[13px] text-[#7B7468]">Verified review</span>
+
+                  
+                  <div className="mt-2 flex items-center gap-3">
+                    {review.avatar ? (
+                      <img src={review.avatar} alt={review.author} className="w-12 h-12 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">
+                        {review.author?.charAt(0) || 'A'}
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-semibold text-[14px] text-[#2B2B2B]">{review.author}</span>
+                      <span className="text-[13px] text-[#7B7468]">{review.date}</span>
+                      <span className="text-[13px] text-[#7B7468]">Verified review</span>
+                    </div>
                   </div>
                 </div>
               ))}

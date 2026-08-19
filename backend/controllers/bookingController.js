@@ -60,53 +60,67 @@ export const createBooking = asyncHandler(async (req, res) => {
     throw new Error(`This property only allows up to ${propertyDoc.maxGuests} guests`);
   }
 
-  // 5. Overlap Prevention
-  const overlappingBookings = await prisma.booking.findMany({
-    where: {
-      propertyId,
-      status: { in: ['Pending', 'Confirmed'] },
-      OR: [
-        {
-          checkIn: { lt: new Date(checkOut) },
-          checkOut: { gt: new Date(checkIn) }
-        }
-      ]
-    }
+  // 5. Automatic Price Calculation with Dynamic Tax
+  const defaultTax = await prisma.tax.findFirst({
+    where: { active: true },
+    orderBy: { createdAt: 'desc' }
   });
+  const taxPercentage = defaultTax ? defaultTax.defaultPercentage : 0;
 
-  if (overlappingBookings.length > 0) {
-    res.status(400);
-    throw new Error('Property is unavailable for selected dates');
-  }
-
-  // 6. Automatic Price Calculation
   const { nights, subtotal, tax, grandTotal } = calculateBookingPrice(
     propertyDoc,
     new Date(checkIn),
     new Date(checkOut),
-    10 // 10% tax for example
+    taxPercentage
   );
 
-  // 7. Create Booking
-  const booking = await prisma.booking.create({
-    data: {
-      propertyId,
-      guestId: req.user.id,
-      hostId: propertyDoc.hostId,
-      checkIn: new Date(checkIn),
-      checkOut: new Date(checkOut),
-      nights,
-      guestsCount,
-      pricePerNight: propertyDoc.pricePerNight,
-      cleaningFee: propertyDoc.cleaningFee,
-      serviceFee: propertyDoc.serviceFee,
-      subtotal,
-      taxes: tax,
-      totalPrice: grandTotal,
-      specialRequests,
-      bookingNotes,
-    }
-  });
+  // 6. Overlap Prevention & Booking Creation in Transaction
+  let booking;
+  try {
+    booking = await prisma.$transaction(async (tx) => {
+      const overlappingBookings = await tx.booking.findMany({
+        where: {
+          propertyId,
+          status: { in: ['Pending', 'Confirmed'] },
+          OR: [
+            {
+              checkIn: { lt: new Date(checkOut) },
+              checkOut: { gt: new Date(checkIn) }
+            }
+          ]
+        }
+      });
+
+      if (overlappingBookings.length > 0) {
+        throw new Error('Property is unavailable for selected dates');
+      }
+
+      return await tx.booking.create({
+        data: {
+          propertyId,
+          guestId: req.user.id,
+          hostId: propertyDoc.hostId,
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          nights,
+          guestsCount,
+          pricePerNight: propertyDoc.pricePerNight,
+          cleaningFee: propertyDoc.cleaningFee,
+          serviceFee: propertyDoc.serviceFee,
+          subtotal,
+          taxes: tax,
+          totalPrice: grandTotal,
+          specialRequests,
+          bookingNotes,
+        }
+      });
+    }, {
+      isolationLevel: 'Serializable'
+    });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message || 'Failed to create booking');
+  }
 
   console.info(`[BOOKING CREATED] Booking ${booking.id} created for property ${propertyId} by guest ${req.user.id}`);
 

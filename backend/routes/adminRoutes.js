@@ -2,6 +2,7 @@ import express from 'express';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 import * as adminController from '../controllers/adminController.js';
 import * as validation from '../middleware/validationMiddleware.js';
+import { upload } from '../middleware/uploadMiddleware.js';
 import accessControlRoutes from './accessControlRoutes.js';
 
 const router = express.Router();
@@ -54,6 +55,9 @@ router.post('/payments/:id/refund', validation.validateAdminIdParam, adminContro
 // Review Moderation
 // =========================
 router.get('/reviews', validation.validateDashboardQuery, adminController.getReviews);
+router.post('/reviews/upload', upload.single('image'), adminController.uploadReviewImage);
+router.post('/reviews', adminController.createReview);
+router.put('/reviews/:id', validation.validateAdminIdParam, adminController.updateReview);
 router.delete('/reviews/:id', validation.validateAdminIdParam, adminController.deleteReview);
 
 // =========================

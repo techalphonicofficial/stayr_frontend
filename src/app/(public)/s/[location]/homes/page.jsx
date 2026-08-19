@@ -6,6 +6,7 @@ import ListingCard from "@/components/listings/ListingCard";
 import Container from "@/components/common/Container";
 
 import { use, useState, useEffect } from "react";
+import { propertyApi } from "@/lib/api";
 
 export default function SearchResultsPage({ params }) {
   const unwrappedParams = use(params);
@@ -31,18 +32,22 @@ export default function SearchResultsPage({ params }) {
   useEffect(() => {
     const fetchProps = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${baseUrl}/api/properties?city=${locationParam}`);
-        const json = await res.json();
-        if (json.success) {
-          // If no city matches exactly, fallback to returning all properties
+        // Use 'search' instead of 'city' to allow partial matches (e.g. 'Delhi' matches 'New Delhi')
+        const json = await propertyApi.getProperties({ search: locationParam });
+        if (json && json.success) {
           if (json.data.length === 0) {
-            const allRes = await fetch(`${baseUrl}/api/properties`);
-            const allJson = await allRes.json();
-            setProperties(allJson.data);
+            const allJson = await propertyApi.getProperties();
+            setProperties(allJson?.data || []);
           } else {
             setProperties(json.data);
           }
+        } else if (json && Array.isArray(json)) {
+            if (json.length === 0) {
+               const allJson = await propertyApi.getProperties();
+               setProperties(Array.isArray(allJson) ? allJson : (allJson?.data || []));
+            } else {
+                setProperties(json);
+            }
         }
       } catch (err) {
         console.error("Failed to fetch search properties:", err);
@@ -115,7 +120,9 @@ export default function SearchResultsPage({ params }) {
               price={"₹" + (listing.pricePerNight || 0).toLocaleString("en-IN")}
               image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
               nights={3}
-              rating={listing.averageRating || 4.9}
+              rating={listing.averageRating ? listing.averageRating.toFixed(2) : 4.9}
+              reviewCount={listing.totalReviews}
+              topReview={listing.reviews?.[0]}
             />
           ))}
           </div>

@@ -8,6 +8,7 @@ import ListingCard from "./ListingCard";
 import Container from "../common/Container";
 
 import { useState, useEffect } from "react";
+import { propertyApi } from "@/lib/api";
 
 export default function ListingCarousel({ 
   title = "Popular homes in Noida", 
@@ -28,18 +29,18 @@ export default function ListingCarousel({
   useEffect(() => {
     const fetchProps = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${baseUrl}/api/properties?limit=6`);
-        const json = await res.json();
-        if (json.success) setListings(json.data);
+        // Fetch dynamically using our centralized API and location prop
+        const json = await propertyApi.getProperties({ search: location, limit: 6 });
+        if (json && json.success) setListings(json.data);
+        else if (json && Array.isArray(json)) setListings(json); // fallback if api returns array directly
       } catch (err) {
-        console.error("Failed to fetch carousel properties:", err);
+        console.error("Failed to fetch carousel properties for", location, err);
       } finally {
         setLoading(false);
       }
     };
     fetchProps();
-  }, []);
+  }, [location]);
 
   return (
     <section className="w-full py-6 md:py-12">
@@ -93,7 +94,9 @@ export default function ListingCarousel({
                 price={"₹" + (listing.pricePerNight || 0).toLocaleString("en-IN")}
                 image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
                 nights={3}
-                rating={listing.averageRating || 4.9}
+                rating={listing.averageRating ? listing.averageRating.toFixed(2) : 4.9}
+                reviewCount={listing.totalReviews}
+                topReview={listing.reviews?.[0]}
               />
             </div>
           ))}
@@ -104,13 +107,17 @@ export default function ListingCarousel({
               <div className="relative w-32 h-20">
                 {/* Decorative overlapping images */}
                 <div className="absolute top-2 left-0 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-sm transform -rotate-6 overflow-hidden">
-                   <img src={listings[0]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />
+                   {listings.length > 0 && <img src={listings[0]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />}
                 </div>
                 <div className="absolute top-0 right-0 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-sm transform rotate-12 overflow-hidden z-10">
-                   <img src={listings[1]?.images?.[0]?.url || listings[1]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />
+                   {listings.length > 1 && <img src={listings[1]?.images?.[0]?.url || listings[1]?.featuredImage} className="w-full h-full object-cover opacity: 1,y-80" />}
                 </div>
                 <div className="absolute bottom-0 left-8 w-16 h-12 bg-gray-200 rounded-md border border-white shadow-md z-20 overflow-hidden">
-                   <img src={listings[3]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover" />
+                   {listings.length > 2 ? (
+                     <img src={listings[2]?.images?.[0]?.url || listings[2]?.featuredImage} className="w-full h-full object-cover" />
+                   ) : (listings.length > 0 && (
+                     <img src={listings[0]?.images?.[0]?.url || listings[0]?.featuredImage} className="w-full h-full object-cover" />
+                   ))}
                 </div>
               </div>
               <span className="font-bold text-[#2B2B2B] group-hover:underline">See all</span>

@@ -15,6 +15,7 @@ const TABS = [
 ];
 
 import { useEffect } from "react";
+import { propertyApi } from "@/lib/api";
 
 export default function PerfectPlaceSection() {
   const [activeTab, setActiveTab] = useState("beachfront");
@@ -24,10 +25,9 @@ export default function PerfectPlaceSection() {
   useEffect(() => {
     const fetchProps = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${baseUrl}/api/properties?limit=20`);
-        const json = await res.json();
-        if (json.success) setProperties(json.data);
+        const json = await propertyApi.getProperties({ limit: 20 });
+        if (json && json.success) setProperties(json.data);
+        else if (json && Array.isArray(json)) setProperties(json);
       } catch (err) {
         console.error("Failed to fetch perfect places:", err);
       } finally {

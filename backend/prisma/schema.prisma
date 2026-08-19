@@ -247,6 +247,7 @@ model Review {
   bookingId  String
   rating     Float
   comment    String?  @db.Text
+  images     Json?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

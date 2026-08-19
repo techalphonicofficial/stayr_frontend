@@ -24,32 +24,34 @@ router.post('/razorpay', async (req, res) => {
         
         const payment = await prisma.payment.findFirst({ where: { razorpayOrderId: paymentData.order_id } });
         if (payment && payment.status === 'Pending') {
-          await prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-              status: 'Paid',
-              razorpayPaymentId: paymentData.id,
-              transactionDate: new Date()
+          await prisma.$transaction(async (tx) => {
+            await tx.payment.update({
+              where: { id: payment.id },
+              data: {
+                status: 'Paid',
+                razorpayPaymentId: paymentData.id,
+                transactionDate: new Date()
+              }
+            });
+
+            const booking = await tx.booking.findUnique({ where: { id: payment.bookingId } });
+            if (booking) {
+              await tx.booking.update({
+                where: { id: booking.id },
+                data: {
+                  status: 'Confirmed',
+                  paymentStatus: 'Paid'
+                }
+              });
+
+              await tx.property.update({
+                where: { id: booking.propertyId },
+                data: {
+                  totalBookings: { increment: 1 }
+                }
+              });
             }
           });
-
-          const booking = await prisma.booking.findUnique({ where: { id: payment.bookingId } });
-          if (booking) {
-            await prisma.booking.update({
-              where: { id: booking.id },
-              data: {
-                status: 'Confirmed',
-                paymentStatus: 'Paid'
-              }
-            });
-
-            await prisma.property.update({
-              where: { id: booking.propertyId },
-              data: {
-                totalBookings: { increment: 1 }
-              }
-            });
-          }
         }
       } else if (event.event === 'payment.failed') {
         const paymentData = event.payload.payment.entity;

@@ -33,7 +33,7 @@ function SuccessContent() {
         <Link href="/" className="flex-1 bg-gradient-to-r from-[#E8B65B] to-[#D89C2B] text-white font-bold text-[16px] py-4 rounded-lg hover:brightness-95 transition shadow-sm active:scale-[0.98]">
           Explore More Places
         </Link>
-        <Link href="/dashboard" className="flex-1 bg-white text-[#2B2B2B] border-2 border-[#E8B65B] font-bold text-[16px] py-4 rounded-lg hover:bg-gray-50 transition shadow-sm active:scale-[0.98]">
+        <Link href="/profile" className="flex-1 bg-white text-[#2B2B2B] border-2 border-[#E8B65B] font-bold text-[16px] py-4 rounded-lg hover:bg-gray-50 transition shadow-sm active:scale-[0.98]">
           View My Bookings
         </Link>
       </div>

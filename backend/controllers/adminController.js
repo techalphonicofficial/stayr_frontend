@@ -1,5 +1,6 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import * as adminService from '../services/adminService.js';
+import cloudinary from '../config/cloudinary.js';
 import { refundPayment as originalRefundPayment } from './paymentController.js';
 
 const formatWithId = (item) => {
@@ -149,9 +150,40 @@ export const getReviews = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, count: reviews.length, total, pagination, data: formatArrayWithId(reviews) });
 });
 
+export const createReview = asyncHandler(async (req, res) => {
+  const review = await adminService.createReview(req.body);
+  res.status(201).json({ success: true, data: formatWithId(review) });
+});
+
+export const updateReview = asyncHandler(async (req, res) => {
+  const review = await adminService.updateReview(req.params.id, req.body);
+  res.status(200).json({ success: true, data: formatWithId(review) });
+});
+
 export const deleteReview = asyncHandler(async (req, res) => {
   await adminService.deleteReview(req.params.id);
   res.status(200).json({ success: true, message: 'Review deleted successfully' });
+});
+
+export const uploadReviewImage = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    res.status(400);
+    throw new Error('No image uploaded');
+  }
+  const file = req.file;
+
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'stayr/reviews' },
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    stream.end(file.buffer);
+  });
+
+  res.status(200).json({ success: true, url: result.secure_url });
 });
 
 export const getNotifications = asyncHandler(async (req, res) => {

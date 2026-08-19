@@ -390,7 +390,7 @@ export const getReviews = async (query) => {
       skip,
       take: limit,
       include: {
-        guest: { select: { id: true, name: true } },
+        guest: { select: { id: true, name: true, profileImage: true } },
         property: { select: { id: true, title: true } }
       },
       orderBy: { createdAt: 'desc' }
@@ -398,6 +398,152 @@ export const getReviews = async (query) => {
   ]);
 
   return { total, reviews };
+};
+
+export const createReview = async (data) => {
+  const { propertyId, rating, comment, guestName, images } = data;
+  
+  const property = await prisma.property.findUnique({ where: { id: propertyId } });
+  if (!property) throw new Error('Property not found');
+
+  // Find or create dummy guest
+  let guest = await prisma.user.findFirst({
+    where: { role: 'Guest', email: 'admin_guest@stayr.com' }
+  });
+
+  if (!guest) {
+    guest = await prisma.user.create({
+      data: {
+        name: guestName || 'Admin Guest',
+        email: `guest_${Date.now()}@stayr.com`,
+        password: 'admin_guest_pwd',
+        role: 'Guest',
+        isVerified: true,
+        profileImage: data.guestProfileImage || null
+      }
+    });
+  } else {
+    // we create a new guest if we want different avatars per review, but let's stick to unique guests per name
+    const existingGuest = await prisma.user.findFirst({
+      where: { role: 'Guest', name: guestName }
+    });
+    if (existingGuest) {
+      guest = existingGuest;
+      if (data.guestProfileImage) {
+        await prisma.user.update({
+          where: { id: guest.id },
+          data: { profileImage: data.guestProfileImage }
+        });
+      }
+    } else {
+      guest = await prisma.user.create({
+        data: {
+          name: guestName || 'Admin Guest',
+          email: `guest_${Date.now()}@stayr.com`,
+          password: 'admin_guest_pwd',
+          role: 'Guest',
+          isVerified: true,
+          profileImage: data.guestProfileImage || null
+        }
+      });
+    }
+  }
+
+  // Create a dummy completed booking
+  const booking = await prisma.booking.create({
+    data: {
+      propertyId: property.id,
+      guestId: guest.id,
+      hostId: property.hostId,
+      checkIn: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      checkOut: new Date(),
+      nights: 2,
+      guestsCount: 1,
+      pricePerNight: property.pricePerNight,
+      cleaningFee: property.cleaningFee,
+      serviceFee: property.serviceFee,
+      subtotal: property.pricePerNight * 2,
+      taxes: 0,
+      totalPrice: property.pricePerNight * 2,
+      status: 'Completed',
+      paymentStatus: 'Paid',
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    }
+  });
+
+  const review = await prisma.review.create({
+    data: {
+      propertyId: property.id,
+      guestId: guest.id,
+      bookingId: booking.id,
+      rating: parseFloat(rating),
+      comment: comment || null,
+      images: images || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    include: {
+      guest: { select: { id: true, name: true } },
+      property: { select: { id: true, title: true } }
+    }
+  });
+
+  const aggregate = await prisma.review.aggregate({
+    _avg: { rating: true },
+    _count: { rating: true },
+    where: { propertyId: property.id }
+  });
+  
+  await prisma.property.update({
+    where: { id: property.id },
+    data: {
+      averageRating: aggregate._avg.rating || 0,
+      totalReviews: aggregate._count.rating || 0
+    }
+  });
+
+  return review;
+};
+
+export const updateReview = async (id, data) => {
+  const { rating, comment, guestProfileImage, guestId } = data;
+
+  const review = await prisma.review.update({
+    where: { id },
+    data: {
+      rating: rating !== undefined ? parseFloat(rating) : undefined,
+      comment: comment !== undefined ? comment : undefined,
+    },
+    include: {
+      guest: { select: { id: true, name: true } },
+      property: { select: { id: true, title: true } }
+    }
+  });
+
+  if (guestId && guestProfileImage !== undefined) {
+    await prisma.user.update({
+      where: { id: guestId },
+      data: { profileImage: guestProfileImage }
+    });
+  }
+
+  if (rating !== undefined) {
+    const aggregate = await prisma.review.aggregate({
+      _avg: { rating: true },
+      _count: { rating: true },
+      where: { propertyId: review.propertyId }
+    });
+    
+    await prisma.property.update({
+      where: { id: review.propertyId },
+      data: {
+        averageRating: aggregate._avg.rating || 0,
+        totalReviews: aggregate._count.rating || 0
+      }
+    });
+  }
+
+  return review;
 };
 
 export const deleteReview = async (id) => {
@@ -552,3 +698,9 @@ export const getUserAnalytics = async () => {
   
   return { totalHosts: hostCount, totalGuests: guestCount, registrations };
 };
+
+// Trigger nodemon restart
+
+// Trigger nodemon restart
+
+// Restart nodemon 2

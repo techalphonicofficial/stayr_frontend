@@ -164,9 +164,43 @@ export const adminApi = {
   
   // Reviews
   getReviews: (query = '') => fetchAdminAPI(`/api/admin/reviews${query}`),
+  createReview: (data) => fetchAdminAPI('/api/admin/reviews', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  updateReview: (id, data) => fetchAdminAPI(`/api/admin/reviews/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
   deleteReview: (id) => fetchAdminAPI(`/api/admin/reviews/${id}`, {
     method: 'DELETE'
   }),
+  uploadReviewImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const url = `${API_URL}/api/admin/reviews/upload`;
+    let token = null;
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('adminToken');
+    }
+    
+    return fetch(url, {
+      method: 'POST',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      body: formData,
+    }).then(async res => {
+      let data;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        data = { message: await res.text() };
+      }
+      if (!res.ok) throw new Error(data?.message || `Error ${res.status}`);
+      return data;
+    });
+  },
   
   // Notifications
   getNotifications: (query = '') => fetchAdminAPI(`/api/admin/notifications${query}`),

@@ -85,7 +85,7 @@ export const createOrder = asyncHandler(async (req, res) => {
 // @route   POST /api/payments/verify
 // @access  Private (Guest)
 export const verifyPayment = asyncHandler(async (req, res) => {
-  const { bookingId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
   const bodyString = razorpay_order_id + '|' + razorpay_payment_id;
   const expectedSignature = crypto
@@ -108,6 +108,11 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     throw new Error('Payment record not found');
   }
 
+  if (payment.guestId !== req.user.id) {
+    res.status(403);
+    throw new Error('Not authorized to verify this payment');
+  }
+
   if (payment.status === 'Paid') {
     res.status(400);
     throw new Error('Payment already verified');
@@ -126,7 +131,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     });
 
     const booking = await tx.booking.update({
-      where: { id: bookingId },
+      where: { id: payment.bookingId },
       data: {
         status: 'Confirmed',
         paymentStatus: 'Paid'
@@ -146,7 +151,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     where: { id: payment.id }
   });
 
-  console.info(`[PAYMENT VERIFIED] Payment ${payment.id} verified successfully for booking ${bookingId}`);
+  console.info(`[PAYMENT VERIFIED] Payment ${payment.id} verified successfully for booking ${payment.bookingId}`);
 
   // Trigger Notification Fire & Forget
   const propertyDoc = await prisma.property.findUnique({ where: { id: payment.propertyId } });
