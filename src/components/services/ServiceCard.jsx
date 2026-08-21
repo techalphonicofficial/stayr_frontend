@@ -4,22 +4,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star, Clock, Home } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function ServiceCard({ service }) {
+  const fallbackImage = "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9de?auto=format&fit=crop&w=800&q=80";
+  const [imgSrc, setImgSrc] = useState(service.image || fallbackImage);
+
   return (
     <Link href={`/services/${service.slug}`} className="block group">
-      <motion.div 
+      <motion.div
         className="relative flex flex-col gap-4 p-4 rounded-3xl border border-transparent hover:border-border hover:shadow-xl hover:bg-white transition-all duration-300"
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-secondary">
           <Image
-            src={service.image}
+            src={imgSrc}
             alt={service.title}
             fill
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImgSrc(fallbackImage)}
           />
-          
+
           {/* Wishlist Button */}
           <button className="absolute top-3 right-3 z-10 p-2 text-white hover:scale-110 transition-transform bg-black/20 rounded-full backdrop-blur-sm hover:bg-black/40">
             <Heart className="w-5 h-5 stroke-[2px]" />
@@ -45,7 +50,7 @@ export default function ServiceCard({ service }) {
               </div>
             )}
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
             <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-2 py-0.5 rounded text-xs font-medium border border-green-100">
               <Home className="w-3 h-3" />
@@ -64,7 +69,7 @@ export default function ServiceCard({ service }) {
                 From ₹{service.price.toLocaleString("en-IN")}
               </div>
             </div>
-            
+
             <button className="text-sm font-semibold text-primary hover:text-primary-hover transition border border-primary px-4 py-1.5 rounded-full group-hover:bg-primary group-hover:text-white">
               View details
             </button>

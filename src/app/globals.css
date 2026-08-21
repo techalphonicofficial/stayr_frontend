@@ -33,10 +33,10 @@
   --radius-theme: 20px;
 
   /* ===== Shadow ===== */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-md: 0 6px 20px rgba(0,0,0,0.06);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
-  --shadow-xl: 0 20px 60px rgba(0,0,0,0.10);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.10);
 
   /* ===== Fonts ===== */
   --font-sans: var(--font-inter);
@@ -50,14 +50,14 @@
 }
 
 @layer base {
+
   *,
   *::before,
   *::after {
     box-sizing: border-box;
   }
 
-  html {
-  }
+  html {}
 
   html,
   body {
@@ -116,6 +116,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

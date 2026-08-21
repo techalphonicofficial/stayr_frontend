@@ -4,14 +4,164 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
-export default function DatePanel() {
+export default function DatePanel({ dateRange, onDateRangeChange }) {
   const [activeTab, setActiveTab] = useState("dates"); // "dates" | "months" | "flexible"
   const [selectedStayLength, setSelectedStayLength] = useState("Weekend"); // Weekend | Week | Month
   const [selectedMonths, setSelectedMonths] = useState([]); // array of month names
 
-  // Mock calendar structure for August 2026
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+
+  const [currentDate, setCurrentDate] = useState(() => {
+    return new Date(todayMidnight.getFullYear(), todayMidnight.getMonth(), 1);
+  });
+
+  const nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+  const currentMonthStart = new Date(todayMidnight.getFullYear(), todayMidnight.getMonth(), 1);
+  const isLeftButtonDisabled = currentDate.getTime() <= currentMonthStart.getTime();
+
+  const handlePrevMonth = () => {
+    if (!isLeftButtonDisabled) {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    }
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getStartingDay = (year, month) => new Date(year, month, 1).getDay();
+
+  // Use props if available, otherwise local state for fallback
+  const start = dateRange?.start || null;
+  const end = dateRange?.end || null;
+
+  const handleDateClick = (year, month, day) => {
+    const clickedDate = new Date(year, month, day);
+    clickedDate.setHours(0, 0, 0, 0);
+
+    if (!start || (start && end)) {
+      onDateRangeChange?.({ start: clickedDate, end: null });
+    } else {
+      if (clickedDate < start) {
+        onDateRangeChange?.({ start: clickedDate, end: null });
+      } else {
+        onDateRangeChange?.({ start, end: clickedDate });
+      }
+    }
+  };
+
+  const isStartOrEnd = (year, month, day) => {
+    const current = new Date(year, month, day).getTime();
+    const startTime = start?.getTime();
+    const endTime = end?.getTime();
+    return (startTime && current === startTime) || (endTime && current === endTime);
+  };
+
+  const isInBetween = (year, month, day) => {
+    const current = new Date(year, month, day).getTime();
+    const startTime = start?.getTime();
+    const endTime = end?.getTime();
+    return startTime && endTime && current > startTime && current < endTime;
+  };
+
   const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-  const dates = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  const renderCalendar = (dateObj, isLeft) => {
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    const monthName = dateObj.toLocaleString("default", { month: "long" });
+    const numDays = getDaysInMonth(year, month);
+    const startDay = getStartingDay(year, month);
+
+    const datesArray = Array.from({ length: numDays }, (_, i) => i + 1);
+
+    return (
+      <div className="flex-1">
+        <div className="flex items-center justify-between mb-6">
+          {isLeft ? (
+            <button
+              onClick={handlePrevMonth}
+              disabled={isLeftButtonDisabled}
+              className={`p-2 rounded-full transition ${
+                isLeftButtonDisabled 
+                  ? "text-gray-300 cursor-not-allowed" 
+                  : "hover:bg-gray-100 text-[#7B7468]"
+              }`}
+            >
+              <ChevronLeft size={20} />
+            </button>
+          ) : (
+            <div className="w-8"></div>
+          )}
+          
+          <div className="font-semibold text-[#2B2B2B]">
+            {monthName} {year}
+          </div>
+          
+          {!isLeft ? (
+            <button
+              onClick={handleNextMonth}
+              className="p-2 hover:bg-gray-100 rounded-full text-[#7B7468] transition"
+            >
+              <ChevronRight size={20} />
+            </button>
+          ) : (
+            <div className="w-8"></div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-7 mb-2">
+          {days.map((d) => (
+            <div key={d} className="text-center text-xs font-semibold text-[#7B7468]">
+              {d}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-y-1 relative">
+          {Array.from({ length: startDay }).map((_, i) => (
+            <div key={`empty-${i}`} />
+          ))}
+          
+          {datesArray.map((d) => {
+            const isSelected = isStartOrEnd(year, month, d);
+            const isBetween = isInBetween(year, month, d);
+            const buttonDate = new Date(year, month, d);
+            const isPast = buttonDate.getTime() < todayMidnight.getTime();
+            
+            return (
+              <div key={d} className="aspect-square flex items-center justify-center relative">
+                {isBetween && !isPast && (
+                  <div className="absolute inset-y-0 -inset-x-[2px] bg-[#F7F7F7] -z-10" />
+                )}
+                {/* Special case for connecting start and end dates */}
+                {isSelected && start && end && start.getTime() !== end.getTime() && !isPast && (
+                  <div className={`absolute inset-y-0 ${start.getTime() === buttonDate.getTime() ? "right-0 left-1/2" : "left-0 right-1/2"} bg-[#F7F7F7] -z-10`} />
+                )}
+                <button
+                  onClick={() => {
+                    if (!isPast) handleDateClick(year, month, d);
+                  }}
+                  disabled={isPast}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full font-semibold text-sm transition-all z-10 ${
+                    isPast
+                      ? "text-gray-300 cursor-not-allowed"
+                      : isSelected
+                        ? "bg-black text-white"
+                        : "hover:border hover:border-[#2B2B2B] text-[#2B2B2B]"
+                  } ${isBetween && !isSelected && !isPast ? "bg-[#F7F7F7] w-full rounded-none" : ""}`}
+                >
+                  {d}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const flexibleMonths = [
     { name: "August", year: "2026" },
@@ -24,7 +174,7 @@ export default function DatePanel() {
 
   const toggleMonth = (monthName) => {
     if (selectedMonths.includes(monthName)) {
-      setSelectedMonths(selectedMonths.filter(m => m !== monthName));
+      setSelectedMonths(selectedMonths.filter((m) => m !== monthName));
     } else {
       setSelectedMonths([...selectedMonths, monthName]);
     }
@@ -38,35 +188,25 @@ export default function DatePanel() {
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="absolute top-[120%] left-1/2 -translate-x-1/2 w-[850px] max-w-[95vw] max-h-[60vh] overflow-y-auto overflow-x-hidden bg-white rounded-3xl shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-[#EFE7D8] p-8 z-50 origin-top"
     >
-      
       {/* Quick Select Tabs */}
       <div className="flex items-center justify-center mb-8">
         <div className="bg-[#F5F5F5] rounded-full p-1 flex shadow-inner">
-          <button 
+          <button
             onClick={() => setActiveTab("dates")}
             className={`px-6 py-2 rounded-full text-sm font-semibold transition ${
-              activeTab === "dates" 
-                ? "bg-white shadow-sm text-[#2B2B2B]" 
+              activeTab === "dates"
+                ? "bg-white shadow-sm text-[#2B2B2B]"
                 : "text-[#7B7468] hover:text-[#2B2B2B]"
             }`}
           >
             Dates
           </button>
-          <button 
-            onClick={() => setActiveTab("months")}
-            className={`px-6 py-2 rounded-full text-sm font-semibold transition ${
-              activeTab === "months" 
-                ? "bg-white shadow-sm text-[#2B2B2B]" 
-                : "text-[#7B7468] hover:text-[#2B2B2B]"
-            }`}
-          >
-            Months
-          </button>
-          <button 
+
+          <button
             onClick={() => setActiveTab("flexible")}
             className={`px-6 py-2 rounded-full text-sm font-semibold transition ${
-              activeTab === "flexible" 
-                ? "bg-white shadow-sm text-[#2B2B2B]" 
+              activeTab === "flexible"
+                ? "bg-white shadow-sm text-[#2B2B2B]"
                 : "text-[#7B7468] hover:text-[#2B2B2B]"
             }`}
           >
@@ -77,7 +217,7 @@ export default function DatePanel() {
 
       <AnimatePresence mode="wait">
         {activeTab === "dates" && (
-          <motion.div 
+          <motion.div
             key="dates-view"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -85,66 +225,13 @@ export default function DatePanel() {
             transition={{ duration: 0.2 }}
             className="flex flex-row gap-12"
           >
-            {/* Left Calendar */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <button className="p-2 hover:bg-gray-100 rounded-full text-[#7B7468]">
-                  <ChevronLeft size={20} />
-                </button>
-                <div className="font-semibold text-[#2B2B2B]">August 2026</div>
-                <div className="w-8"></div> {/* Spacer to center title */}
-              </div>
-              
-              <div className="grid grid-cols-7 mb-2">
-                {days.map(d => (
-                  <div key={d} className="text-center text-xs font-semibold text-[#7B7468]">{d}</div>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-7 gap-y-1">
-                {Array.from({length: 6}).map((_, i) => <div key={`empty-${i}`} />)}
-                {dates.map(d => (
-                  <div key={d} className="aspect-square flex items-center justify-center">
-                    <button className="w-10 h-10 flex items-center justify-center rounded-full hover:border hover:border-[#2B2B2B] text-[#2B2B2B] font-semibold text-sm transition">
-                      {d}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Calendar */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-8"></div> {/* Spacer */}
-                <div className="font-semibold text-[#2B2B2B]">September 2026</div>
-                <button className="p-2 hover:bg-gray-100 rounded-full text-[#7B7468]">
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-7 mb-2">
-                {days.map(d => (
-                  <div key={d} className="text-center text-xs font-semibold text-[#7B7468]">{d}</div>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-7 gap-y-1">
-                {Array.from({length: 2}).map((_, i) => <div key={`empty-sept-${i}`} />)}
-                {dates.slice(0, 30).map(d => (
-                  <div key={d} className="aspect-square flex items-center justify-center">
-                    <button className="w-10 h-10 flex items-center justify-center rounded-full hover:border hover:border-[#2B2B2B] text-[#2B2B2B] font-semibold text-sm transition">
-                      {d}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {renderCalendar(currentDate, true)}
+            {renderCalendar(nextMonthDate, false)}
           </motion.div>
         )}
 
         {activeTab === "flexible" && (
-          <motion.div 
+          <motion.div
             key="flexible-view"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -152,7 +239,9 @@ export default function DatePanel() {
             transition={{ duration: 0.2 }}
             className="flex flex-col items-center pb-4"
           >
-            <h3 className="text-[18px] font-semibold text-[#2B2B2B] mb-6">How long would you like to stay?</h3>
+            <h3 className="text-[18px] font-semibold text-[#2B2B2B] mb-6">
+              How long would you like to stay?
+            </h3>
             <div className="flex gap-3 mb-10">
               {["Weekend", "Week", "Month"].map((length) => (
                 <button
@@ -169,8 +258,10 @@ export default function DatePanel() {
               ))}
             </div>
 
-            <h3 className="text-[18px] font-semibold text-[#2B2B2B] mb-6">When do you want to go?</h3>
-            
+            <h3 className="text-[18px] font-semibold text-[#2B2B2B] mb-6">
+              When do you want to go?
+            </h3>
+
             {/* Horizontal scroll container with hidden scrollbar */}
             <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <div className="flex gap-4 min-w-max px-2 pb-4">
@@ -184,27 +275,25 @@ export default function DatePanel() {
                         : "border-[#EFE7D8] bg-white hover:border-black"
                     }`}
                   >
-                    <CalendarIcon size={32} strokeWidth={1.5} className="mb-3 text-[#2B2B2B]" />
-                    <span className="font-semibold text-[14px] text-[#2B2B2B]">{month.name}</span>
-                    <span className="text-[12px] text-[#7B7468]">{month.year}</span>
+                    <CalendarIcon
+                      size={32}
+                      strokeWidth={1.5}
+                      className="mb-3 text-[#2B2B2B]"
+                    />
+                    <span className="font-semibold text-[14px] text-[#2B2B2B]">
+                      {month.name}
+                    </span>
+                    <span className="text-[12px] text-[#7B7468]">
+                      {month.year}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
           </motion.div>
         )}
-        
-        {activeTab === "months" && (
-          <motion.div 
-            key="months-view"
-            initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col items-center justify-center h-48 text-[#7B7468]"
-          >
-            Months view coming soon...
-          </motion.div>
-        )}
+
+
       </AnimatePresence>
     </motion.div>
   );

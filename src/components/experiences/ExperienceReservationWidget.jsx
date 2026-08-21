@@ -46,8 +46,8 @@ export default function ExperienceReservationWidget({ experience }) {
             <div className="flex border-b border-border relative">
               <div className="w-1/2 border-r border-border relative">
                 <label className="absolute top-2 left-4 text-[10px] font-bold uppercase tracking-wider text-muted z-10 pointer-events-none">Date</label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   onClick={(e) => e.target.showPicker && e.target.showPicker()}
@@ -57,8 +57,8 @@ export default function ExperienceReservationWidget({ experience }) {
               </div>
               <div className="w-1/2 relative">
                 <label className="absolute top-2 left-4 text-[10px] font-bold uppercase tracking-wider text-muted z-10 pointer-events-none">Time</label>
-                <input 
-                  type="time" 
+                <input
+                  type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   onClick={(e) => e.target.showPicker && e.target.showPicker()}
@@ -69,12 +69,12 @@ export default function ExperienceReservationWidget({ experience }) {
             </div>
             <div className="relative">
               <label className="absolute top-2 left-4 text-[10px] font-bold uppercase tracking-wider text-muted z-10 pointer-events-none">Guests</label>
-              <select 
+              <select
                 value={guests}
                 onChange={(e) => setGuests(parseInt(e.target.value))}
                 className="w-full p-4 pt-7 text-sm font-medium outline-none bg-transparent hover:bg-secondary/50 transition cursor-pointer appearance-none"
               >
-                {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                   <option key={n} value={n}>{n} {n === 1 ? 'guest' : 'guests'}</option>
                 ))}
               </select>
@@ -86,7 +86,7 @@ export default function ExperienceReservationWidget({ experience }) {
               Reservation Confirmed! 🎉
             </div>
           ) : (
-            <button 
+            <button
               onClick={handleReserve}
               className="w-full bg-primary hover:bg-primary-hover text-foreground font-bold py-4 rounded-xl transition shadow-lg shadow-primary/20"
             >
@@ -109,7 +109,7 @@ export default function ExperienceReservationWidget({ experience }) {
             {date ? new Date(date).toLocaleDateString() : "Select dates"}
           </div>
         </div>
-        <button 
+        <button
           onClick={() => {
             if (!date || !time) alert("Please select a date & time above first!");
             else handleReserve();

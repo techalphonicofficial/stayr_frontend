@@ -9,7 +9,7 @@ export default function ServiceProviderCTA() {
     <div className="py-24">
       <Container>
         <div className="bg-foreground rounded-[3rem] overflow-hidden relative shadow-2xl flex flex-col md:flex-row items-center">
-          
+
           {/* Image */}
           <div className="w-full md:w-1/2 h-[400px] md:h-[500px] relative order-2 md:order-1">
             <Image
@@ -38,7 +38,7 @@ export default function ServiceProviderCTA() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
-          
+
         </div>
       </Container>
     </div>

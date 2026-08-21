@@ -4,8 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function ExperienceCard({ experience }) {
+  const fallbackImage = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80";
+  const [imgSrc, setImgSrc] = useState(experience.image || fallbackImage);
+
   return (
     <Link href={`/experiences/${experience.slug}`} className="block group">
       <motion.div 
@@ -13,11 +17,12 @@ export default function ExperienceCard({ experience }) {
       >
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-secondary">
           <Image
-            src={experience.image}
+            src={imgSrc}
             alt={experience.title}
             fill
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImgSrc(fallbackImage)}
           />
           
           {/* Wishlist Button */}

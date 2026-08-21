@@ -43,7 +43,8 @@ export default function PropertiesPage() {
       cell: (row) => (
         <div className="flex items-center gap-3">
           <img 
-            src={row.images?.[0]?.url || 'https://via.placeholder.com/150'} 
+            src={row.images?.[0]?.url || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=150&q=80'} 
+            onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=150&q=80"; e.currentTarget.onerror = null; }}
             alt="" 
             className="h-10 w-12 rounded object-cover" 
           />

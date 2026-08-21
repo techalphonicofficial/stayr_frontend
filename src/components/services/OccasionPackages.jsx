@@ -24,7 +24,7 @@ export default function OccasionPackages() {
             <motion.div
               key={pkg.id}
               initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl transition-all group flex flex-col"

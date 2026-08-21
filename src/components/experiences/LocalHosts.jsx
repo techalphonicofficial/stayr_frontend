@@ -24,7 +24,7 @@ export default function LocalHosts() {
             <motion.div
               key={host.id}
               initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-3xl p-6 shadow-sm border border-border hover:shadow-xl transition-shadow flex flex-col items-center text-center group"

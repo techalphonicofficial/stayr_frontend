@@ -90,6 +90,7 @@ model User {
   hostedProperties  Property[]     @relation("HostProperties")
   guestBookings     Booking[]      @relation("GuestBookings")
   hostBookings      Booking[]      @relation("HostBookings")
+  guestExperienceBookings ExperienceBooking[] @relation("GuestExperienceBookings")
   reviews           Review[]       @relation("GuestReviews")
   guestPayments     Payment[]      @relation("GuestPayments")
   hostPayments      Payment[]      @relation("HostPayments")
@@ -98,6 +99,7 @@ model User {
 
   accessRoleId      String?
   accessRole        AccessRole?    @relation(fields: [accessRoleId], references: [id], onDelete: SetNull)
+  wishlists         Wishlist[]
 }
 
 model Property {
@@ -152,6 +154,7 @@ model Property {
   bookings  Booking[]
   reviews   Review[]
   payments  Payment[]
+  wishlists Wishlist[]
 
   @@index([pricePerNight])
   @@index([category])
@@ -548,4 +551,68 @@ model BlogPost {
   
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+}
+
+model ExperienceStory {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String?
+  description String   @db.Text
+  price       Float
+  currency    String   @default("INR")
+  packageText String   @default("Complete Package")
+  image       String
+  timeline    Json     // Array of { time, title, desc }
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model InspirationCard {
+  id        String   @id @default(uuid())
+  tag       String
+  title     String
+  image     String
+  link      String
+  btnText   String   @default("Book now")
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model ExperienceBooking {
+  id              String        @id @default(uuid())
+  experienceId    String
+  guestId         String
+  date            DateTime
+  time            String
+  guestsCount     Int
+  totalPrice      Float
+  paymentStatus   PaymentStatus @default(Pending)
+  razorpayOrderId String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  specialRequests String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  guest    User @relation("GuestExperienceBookings", fields: [guestId], references: [id])
+
+  @@index([guestId])
+  @@index([experienceId])
+}
+
+model Wishlist {
+  id         String   @id @default(uuid())
+  userId     String
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
 }

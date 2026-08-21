@@ -14,7 +14,7 @@ export default function ServicesHero() {
           {/* Background Image */}
           <div className="absolute inset-0 w-full h-full">
             <Image
-              src="https://images.unsplash.com/photo-1577106263724-2c8e03bfe9de?auto=format&fit=crop&q=80&w=2000"
+              src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=2000"
               alt="Luxury hospitality services"
               fill
               priority
@@ -27,7 +27,7 @@ export default function ServicesHero() {
           <div className="relative h-full flex flex-col justify-end pb-24 md:pb-32 px-8 md:px-16 z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="max-w-3xl text-white"
             >
@@ -38,7 +38,7 @@ export default function ServicesHero() {
               <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl">
                 Book trusted professionals for comfort, convenience and special moments right at your Stayr home.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 text-sm font-medium text-white/80">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
                   <ShieldCheck className="w-5 h-5 text-accent" />
@@ -53,11 +53,11 @@ export default function ServicesHero() {
           </div>
         </div>
       </Container>
-      
+
       {/* Positioned exactly overlapping the bottom edge of the hero */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         className="px-4 md:px-0"
       >

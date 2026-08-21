@@ -55,7 +55,7 @@ export default function HostLoginBackground() {
           </motion.div>
         ))}
       </div>
-      
+
       {/* Soft gradient overlay to make the center card pop */}
       <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
     </div>

@@ -11,7 +11,22 @@ import ExperienceHostCTA from "@/components/experiences/ExperienceHostCTA";
 
 import { EXPERIENCES, STAYR_ORIGINALS } from "@/data/experiences";
 
-export default function ExperiencesPage() {
+async function getActiveStory() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/experience-stories/active`, { 
+      next: { revalidate: 60 } 
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.success ? json.data : null;
+  } catch (error) {
+    console.error("Failed to fetch active experience story:", error);
+    return null;
+  }
+}
+
+export default async function ExperiencesPage() {
+  const activeStory = await getActiveStory();
 
   return (
     <div className="min-h-screen bg-[#FFFDF8]">
@@ -40,7 +55,7 @@ export default function ExperiencesPage() {
         <StayrOriginals originals={STAYR_ORIGINALS} />
 
         {/* Itinerary */}
-        <OneDayStory />
+        <OneDayStory story={activeStory || undefined} />
 
         {/* Meet the Locals */}
         <LocalHosts />

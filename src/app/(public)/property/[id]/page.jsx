@@ -64,8 +64,9 @@ export default function PropertyPage({ params }) {
   }
 
   // Safe mapping of dynamic JSON fields
-  const imagesForGallery = propertyData.images?.map(img => img.url) || 
-                           (propertyData.featuredImage ? [propertyData.featuredImage] : []);
+  const imagesForGallery = propertyData.images?.length > 0 
+    ? propertyData.images.map(img => img.url) 
+    : (propertyData.featuredImage ? [propertyData.featuredImage] : []);
                            
   const taxRate = propertyData.bookingSettings?.taxRate || 0; 
   

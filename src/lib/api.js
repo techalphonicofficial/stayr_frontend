@@ -2,7 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function fetchAPI(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
-  
+
   // Create a clean options object
   const fetchOptions = {
     ...options,
@@ -136,6 +136,9 @@ export const authApi = {
   },
   logout: async () => {
     return fetchAPI('/api/auth/logout', { method: 'POST' });
+  },
+  becomeHost: async () => {
+    return fetchAPI('/api/auth/become-host', { method: 'PUT' });
   }
 };
 
@@ -177,5 +180,20 @@ export const verifyPayment = paymentApi.verifyPayment;
 export const settingsApi = {
   getTaxes: async () => {
     return fetchAPI('/api/public/settings/taxes');
+  }
+};
+
+// ----------------------------------------------------------------------------
+// WISHLIST API
+// ----------------------------------------------------------------------------
+export const wishlistApi = {
+  getWishlist: async () => {
+    return fetchAPI('/api/wishlist');
+  },
+  toggleWishlist: async (propertyId) => {
+    return fetchAPI('/api/wishlist/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ propertyId })
+    });
   }
 };

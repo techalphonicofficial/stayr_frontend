@@ -406,4 +406,11 @@ export const adminApi = {
       return data;
     });
   },
+
+  // Experience Stories
+  getExperienceStories: () => fetchAdminAPI('/api/experience-stories'),
+  getExperienceStory: (id) => fetchAdminAPI(`/api/experience-stories/${id}`),
+  createExperienceStory: (data) => fetchAdminAPI('/api/experience-stories', { method: 'POST', body: JSON.stringify(data) }),
+  updateExperienceStory: (id, data) => fetchAdminAPI(`/api/experience-stories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteExperienceStory: (id) => fetchAdminAPI(`/api/experience-stories/${id}`, { method: 'DELETE' }),
 };

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, Home, CheckSquare,
   Calendar, CreditCard, Star, Bell,
-  BarChart, Settings, LogOut, X, RefreshCw, FileText, ChevronDown, ChevronRight, ShieldCheck
+  BarChart, Settings, LogOut, X, RefreshCw, FileText, ChevronDown, ChevronRight, ShieldCheck, Map
 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,6 +47,7 @@ const menuItems = [
       { name: 'Categories', href: '/admin/blogs/categories' }
     ]
   },
+  { name: 'Experience Stories', href: '/admin/experiences', icon: Map },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
@@ -111,8 +112,8 @@ export default function Sidebar({ onClose }) {
                             href={sub.href}
                             onClick={onClose}
                             className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isSubActive
-                                ? 'bg-gray-100 text-[var(--brand-primary)]'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                              ? 'bg-gray-100 text-[var(--brand-primary)]'
+                              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                               }`}
                           >
                             {sub.name}
@@ -132,8 +133,8 @@ export default function Sidebar({ onClose }) {
                 href={item.href}
                 onClick={onClose}
                 className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive
-                    ? 'bg-gray-100 text-[var(--brand-primary)]'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-gray-100 text-[var(--brand-primary)]'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
               >
                 <item.icon

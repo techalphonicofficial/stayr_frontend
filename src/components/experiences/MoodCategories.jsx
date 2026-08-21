@@ -27,13 +27,13 @@ export default function MoodCategories() {
               <Link href={`/experiences/mood/${mood.id}`} key={mood.id} className="block">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group cursor-pointer flex flex-col gap-3"
                 >
                   <div className="relative aspect-square w-full rounded-2xl overflow-hidden shadow-sm group-hover:shadow-xl transition-all duration-300">
-                    <div 
+                    <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
                       style={{ backgroundImage: `url(${mood.image})` }}
                     />

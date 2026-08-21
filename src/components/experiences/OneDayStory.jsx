@@ -6,16 +6,28 @@ import { useRef } from "react";
 import { Clock, MapPin, ArrowRight } from "lucide-react";
 import Container from "../common/Container";
 
-const TIMELINE = [
-  { time: "8:00 AM", title: "Heritage breakfast", desc: "Start the day with traditional kachoris and chai overlooking the city." },
-  { time: "10:00 AM", title: "Block-printing workshop", desc: "Learn ancient textile arts from a master artisan in their home studio." },
-  { time: "1:00 PM", title: "Traditional Rajasthani lunch", desc: "An authentic thali experience in a restored 200-year-old courtyard." },
-  { time: "4:00 PM", title: "Hidden palace tour", desc: "Exclusive access to private quarters and untold royal histories." },
-  { time: "7:00 PM", title: "Rooftop sunset dinner", desc: "End the day with a majestic view of the illuminated fort." },
-];
+const DEFAULT_STORY = {
+  title: "A Royal Day in Jaipur",
+  description: "Experience the Pink City like royalty with a perfectly curated dawn-to-dusk itinerary.",
+  packageText: "Complete Package",
+  price: 12500,
+  currency: "INR",
+  subtitle: "couple",
+  image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&q=80&w=1200",
+  timeline: [
+    { time: "8:00 AM", title: "Heritage breakfast", desc: "Start the day with traditional kachoris and chai overlooking the city." },
+    { time: "10:00 AM", title: "Block-printing workshop", desc: "Learn ancient textile arts from a master artisan in their home studio." },
+    { time: "1:00 PM", title: "Traditional Rajasthani lunch", desc: "An authentic thali experience in a restored 200-year-old courtyard." },
+    { time: "4:00 PM", title: "Hidden palace tour", desc: "Exclusive access to private quarters and untold royal histories." },
+    { time: "7:00 PM", title: "Rooftop sunset dinner", desc: "End the day with a majestic view of the illuminated fort." },
+  ]
+};
 
-export default function OneDayStory() {
+export default function OneDayStory({ story: propStory }) {
+  const story = propStory || DEFAULT_STORY;
   const containerRef = useRef(null);
+
+  if (!story) return null;
   
   return (
     <div className="py-24 bg-secondary/20 relative overflow-hidden" ref={containerRef}>
@@ -25,10 +37,10 @@ export default function OneDayStory() {
             One Day, One Story
           </div>
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-4">
-            A Royal Day in Jaipur
+            {story.title}
           </h2>
           <p className="text-muted text-lg max-w-2xl mx-auto">
-            Experience the Pink City like royalty with a perfectly curated dawn-to-dusk itinerary.
+            {story.description}
           </p>
         </div>
 
@@ -39,7 +51,7 @@ export default function OneDayStory() {
             <div className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-border rounded-full" />
             
             <div className="flex flex-col gap-10 relative z-10">
-              {TIMELINE.map((item, index) => (
+              {(story.timeline || []).map((item, index) => (
                 <motion.div 
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -71,8 +83,8 @@ export default function OneDayStory() {
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted">Complete Package</div>
-                  <div className="text-xl font-bold text-foreground">₹12,500 <span className="text-sm font-normal text-muted">/ couple</span></div>
+                  <div className="text-sm text-muted">{story.packageText}</div>
+                  <div className="text-xl font-bold text-foreground">{story.currency === 'INR' ? '₹' : story.currency}{story.price} <span className="text-sm font-normal text-muted">{story.subtitle ? `/ ${story.subtitle}` : ''}</span></div>
                 </div>
               </div>
               <button className="w-full bg-primary hover:bg-primary-hover text-foreground font-bold py-4 rounded-xl transition flex items-center justify-center gap-2">
@@ -85,8 +97,8 @@ export default function OneDayStory() {
           {/* Image */}
           <div className="order-1 md:order-2 h-[600px] md:h-[800px] relative rounded-3xl overflow-hidden shadow-xl">
             <Image
-              src="https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&q=80&w=1200"
-              alt="Jaipur Royal Day"
+              src={story.image}
+              alt={story.title}
               fill
               className="object-cover"
             />

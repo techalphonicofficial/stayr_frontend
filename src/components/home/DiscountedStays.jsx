@@ -63,7 +63,7 @@ export default function DiscountedStays() {
               title={listing.title}
               price={"₹" + (listing.pricePerNight || 0).toLocaleString("en-IN")}
               originalPrice={"₹" + ((listing.pricePerNight || 0) + 2000).toLocaleString("en-IN")}
-              image={listing.images?.[0]?.url || listing.featuredImage || "https://via.placeholder.com/400"}
+              image={listing.featuredImage || listing.images?.[0]?.url || ""}
               discountText="20% off"
               nights={3}
               rating={listing.averageRating ? listing.averageRating.toFixed(2) : 4.9}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 import SearchSection from "./search/SearchSection";
 import DestinationPanel from "./search/DestinationPanel";
@@ -12,15 +13,26 @@ import GuestPanel from "./search/GuestPanel";
 export default function SearchMenu({ isExpanded = false, animateLayout = true, onExpand, onClose, defaultActivePanel = null }) {
   const containerLayoutId = animateLayout ? "search-container" : undefined;
   const buttonLayoutId = animateLayout ? "search-button" : undefined;
-  
+
   const [activePanel, setActivePanel] = useState(defaultActivePanel);
   const [hoveredSection, setHoveredSection] = useState(null);
-  
+
+  const [location, setLocation] = useState("");
+  const router = useRouter();
+
   const [guests, setGuests] = useState({
     adults: 0,
     children: 0,
     infants: 0,
-    pets: 0 });
+    pets: 0
+  });
+
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
+
+  const formatDate = (date) => {
+    if (!date) return "Add dates";
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
 
   const menuRef = useRef(null);
 
@@ -28,11 +40,12 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
+        // Only close the active panel, don't collapse the navbar.
+        // The navbar's own backdrop handles full collapse.
         setActivePanel(null);
-        if (onClose) onClose();
       }
     };
-    
+
     const handleEscKey = (e) => {
       if (e.key === "Escape") {
         setActivePanel(null);
@@ -47,7 +60,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
     } else {
       document.body.style.overflow = "unset";
     }
-    
+
     return () => {
       document.body.style.overflow = "unset";
       document.removeEventListener("mousedown", handleClickOutside);
@@ -73,7 +86,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
   };
 
   const guestCount = guests.adults + guests.children;
-  const guestText = guestCount > 0 
+  const guestText = guestCount > 0
     ? `${guestCount} guest${guestCount > 1 ? 's' : ''}${guests.infants ? `, ${guests.infants} infant${guests.infants > 1 ? 's' : ''}` : ''}`
     : "Add guests";
 
@@ -87,7 +100,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
           {activePanel && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 bg-black/20 z-[-1]"
               onClick={() => {
@@ -98,58 +111,61 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
           )}
         </AnimatePresence>
 
-        <motion.div 
+        <motion.div
           layoutId={containerLayoutId}
           transition={morphTransition}
-          className={`flex flex-row items-center border rounded-full relative origin-center transition-colors duration-200 ${
-            activePanel ? "bg-[#EBEBEB] border-transparent" : "bg-white border-[#EFE7D8] shadow-lg"
-          }`}
+          className={`flex flex-row items-center border rounded-full relative origin-center transition-colors duration-200 ${activePanel ? "bg-[#EBEBEB] border-transparent" : "bg-white border-[#EFE7D8] shadow-lg"
+            }`}
           style={{ width: "850px", maxWidth: "100%" }}
         >
-          {/* Where */}
-          <SearchSection 
+          <SearchSection
             id="where"
             title="Where"
-            subtitle="Search destinations"
+            subtitle={
+              activePanel === "where" ? (
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Search destinations"
+                  className="bg-transparent outline-none w-full text-sm text-[#2B2B2B] placeholder:text-[#7B7468]"
+                  autoFocus
+                />
+              ) : (location || "Search destinations")
+            }
             isActive={activePanel === "where"}
             isHovered={hoveredSection === "where"}
             onHover={() => setHoveredSection("where")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel(activePanel === "where" ? null : "where")}
+            onClick={() => setActivePanel("where")}
             className="flex-[1.5]"
           />
           <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
 
-          {/* Check in */}
-          <SearchSection 
-            id="checkin"
-            title="Check in"
-            subtitle="Add dates"
-            isActive={activePanel === "checkin"}
-            isHovered={hoveredSection === "checkin"}
-            onHover={() => setHoveredSection("checkin")}
-            onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel(activePanel === "checkin" ? null : "checkin")}
-            className="flex-1"
-          />
           <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
 
-          {/* Check out */}
-          <SearchSection 
-            id="checkout"
-            title="Check out"
-            subtitle="Add dates"
-            isActive={activePanel === "checkout"}
-            isHovered={hoveredSection === "checkout"}
-            onHover={() => setHoveredSection("checkout")}
+          {/* When */}
+          <SearchSection
+            id="when"
+            title="When"
+            subtitle={
+              dateRange.start && dateRange.end 
+                ? `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}` 
+                : dateRange.start 
+                  ? formatDate(dateRange.start) 
+                  : "Add dates"
+            }
+            isActive={activePanel === "when"}
+            isHovered={hoveredSection === "when"}
+            onHover={() => setHoveredSection("when")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel(activePanel === "checkout" ? null : "checkout")}
-            className="flex-1"
+            onClick={() => setActivePanel("when")}
+            className="flex-[2]"
           />
           <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
 
           {/* Who */}
-          <SearchSection 
+          <SearchSection
             id="who"
             title="Who"
             subtitle={guestText}
@@ -157,11 +173,11 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
             isHovered={hoveredSection === "who"}
             onHover={() => setHoveredSection("who")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel(activePanel === "who" ? null : "who")}
+            onClick={() => setActivePanel("who")}
             className="flex-[1.5]"
             hasSearchButton={true}
             searchButton={
-              <motion.button 
+              <motion.button
                 layoutId={buttonLayoutId}
                 layout
                 transition={morphTransition}
@@ -169,15 +185,15 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
                   e.stopPropagation();
                   setActivePanel(null); // Execute search
                   if (onClose) onClose();
+                  router.push(`/s/${location || "Anywhere"}/homes`);
                 }}
-                className={`h-12 bg-[#E8B65B] hover:bg-[#D89C2B] rounded-full text-white transition-all duration-200 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ${
-                  activePanel ? "w-[120px]" : "w-12"
-                }`}
+                className={`h-12 bg-[#E8B65B] hover:bg-[#D89C2B] rounded-full text-white transition-all duration-200 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ${activePanel ? "w-[120px]" : "w-12"
+                  }`}
               >
                 <Search size={20} strokeWidth={3} className="flex-shrink-0" />
                 <AnimatePresence>
                   {activePanel && (
-                    <motion.span 
+                    <motion.span
                       initial={{ opacity: 0, width: 0, marginLeft: 0 }}
                       animate={{ opacity: 1, width: "auto", marginLeft: 8 }}
                       exit={{ opacity: 0, width: 0, marginLeft: 0 }}
@@ -192,10 +208,27 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
           />
         </motion.div>
 
-        {/* Floating Dropdown Panels */}
         <AnimatePresence>
-          {activePanel === "where" && <DestinationPanel key="panel-where" />}
-          {(activePanel === "checkin" || activePanel === "checkout") && <DatePanel key="panel-date" />}
+          {activePanel === "where" && (
+            <DestinationPanel 
+              key="panel-where" 
+              onSelect={(dest) => {
+                setLocation(dest);
+                setActivePanel("when");
+              }} 
+            />
+          )}
+          {activePanel === "when" && (
+            <DatePanel 
+              key="panel-date" 
+              dateRange={dateRange}
+              onDateRangeChange={(range) => {
+                setDateRange(range);
+                // Optionally move to checkout if start is selected but end is not,
+                // but usually the date panel stays open until closed.
+              }}
+            />
+          )}
           {activePanel === "who" && <GuestPanel key="panel-who" guests={guests} updateGuests={updateGuests} />}
         </AnimatePresence>
 
@@ -205,7 +238,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
 
   // Collapsed State
   return (
-    <motion.div 
+    <motion.div
       layoutId={containerLayoutId}
       transition={morphTransition}
       whileHover={{ scale: 1.02 }}
@@ -213,20 +246,20 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
       className="border border-[#EFE7D8] w-full md:w-auto py-2 px-2 rounded-full shadow-sm hover:shadow-md transition-colors transition-shadow cursor-pointer bg-white origin-center relative z-50"
       onClick={onExpand}
     >
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+        whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
         className="flex flex-row items-center justify-between w-full h-full"
       >
         <div className="text-sm font-semibold pl-4 pr-6 text-[#2B2B2B] whitespace-nowrap">
-          Anywhere
+          {location || "Anywhere"}
         </div>
         <div className="hidden sm:block text-sm font-semibold px-6 border-x border-[#EFE7D8] flex-1 text-center text-[#2B2B2B] whitespace-nowrap">
           Any week
         </div>
         <div className="text-sm pl-6 text-[#7B7468] flex flex-row items-center gap-3 whitespace-nowrap">
           <div className="hidden sm:block">{guestText}</div>
-          <motion.div 
+          <motion.div
             layoutId={buttonLayoutId}
             layout
             transition={morphTransition}

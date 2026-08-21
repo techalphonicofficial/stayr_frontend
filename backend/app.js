@@ -21,6 +21,8 @@ import footerRoutes from './routes/footerRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 import crmSettingsRoutes from './routes/crmSettingsRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
+import experienceStoryRoutes from './routes/experienceStoryRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
@@ -83,6 +85,8 @@ app.use('/api/admin/blogs', blogRoutes);
 app.use('/api/admin/pages', cmsRoutes);
 app.use('/api/admin/footer', footerRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/experience-stories', experienceStoryRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -92,3 +96,4 @@ app.use(notFound);
 app.use(errorHandler);
 
 export default app;
+

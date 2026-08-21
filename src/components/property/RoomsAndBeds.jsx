@@ -15,16 +15,19 @@ export default function RoomsAndBeds({ rooms = [], bedrooms, guests }) {
           <div key={idx} className="flex flex-col gap-2">
             <h3 className="font-semibold text-[#2B2B2B] text-[15px]">{room.name}</h3>
             <div className="flex flex-col gap-1.5 mt-1">
-              {room.beds.map((bed, bedIdx) => (
-                <div key={bedIdx} className="flex items-center gap-2 text-[#7B7468] text-[14px]">
-                  {bed.toLowerCase().includes("king") || bed.toLowerCase().includes("queen") ? (
-                    <BedDouble size={20} strokeWidth={1.5} className="text-[#2B2B2B]" />
-                  ) : (
-                    <Bed size={20} strokeWidth={1.5} className="text-[#2B2B2B]" />
-                  )}
-                  <span>{bed}</span>
-                </div>
-              ))}
+              {room.beds.map((bedItem, bedIdx) => {
+                const bed = typeof bedItem === 'string' ? bedItem : `${bedItem.count || 1} ${bedItem.type || 'Bed'}`;
+                return (
+                  <div key={bedIdx} className="flex items-center gap-2 text-[#7B7468] text-[14px]">
+                    {bed.toLowerCase().includes("king") || bed.toLowerCase().includes("queen") ? (
+                      <BedDouble size={20} strokeWidth={1.5} className="text-[#2B2B2B]" />
+                    ) : (
+                      <Bed size={20} strokeWidth={1.5} className="text-[#2B2B2B]" />
+                    )}
+                    <span>{bed}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}

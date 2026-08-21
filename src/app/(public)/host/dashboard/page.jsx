@@ -99,7 +99,7 @@ export default function HostDashboard() {
               {properties.map(property => (
                  <div key={property.id} className="bg-white border border-[#EFE7D8] rounded-2xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition cursor-pointer" onClick={() => router.push(`/property/${property.id}`)}>
                     <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden relative">
-                       <img src={property.featuredImage || property.images?.[0]?.url || "https://via.placeholder.com/400"} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                       <img src={property.featuredImage || property.images?.[0]?.url || "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80"} onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80"; e.currentTarget.onerror = null; }} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                        <div className={`absolute top-3 left-3 px-2 py-1 rounded text-xs font-bold shadow-sm ${property.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {property.isActive ? 'Active' : 'Inactive'}
                        </div>

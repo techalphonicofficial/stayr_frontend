@@ -107,7 +107,8 @@ export default function ProfilePage() {
                     <div key={booking.id} className="bg-white border border-[#EFE7D8] rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row gap-6 hover:shadow-md transition">
                       <div className="w-full sm:w-1/3 aspect-video bg-gray-200 rounded-xl overflow-hidden">
                         <img
-                          src={booking.property?.featuredImage || booking.property?.images?.[0]?.url || "https://via.placeholder.com/400x300"}
+                          src={booking.property?.featuredImage || booking.property?.images?.[0]?.url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"}
+                          onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"; e.currentTarget.onerror = null; }}
                           alt="Property"
                           className="w-full h-full object-cover"
                         />
