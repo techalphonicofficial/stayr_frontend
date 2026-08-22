@@ -42,7 +42,7 @@ export default function PerfectPlaceSection() {
   const currentProperties = properties.slice(0, 4);
 
   return (
-    <section className="w-full py-8 md:py-16">
+    <section className="w-full py-4 md:py-8">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -98,18 +98,30 @@ export default function PerfectPlaceSection() {
               const imageToUse = listing.featuredImage || listing.images?.[0]?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80";
 
               return (
-                <Link href={`/property/${listing.id}`} key={listing.id} className="flex flex-col gap-3 w-full cursor-pointer group">
-                  {/* Image Container - Landscape 4:3 */}
-                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-200">
-                    <Image
-                      src={imageToUse}
-                      alt={listing.title}
-                      fill
-                      className="object-cover transition duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                <Link href={`/property/${listing.id}`} key={listing.id} className="block w-full cursor-pointer h-full">
+                  <motion.div 
+                    className="flex flex-col gap-3 w-full h-full p-2 rounded-2xl transition-colors group"
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  >
+                    {/* Image Container - Landscape 4:3 */}
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30 transition-all duration-300">
+                      <Image
+                        src={imageToUse}
+                        alt={listing.title}
+                        fill
+                        className="object-cover transition duration-300 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
 
-                    {/* Premier Host Badge */}
+                      {/* Subtle shine effect on hover */}
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full z-0 pointer-events-none"
+                        whileHover={{ translateX: ["-100%", "200%"] }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                      />
+
+                      {/* Premier Host Badge */}
                     <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">
                       <span className="text-[10px] font-bold text-[#2B2B2B] uppercase tracking-wider">Premier Host</span>
                     </div>
@@ -124,8 +136,8 @@ export default function PerfectPlaceSection() {
                   <div className="flex justify-between items-start mt-1">
 
                     {/* Left Column */}
-                    <div className="flex flex-col max-w-[65%]">
-                      <h3 className="font-semibold text-[#2B2B2B] text-[15px] leading-snug truncate">
+                    <div className="flex flex-col max-w-[65%] px-1">
+                      <h3 className="font-semibold text-[#2B2B2B] text-[15px] leading-snug truncate group-hover:text-[#E8B65B] transition-colors duration-300">
                         {listing.title}
                       </h3>
                       <p className="text-[#7B7468] text-[13px] mt-0.5">
@@ -155,6 +167,7 @@ export default function PerfectPlaceSection() {
                     </div>
 
                   </div>
+                  </motion.div>
                 </Link>
               );
             })}

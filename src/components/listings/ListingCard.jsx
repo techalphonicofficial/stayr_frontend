@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRouter } from "next/navigation";
 
@@ -50,60 +51,73 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
   };
 
   return (
-    <Link href={`/property/${id}`} className="flex flex-col gap-3 w-full cursor-pointer group">
-      {/* Image Container */}
-      <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-200">
-        <Image
-          src={imgSrc}
-          alt={title}
-          fill
-          className="object-cover transition duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          onError={() => setImgSrc(fallbackImage)}
-        />
+    <Link href={`/property/${id}`} className="block w-full cursor-pointer h-full">
+      <motion.div 
+        className="flex flex-col gap-3 w-full h-full p-2 rounded-2xl transition-colors group"
+        whileHover={{ scale: 1.03 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      >
+        {/* Image Container */}
+        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30 transition-all duration-300">
+          <Image
+            src={imgSrc}
+            alt={title}
+            fill
+            className="object-cover transition duration-300 group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImgSrc(fallbackImage)}
+          />
 
-        {/* Overlay Badges */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
-          {guestFavourite ? (
-            <div className="bg-white/95 backdrop-blur-sm px-3 h-7 rounded-full shadow-sm inline-flex items-center justify-center">
-              <span className="text-[13px] font-semibold text-[#2B2B2B] whitespace-nowrap leading-none">Guest favourite</span>
+          {/* Subtle shine effect on hover */}
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full z-0 pointer-events-none"
+            whileHover={{ translateX: ["-100%", "200%"] }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+
+          {/* Overlay Badges */}
+          <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
+            {guestFavourite ? (
+              <div className="bg-white/95 backdrop-blur-sm px-2 h-6 rounded-full shadow-sm inline-flex items-center justify-center overflow-hidden max-w-[70%]">
+                <span className="text-[11px] font-bold text-[#2B2B2B] whitespace-nowrap leading-none truncate">Guest favourite</span>
+              </div>
+            ) : (
+              <div></div> // Spacer
+            )}
+
+            <button 
+              onClick={handleHeartClick}
+              className="text-white drop-shadow-md hover:scale-110 transition z-20 flex-shrink-0 p-1"
+            >
+              <Heart size={22} strokeWidth={2} className={isSaved ? "fill-[#FF385C] text-[#FF385C]" : ""} />
+            </button>
+          </div>
+
+          {/* Deal Badge */}
+          {discountText && (
+            <div className="absolute bottom-3 left-3 bg-[#E8B65B] text-[#2B2B2B] px-3 py-1 rounded-md shadow-md z-10">
+              <span className="text-[12px] font-bold">{discountText}</span>
             </div>
-          ) : (
-            <div></div> // Spacer
           )}
-
-          <button 
-            onClick={handleHeartClick}
-            className="text-white drop-shadow-md hover:scale-110 transition z-10"
-          >
-            <Heart size={24} strokeWidth={2} className={isSaved ? "fill-[#FF385C] text-[#FF385C]" : ""} />
-          </button>
         </div>
 
-        {/* Deal Badge */}
-        {discountText && (
-          <div className="absolute bottom-3 left-3 bg-[#E8B65B] text-[#2B2B2B] px-3 py-1 rounded-md shadow-md">
-            <span className="text-[12px] font-bold">{discountText}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Details */}
-      <div className="flex flex-col">
-        <h3 className="font-semibold text-[#2B2B2B] text-[15px] truncate">
-          {title}
-        </h3>
-        <p className="text-[#7B7468] text-[14px]">
-          {originalPrice && <span className="line-through mr-1 text-gray-400">{originalPrice}</span>}
-          <span className={originalPrice ? "font-bold text-[#2B2B2B]" : ""}>{price}</span>
-          {" "}for {nights} nights • ★ {rating} {reviewCount ? `(${reviewCount})` : ''}
-        </p>
-        {topReview && (
-          <p className="text-[#7B7468] text-[13px] mt-1 line-clamp-1 italic text-ellipsis overflow-hidden">
-            "{typeof topReview === 'string' ? topReview : topReview.comment}"
+        {/* Details */}
+        <div className="flex flex-col px-1">
+          <h3 className="font-semibold text-[#2B2B2B] text-[15px] truncate group-hover:text-[#E8B65B] transition-colors duration-300">
+            {title}
+          </h3>
+          <p className="text-[#7B7468] text-[14px]">
+            {originalPrice && <span className="line-through mr-1 text-gray-400">{originalPrice}</span>}
+            <span className={originalPrice ? "font-bold text-[#2B2B2B]" : ""}>{price}</span>
+            {" "}for {nights} nights • ★ {rating} {reviewCount ? `(${reviewCount})` : ''}
           </p>
-        )}
-      </div>
+          {topReview && (
+            <p className="text-[#7B7468] text-[13px] mt-1 line-clamp-1 italic text-ellipsis overflow-hidden">
+              "{typeof topReview === 'string' ? topReview : topReview.comment}"
+            </p>
+          )}
+        </div>
+      </motion.div>
     </Link>
   );
 }

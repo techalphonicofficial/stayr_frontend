@@ -34,7 +34,7 @@ export default function InspirationCards() {
   ];
 
   return (
-    <section className="w-full py-8 md:py-16">
+    <section className="w-full py-4 md:py-8">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -44,33 +44,48 @@ export default function InspirationCards() {
         >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {cards.map((card) => (
-              <div key={card.id} className="flex flex-col bg-white border border-[#EFE7D8] rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                {/* Image Half */}
-                <div className="relative w-full aspect-[16/10]">
-                  <Image
-                    src={card.image}
-                    alt={card.tag}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+              <motion.div 
+                key={card.id} 
+                className="flex flex-col bg-white border border-[#EFE7D8] rounded-2xl overflow-hidden shadow-sm group cursor-pointer transition-colors"
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                {/* Outer wrapper for card hover effects */}
+                <div className="flex flex-col h-full rounded-2xl transition-all duration-300 group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30">
+                  
+                  {/* Image Half */}
+                  <div className="relative w-full aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={card.image}
+                      alt={card.tag}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {/* Subtle shine effect on hover */}
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full z-10 pointer-events-none"
+                      whileHover={{ translateX: ["-100%", "200%"] }}
+                      transition={{ duration: 1, ease: "easeInOut" }}
+                    />
+                  </div>
 
-                {/* Content Half */}
-                <div className="flex flex-col flex-grow p-5">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#7B7468] mb-1.5">
-                    {card.tag}
-                  </span>
-                  <h3 className="text-[15px] font-semibold text-[#2B2B2B] leading-snug mb-5 flex-grow">
-                    {card.title}
-                  </h3>
-                  <Link
-                    href={card.link}
-                    className="self-start px-5 py-2 rounded-full border-2 border-[#EFE7D8] text-[#2B2B2B] font-bold text-sm hover:border-[#2B2B2B] transition-colors"
-                  >
-                    {card.btnText}
-                  </Link>
+                  {/* Content Half */}
+                  <div className="flex flex-col flex-grow p-5 z-20 bg-white">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#7B7468] mb-1.5">
+                      {card.tag}
+                    </span>
+                    <h3 className="text-[15px] font-semibold text-[#2B2B2B] leading-snug mb-5 flex-grow group-hover:text-[#E8B65B] transition-colors duration-300">
+                      {card.title}
+                    </h3>
+                    <Link
+                      href={card.link}
+                      className="self-start px-5 py-2 rounded-full border-2 border-[#EFE7D8] text-[#2B2B2B] font-bold text-sm transition-all duration-300 group-hover:border-[#E8B65B] group-hover:bg-[#E8B65B] shadow-sm"
+                    >
+                      {card.btnText}
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>

@@ -26,7 +26,7 @@ export default function DiscountedStays() {
     fetchProps();
   }, []);
   return (
-    <section className="w-full py-6 md:py-12 border-t border-[#EFE7D8] bg-[#FFFDF8]">
+    <section className="w-full py-4 md:py-8 border-t border-[#EFE7D8] bg-[#FFFDF8]">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
