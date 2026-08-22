@@ -17,7 +17,7 @@ export default function Logo() {
         width={150}
         height={100}
         priority
-        className="w-auto h-16 object-contain"
+        className="w-auto h-[50px] object-contain pb-1"
       />
     </div>
   );
