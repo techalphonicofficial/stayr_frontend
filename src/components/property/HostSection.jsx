@@ -5,7 +5,7 @@ export default function HostSection({ host }) {
 
   return (
     <div className="py-8 border-b border-gray-200">
-      <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-6">About the host</h2>
+      <h2 className="text-[22px] font-bold text-foreground mb-6">About the host</h2>
       
       <div className="flex items-center gap-4 mb-6">
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200 border border-gray-300">
@@ -17,12 +17,12 @@ export default function HostSection({ host }) {
           />
         </div>
         <div className="flex flex-col">
-          <h3 className="font-bold text-[#2B2B2B] text-[17px]">{host.name}</h3>
-          <span className="text-[#7B7468] text-[15px]">{host.role || "Host"}</span>
+          <h3 className="font-bold text-foreground text-[17px]">{host.name}</h3>
+          <span className="text-muted text-[15px]">{host.role || "Host"}</span>
         </div>
       </div>
 
-      <button className="border border-[#2B2B2B] text-[#0050FF] font-semibold py-2 px-6 rounded-full hover:bg-blue-50 transition border-[#0050FF]">
+      <button className="border border-foreground text-[#0050FF] font-semibold py-2 px-6 rounded-full hover:bg-blue-50 transition border-[#0050FF]">
         Contact host
       </button>
     </div>

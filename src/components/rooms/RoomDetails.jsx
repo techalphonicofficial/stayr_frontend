@@ -43,14 +43,14 @@ export default function RoomDetails({
   }, [showAmenities]);
 
   return (
-    <div className="flex flex-col w-full text-[#2B2B2B]">
+    <div className="flex flex-col w-full text-foreground">
       
       {/* Title & basic info */}
-      <div className="pb-6 border-b border-[#EFE7D8]">
+      <div className="pb-6 border-b border-border">
         <h2 className="text-[22px] font-semibold mb-1">
           Entire rental unit hosted by {hostName}
         </h2>
-        <div className="flex flex-row items-center gap-1 text-[15px] text-[#2B2B2B]">
+        <div className="flex flex-row items-center gap-1 text-[15px] text-foreground">
           <span>{guests} guests</span>
           <span>·</span>
           <span>{bedrooms} bedroom{bedrooms > 1 ? 's' : ''}</span>
@@ -62,22 +62,22 @@ export default function RoomDetails({
       </div>
 
       {/* Host Profile Ribbon */}
-      <div className="py-6 border-b border-[#EFE7D8] flex items-center gap-4">
+      <div className="py-6 border-b border-border flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden relative border border-gray-300">
            {/* Fallback avatar */}
            <Image src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" alt={hostName} fill className="object-cover" />
         </div>
         <div>
           <div className="font-semibold text-[16px]">Hosted by {hostName}</div>
-          <div className="text-[14px] text-[#7B7468]">Host</div>
+          <div className="text-[14px] text-muted">Host</div>
         </div>
       </div>
 
 
 
       {/* Description */}
-      <div className="py-6 border-b border-[#EFE7D8]">
-        <div className="text-[16px] leading-relaxed mb-4 text-[#2B2B2B]">
+      <div className="py-6 border-b border-border">
+        <div className="text-[16px] leading-relaxed mb-4 text-foreground">
           {description}
         </div>
         <button className="font-semibold underline flex items-center gap-1 hover:text-black">
@@ -90,7 +90,7 @@ export default function RoomDetails({
         <h2 className="text-[22px] font-semibold mb-6">What this place offers</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
           {displayAmenities.map((amenity, index) => (
-            <div key={index} className="flex items-center gap-4 text-[#2B2B2B]">
+            <div key={index} className="flex items-center gap-4 text-foreground">
               {amenity.icon}
               <span className="text-[16px]">{amenity.label}</span>
             </div>
@@ -98,7 +98,7 @@ export default function RoomDetails({
         </div>
         <button 
           onClick={() => setShowAmenities(true)}
-          className="mt-8 border border-[#2B2B2B] px-6 py-3 rounded-lg font-semibold text-[16px] hover:bg-gray-50 transition active:scale-95"
+          className="mt-8 border border-foreground px-6 py-3 rounded-lg font-semibold text-[16px] hover:bg-gray-50 transition active:scale-95"
         >
           Show all amenities
         </button>
@@ -109,7 +109,7 @@ export default function RoomDetails({
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-[#EFE7D8]">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <h3 className="text-xl font-bold">What this place offers</h3>
               <button 
                 onClick={() => setShowAmenities(false)}
@@ -122,7 +122,7 @@ export default function RoomDetails({
             <div className="p-8 overflow-y-auto">
               <div className="flex flex-col gap-6">
                 {displayAmenities.map((amenity, index) => (
-                  <div key={index} className="flex items-center gap-4 text-[#2B2B2B] pb-6 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div key={index} className="flex items-center gap-4 text-foreground pb-6 border-b border-gray-100 last:border-0 last:pb-0">
                     <div className="text-gray-700">{amenity.icon}</div>
                     <span className="text-[17px] font-medium">{amenity.label}</span>
                   </div>

@@ -7,7 +7,7 @@ import { Star, ShieldCheck } from "lucide-react";
 
 export default function ExperiencesHero() {
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] mt-24 mb-16 rounded-3xl overflow-hidden shadow-lg">
+    <div className="relative w-full h-[600px] md:h-[700px] mt-[180px] md:mt-24 mb-16 rounded-3xl overflow-hidden shadow-lg">
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <Image

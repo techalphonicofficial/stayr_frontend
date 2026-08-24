@@ -26,7 +26,7 @@ export default function DiscountedStays() {
     fetchProps();
   }, []);
   return (
-    <section className="w-full py-4 md:py-8 border-t border-[#EFE7D8] bg-[#FFFDF8]">
+    <section className="w-full py-4 md:py-8 border-t border-border bg-background">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -37,16 +37,16 @@ export default function DiscountedStays() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-bold text-[#2B2B2B] flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-foreground flex items-center gap-4">
               Monsoon stays for less
             </h2>
-            <p className="text-[#7B7468] text-[15px] mt-1">
+            <p className="text-muted text-[15px] mt-1">
               Whether you go last minute or want to stay longer, find deals on thousands of luxury rentals across India.
             </p>
           </div>
           <Link 
             href="/s/monsoon/homes" 
-            className="self-start md:self-auto shrink-0 px-5 py-2 rounded-full border-2 border-[#2B2B2B] text-[#2B2B2B] font-bold text-sm hover:bg-[#2B2B2B] hover:text-white transition-colors"
+            className="self-start md:self-auto shrink-0 px-5 py-2 rounded-full border-2 border-foreground text-foreground font-bold text-sm hover:bg-foreground hover:text-white transition-colors"
           >
             Book now
           </Link>

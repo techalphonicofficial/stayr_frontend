@@ -47,9 +47,11 @@ export const getDashboardStats = async () => {
   const averageBookingValue = bookings._avg.totalPrice || 0;
 
   const properties = await prisma.property.aggregate({
-    _avg: { averageRating: true }
+    _avg: { averageRating: true },
+    _sum: { totalReviews: true }
   });
   const averagePropertyRating = properties._avg.averageRating || 0;
+  const aggregatedReviews = properties._sum.totalReviews || 0;
 
   const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const monthlyPayments = await prisma.payment.aggregate({
@@ -67,7 +69,7 @@ export const getDashboardStats = async () => {
     totalHosts,
     totalProperties,
     totalBookings,
-    totalReviews,
+    totalReviews: aggregatedReviews > 0 ? aggregatedReviews : totalReviews,
     totalPayments,
     confirmedBookings,
     pendingBookings,

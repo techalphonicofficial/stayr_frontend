@@ -122,40 +122,34 @@ export default function RolesPage() {
 
   const columns = [
     {
-      header: 'Role Name',
+      header: <span className="text-amber-500">ROLE NAME</span>,
       accessor: 'name',
       cell: (row) => (
-        <div className="flex items-center gap-2">
-          <Shield className={`h-4 w-4 ${row.name === 'Admin' ? 'text-[var(--brand-primary)]' : 'text-gray-400'}`} />
-          <span className="font-medium text-gray-900">{row.name}</span>
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 rounded-full border border-gray-200 bg-gray-50 text-gray-500 shadow-sm">
+            <Shield className="h-4 w-4" />
+          </div>
+          <span className="font-semibold text-gray-900">{row.name}</span>
         </div>
       )
     },
     {
-      header: 'Description',
+      header: <span className="text-amber-500">DESCRIPTION</span>,
       accessor: 'description',
-      cell: (row) => <span className="text-gray-500 text-sm">{row.description || '-'}</span>
+      cell: (row) => <span className="text-amber-500 text-sm font-medium">{row.description || '-'}</span>
     },
     {
-      header: 'Permissions',
-      cell: (row) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-          {row.permissions?.length || 0} assigned
-        </span>
-      )
-    },
-    {
-      header: 'Created At',
+      header: <span className="text-amber-500">CREATED AT</span>,
       accessor: 'createdAt',
-      cell: (row) => new Date(row.createdAt).toLocaleDateString()
+      cell: (row) => <span className="text-amber-500 text-sm font-medium">{new Date(row.createdAt).toLocaleDateString()}</span>
     },
     {
-      header: 'Actions',
+      header: <span className="text-amber-500">ACTIONS</span>,
       cell: (row) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleOpenModal(row)}
-            className="text-gray-500 hover:text-[var(--brand-primary)] transition-colors"
+            className="p-1.5 border border-blue-200 rounded text-blue-500 hover:bg-blue-50 transition-colors"
             title="Edit Role"
           >
             <Edit2 className="h-4 w-4" />
@@ -163,7 +157,7 @@ export default function RolesPage() {
           {row.name !== 'Admin' && (
             <button
               onClick={() => { setSelectedRole(row); setIsDeleteModalOpen(true); }}
-              className="text-gray-500 hover:text-red-600 transition-colors"
+              className="p-1.5 border border-red-200 rounded text-red-500 hover:bg-red-50 transition-colors"
               title="Delete Role"
             >
               <Trash2 className="h-4 w-4" />
@@ -179,11 +173,11 @@ export default function RolesPage() {
       <div className="mb-4 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Role Management</h2>
-          <p className="text-sm text-gray-500 mt-1">Define and manage user roles and their associated permissions.</p>
+          <p className="text-sm text-amber-500 mt-1">Define and manage user roles and their associated permissions.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+          className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
         >
           <Plus className="w-4 h-4" />
           Create New Role

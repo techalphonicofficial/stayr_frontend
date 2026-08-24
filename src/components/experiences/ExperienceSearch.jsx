@@ -47,11 +47,11 @@ export default function ExperienceSearch() {
 
   return (
     <div className="w-full max-w-5xl mx-auto -mt-8 relative z-30 px-4 md:px-0" ref={searchRef}>
-      <div className="bg-white rounded-full shadow-lg border border-border flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-border relative">
+      <div className="bg-white rounded-3xl md:rounded-full shadow-lg border border-border flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-border relative">
         
         {/* Where */}
         <div 
-          className="w-full md:w-1/4 px-8 py-4 cursor-pointer hover:bg-secondary/50 rounded-t-full md:rounded-l-full md:rounded-tr-none transition-colors"
+          className="w-full md:w-1/4 px-8 py-4 cursor-pointer hover:bg-secondary/50 rounded-t-3xl md:rounded-t-none md:rounded-l-full transition-colors"
           onClick={() => setActivePanel(activePanel === "where" ? null : "where")}
         >
           <div className="text-xs font-bold text-foreground">Where</div>
@@ -84,7 +84,7 @@ export default function ExperienceSearch() {
 
         {/* Guests & Search Button */}
         <div 
-          className="w-full md:w-1/4 pl-8 pr-3 py-3 cursor-pointer hover:bg-secondary/50 rounded-b-full md:rounded-r-full md:rounded-bl-none transition-colors flex items-center justify-between"
+          className="w-full md:w-1/4 pl-8 pr-3 py-3 cursor-pointer hover:bg-secondary/50 rounded-b-3xl md:rounded-b-none md:rounded-r-full transition-colors flex items-center justify-between"
           onClick={() => setActivePanel(activePanel === "guests" ? null : "guests")}
         >
           <div>

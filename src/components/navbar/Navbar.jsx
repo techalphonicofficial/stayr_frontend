@@ -172,53 +172,81 @@ export default function Navbar({ forceCompact = false, flat = false }) {
           </div>
 
           {/* Mobile View */}
-          <div className="flex md:hidden flex-col w-full">
+          <div className="flex md:hidden flex-col w-full pt-4">
             {/* Mobile Search Pill */}
-            <div className="flex flex-row items-center gap-3 w-full">
-              <div className="flex-1 bg-white border border-[#EFE7D8] rounded-full shadow-md py-3 px-4 flex items-center justify-center gap-3 cursor-pointer">
-                <Search size={18} strokeWidth={3} className="text-[#2B2B2B]" />
-                <span className="text-[#2B2B2B] font-semibold text-sm">Start your search</span>
+            <div className="flex flex-row items-start gap-3 w-full relative z-[70]">
+              <div className="flex-1 w-full relative">
+                <AnimatePresence mode="wait">
+                  {!isSearchOverride ? (
+                    <motion.div
+                      key="pill"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="bg-white border border-border rounded-full shadow-md py-3 px-4 flex items-center justify-center gap-3 cursor-pointer"
+                      onClick={() => setIsSearchOverride(true)}
+                    >
+                      <Search size={18} strokeWidth={3} className="text-foreground" />
+                      <span className="text-foreground font-semibold text-sm">Start your search</span>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute top-0 left-0 w-full z-50 bg-white shadow-xl rounded-3xl"
+                    >
+                      <SearchMenu 
+                        isExpanded={true} 
+                        animateLayout={false} 
+                        onClose={() => setIsSearchOverride(false)} 
+                        defaultActivePanel="where" 
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <UserMenu />
+              {!isSearchOverride && <UserMenu />}
             </div>
 
             {/* Mobile Tabs */}
-            <div className="flex flex-row justify-center items-end gap-8 mt-4 overflow-hidden relative z-[70]">
-              {TABS.map((tab) => (
-                <Link
-                  key={tab.id}
-                  href={tab.path}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsSearchOverride(false);
-                  }}
-                  className={`flex flex-col items-center justify-end cursor-pointer transition relative pb-2 ${activeTab === tab.id ? 'text-[#2B2B2B]' : 'text-[#7B7468]'
-                    }`}
-                >
-                  <AnimatePresence>
-                    {!isActuallyScrolled && (
+            {!isSearchOverride && (
+              <div className="flex flex-row justify-center items-end gap-8 mt-4 overflow-hidden relative z-[70]">
+                {TABS.map((tab) => (
+                  <Link
+                    key={tab.id}
+                    href={tab.path}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSearchOverride(false);
+                    }}
+                    className={`flex flex-col items-center justify-end cursor-pointer transition relative pb-2 ${activeTab === tab.id ? 'text-foreground' : 'text-muted'
+                      }`}
+                  >
+                    <AnimatePresence>
+                      {!isActuallyScrolled && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0, scale: 0.8 }}
+                          animate={{ height: "auto", opacity: 1, scale: 1 }}
+                          exit={{ height: 0, opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                          className="text-[28px] mb-1"
+                        >
+                          {tab.icon}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <span className="text-[13px] font-semibold">{tab.label}</span>
+                    {activeTab === tab.id && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0, scale: 0.8 }}
-                        animate={{ height: "auto", opacity: 1, scale: 1 }}
-                        exit={{ height: 0, opacity: 0, scale: 0.8 }}
+                        layoutId="mobile-active-tab"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground"
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="text-[28px] mb-1"
-                      >
-                        {tab.icon}
-                      </motion.div>
+                      />
                     )}
-                  </AnimatePresence>
-                  <span className="text-[13px] font-semibold">{tab.label}</span>
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId="mobile-active-tab"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#2B2B2B]"
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                    />
-                  )}
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </Container>
       </motion.div>

@@ -98,8 +98,8 @@ export default function HostLoginCard() {
       return (
         <div className="flex flex-col items-center text-center gap-4 py-8">
           <CheckCircle2 className="text-green-500 w-16 h-16 mb-2" />
-          <h2 className="text-[22px] font-bold text-[#2B2B2B]">Welcome, Host!</h2>
-          <p className="text-[#7B7468]">Your account is ready. Redirecting to your dashboard...</p>
+          <h2 className="text-[22px] font-bold text-foreground">Welcome, Host!</h2>
+          <p className="text-muted">Your account is ready. Redirecting to your dashboard...</p>
         </div>
       );
     }
@@ -108,8 +108,8 @@ export default function HostLoginCard() {
       if (user.role === 'Host' || user.role === 'Admin') {
         return (
           <div className="flex flex-col items-center text-center gap-4 py-8">
-            <h2 className="text-[22px] font-bold text-[#2B2B2B]">You are already a Host!</h2>
-            <p className="text-[#7B7468]">Manage your listings from your profile dashboard.</p>
+            <h2 className="text-[22px] font-bold text-foreground">You are already a Host!</h2>
+            <p className="text-muted">Manage your listings from your profile dashboard.</p>
             <button 
               onClick={() => router.push("/profile")}
               className="mt-4 w-full py-4 bg-[#E00B41] hover:bg-[#C00032] text-white font-bold rounded-xl transition shadow-sm text-lg"
@@ -122,8 +122,8 @@ export default function HostLoginCard() {
 
       return (
         <div className="flex flex-col items-center text-center gap-4 py-4">
-          <h2 className="text-[22px] font-bold text-[#2B2B2B]">Ready to earn, {user.name}?</h2>
-          <p className="text-[#7B7468] mb-4">Upgrade your account to become a Host and start listing your properties.</p>
+          <h2 className="text-[22px] font-bold text-foreground">Ready to earn, {user.name}?</h2>
+          <p className="text-muted mb-4">Upgrade your account to become a Host and start listing your properties.</p>
           
           {error && <div className="w-full p-3 bg-red-50 text-red-600 rounded-lg text-sm mb-4">{error}</div>}
 
@@ -140,13 +140,13 @@ export default function HostLoginCard() {
 
     return (
       <form onSubmit={handleRegisterAndUpgrade} className="w-full flex flex-col gap-4">
-        <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-2 text-center">
+        <h2 className="text-[22px] font-bold text-foreground mb-2 text-center">
           Register as a Host
         </h2>
 
         {error && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">{error}</div>}
 
-        <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-[#2B2B2B] focus-within:ring-1 focus-within:ring-[#2B2B2B] transition flex flex-col">
+        <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground transition flex flex-col">
           <input 
             type="text" 
             name="name"
@@ -154,7 +154,7 @@ export default function HostLoginCard() {
             value={formData.name}
             onChange={handleInputChange}
             placeholder="Full Name" 
-            className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468] border-b border-[#EFE7D8]"
+            className="w-full p-4 outline-none text-foreground placeholder:text-muted border-b border-border"
           />
           <input 
             type="email" 
@@ -163,7 +163,7 @@ export default function HostLoginCard() {
             value={formData.email}
             onChange={handleInputChange}
             placeholder="Email Address" 
-            className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468] border-b border-[#EFE7D8]"
+            className="w-full p-4 outline-none text-foreground placeholder:text-muted border-b border-border"
           />
           <input 
             type="tel" 
@@ -172,7 +172,7 @@ export default function HostLoginCard() {
             value={formData.phone}
             onChange={handleInputChange}
             placeholder="Phone Number" 
-            className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468] border-b border-[#EFE7D8]"
+            className="w-full p-4 outline-none text-foreground placeholder:text-muted border-b border-border"
           />
           <input 
             type="password" 
@@ -182,7 +182,7 @@ export default function HostLoginCard() {
             value={formData.password}
             onChange={handleInputChange}
             placeholder="Password" 
-            className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468]"
+            className="w-full p-4 outline-none text-foreground placeholder:text-muted"
           />
         </div>
         
@@ -209,7 +209,7 @@ export default function HostLoginCard() {
         onClick={() => router.back()}
         className="absolute top-4 left-4 p-2 rounded-full hover:bg-black/5 transition z-20"
       >
-        <X size={20} className="text-[#2B2B2B]" />
+        <X size={20} className="text-foreground" />
       </button>
 
       {/* Body */}
@@ -227,12 +227,12 @@ export default function HostLoginCard() {
         {!user && !success && !isLoading && (
           <>
             <div className="flex flex-row items-center gap-4 w-full my-6">
-              <div className="flex-1 h-[1px] bg-[#EFE7D8]"></div>
-              <div className="text-sm text-[#7B7468]">or</div>
-              <div className="flex-1 h-[1px] bg-[#EFE7D8]"></div>
+              <div className="flex-1 h-[1px] bg-border"></div>
+              <div className="text-sm text-muted">or</div>
+              <div className="flex-1 h-[1px] bg-border"></div>
             </div>
             
-            <p className="text-sm text-[#7B7468] text-center">
+            <p className="text-sm text-muted text-center">
               Already have an account? <br/> Log in from the top menu first to upgrade.
             </p>
           </>

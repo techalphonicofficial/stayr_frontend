@@ -11,7 +11,7 @@ export default function ExploreArea({ location, nearbyPlaces }) {
 
   return (
     <div className="py-8 border-b border-gray-200">
-      <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-6">Explore the area</h2>
+      <h2 className="text-[22px] font-bold text-foreground mb-6">Explore the area</h2>
       
       <div className="flex flex-col md:flex-row gap-8">
         {/* Map Placeholder */}
@@ -34,17 +34,17 @@ export default function ExploreArea({ location, nearbyPlaces }) {
         {/* Location Details */}
         <div className="w-full md:w-[40%] flex flex-col gap-5">
           <div className="flex gap-3">
-            <MapPin size={20} className="text-[#2B2B2B] flex-shrink-0 mt-0.5" strokeWidth={2} />
+            <MapPin size={20} className="text-foreground flex-shrink-0 mt-0.5" strokeWidth={2} />
             <div>
-              <h3 className="font-semibold text-[#2B2B2B] text-[15px]">{location || "Varanasi, Uttar Pradesh, India"}</h3>
+              <h3 className="font-semibold text-foreground text-[15px]">{location || "Varanasi, Uttar Pradesh, India"}</h3>
             </div>
           </div>
           
           <div className="flex flex-col gap-3">
             {attractions.map((item, idx) => (
               <div key={idx} className="flex justify-between items-center text-[15px]">
-                <span className="text-[#2B2B2B]">{item.name}</span>
-                <span className="text-[#7B7468]">{item.distance}</span>
+                <span className="text-foreground">{item.name}</span>
+                <span className="text-muted">{item.distance}</span>
               </div>
             ))}
           </div>

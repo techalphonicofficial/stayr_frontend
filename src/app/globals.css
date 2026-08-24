@@ -1,52 +1,106 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ===== Backgrounds ===== */
-  --color-background: #FFFDF8;
-  --color-surface: #FFFFFF;
-  --color-secondary: #FFF6E6;
-
-  /* ===== Brand ===== */
-  --color-primary: #E8B65B;
-  --color-primary-hover: #D89C2B;
+  /* ===== BRAND PALETTE ===== */
+  --brand-primary: #E8B65B;
+  --brand-primary-hover: #D89C2B;
+  --brand-primary-light: #FFB3C1;
+  --brand-primary-border: #D89C2B;
+  --brand-secondary: #222222;
+  --brand-secondary-hover: #000000;
+  
+  --bs-primary: var(--brand-primary);
+  --bs-secondary: var(--brand-secondary);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-hover-color: var(--brand-primary-hover);
+  
   --color-accent: #F4D28C;
+  --color-accent-hover: #D89C2B;
 
-  /* ===== Text ===== */
-  --color-foreground: #2B2B2B;
-  --color-muted: #7B7468;
+  /* Aliases mapped to our UI semantic classes */
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-primary-light: var(--brand-primary-light);
 
-  /* ===== Borders ===== */
+  /* ===== TEXT ===== */
+  --color-text-primary: #2B2B2B;
+  --color-text-secondary: #7B7468;
+  --color-text-muted: #9ca3af;
+  
+  /* Aliases */
+  --color-foreground: var(--color-text-primary);
+  --color-muted: var(--color-text-secondary);
+
+  /* ===== BACKGROUNDS ===== */
+  --color-bg: #FFFDF8;
+  --color-bg-soft: #FFF6E6;
+  --color-bg-card: #FFFFFF;
+  --color-bg-overlay: rgba(0,0,0,0.5);
+
+  /* Aliases */
+  --color-background: var(--color-bg);
+  --color-secondary: var(--color-bg-soft);
+  --color-surface: var(--color-bg-card);
+
+  /* ===== BORDERS ===== */
   --color-border: #EFE7D8;
+  --color-border-focus: var(--brand-primary);
 
-  /* ===== Extra Colors ===== */
+  /* ===== EXTRA COLORS ===== */
   --color-success: #3FAF75;
   --color-error: #E86A6A;
   --color-warning: #F5A623;
   --color-info: #6C8AE4;
 
-  /* ===== Radius ===== */
+  /* ===== SHADOWS ===== */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.10);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0,0,0,0.1);
+
+  /* ===== BORDER RADIUS ===== */
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 18px;
   --radius-xl: 24px;
   --radius-2xl: 32px;
+  --radius-full: 9999px;
   --radius-theme: 20px;
 
-  /* ===== Shadow ===== */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.10);
-
-  /* ===== Fonts ===== */
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-playfair);
-  --font-display: var(--font-sora);
-
-  /* ===== Animation ===== */
+  /* ===== TRANSITIONS ===== */
   --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
+  --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+
+  /* ===== SPACING SCALE ===== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ===== Z-INDEX LAYERS ===== */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-modal: 1050;
+  --z-toast: 1100;
+
+  /* ===== GRADIENTS ===== */
+  --gradient-primary: linear-gradient(to right, var(--brand-primary), var(--brand-primary-hover));
+  --gradient-hero: linear-gradient(to right, #222222, #444444);
+  --gradient-card: linear-gradient(to bottom, #ffffff, #f7f7f7);
+  --gradient-warm: linear-gradient(to right, #ff9a9e, #fecfef);
+  --gradient-green: linear-gradient(to right, #00a699, #00887a);
 }
 
 @layer base {

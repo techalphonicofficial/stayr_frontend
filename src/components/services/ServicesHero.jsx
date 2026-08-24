@@ -8,7 +8,7 @@ import ServiceSearch from "./ServiceSearch";
 
 export default function ServicesHero() {
   return (
-    <div className="relative pt-24 mb-16">
+    <div className="relative pt-[180px] md:pt-24 mb-16">
       <Container>
         <div className="relative w-full h-[600px] md:h-[700px] rounded-[3rem] overflow-hidden shadow-2xl">
           {/* Background Image */}
@@ -54,12 +54,12 @@ export default function ServicesHero() {
         </div>
       </Container>
 
-      {/* Positioned exactly overlapping the bottom edge of the hero */}
+      {/* Positioned exactly overlapping the bottom edge of the hero on desktop, but detached on mobile */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="px-4 md:px-0"
+        className="px-4 md:px-0 mt-16 md:-mt-10 relative z-30"
       >
         <ServiceSearch />
       </motion.div>

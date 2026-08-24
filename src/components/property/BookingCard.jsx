@@ -206,15 +206,15 @@ export default function BookingCard({ property }) {
       <div className="flex justify-between items-start">
         <div className="flex flex-col">
           <div className="flex items-end gap-1">
-            <span className="text-[22px] font-bold text-[#2B2B2B]">{formattedPrice}</span>
-            <span className="text-[#2B2B2B] text-[15px] pb-1">night</span>
+            <span className="text-[22px] font-bold text-foreground">{formattedPrice}</span>
+            <span className="text-foreground text-[15px] pb-1">night</span>
           </div>
-          <div className="flex items-center gap-1 mt-1 text-[13px] font-semibold text-[#128859]">
-            <div className="bg-[#128859] w-[14px] h-[14px] rounded flex items-center justify-center">
+          <div className="flex items-center gap-1 mt-1 text-[13px] font-semibold text-success">
+            <div className="bg-success w-[14px] h-[14px] rounded flex items-center justify-center">
               <span className="text-white text-[10px] pb-[1px]">✓</span>
             </div>
             {rating} {rating !== "New" && "Excellent"}
-            <span className="text-[#7B7468] font-normal underline ml-1">({reviewCount} reviews)</span>
+            <span className="text-muted font-normal underline ml-1">({reviewCount} reviews)</span>
           </div>
         </div>
       </div>
@@ -223,33 +223,33 @@ export default function BookingCard({ property }) {
       <div className="flex flex-col border border-gray-300 rounded-lg overflow-hidden">
         <div className="flex border-b border-gray-300">
           <div className="w-1/2 p-3 border-r border-gray-300 flex flex-col justify-center relative hover:bg-gray-50 transition">
-            <span className="text-[10px] font-bold uppercase text-[#2B2B2B]">Check-in</span>
+            <span className="text-[10px] font-bold uppercase text-foreground">Check-in</span>
             <input 
               type="date" 
               value={checkIn}
               min={todayStr}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="text-[14px] text-[#2B2B2B] bg-transparent outline-none w-full cursor-pointer mt-1"
+              className="text-[14px] text-foreground bg-transparent outline-none w-full cursor-pointer mt-1"
             />
           </div>
           <div className="w-1/2 p-3 flex flex-col justify-center relative hover:bg-gray-50 transition">
-            <span className="text-[10px] font-bold uppercase text-[#2B2B2B]">Check-out</span>
+            <span className="text-[10px] font-bold uppercase text-foreground">Check-out</span>
             <input 
               type="date" 
               value={checkOut}
               min={checkIn || todayStr}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="text-[14px] text-[#2B2B2B] bg-transparent outline-none w-full cursor-pointer mt-1"
+              className="text-[14px] text-foreground bg-transparent outline-none w-full cursor-pointer mt-1"
             />
           </div>
         </div>
         <div className="p-3 flex justify-between items-center hover:bg-gray-50 transition relative">
           <div className="flex flex-col w-full">
-            <span className="text-[10px] font-bold uppercase text-[#2B2B2B]">Travelers</span>
+            <span className="text-[10px] font-bold uppercase text-foreground">Travelers</span>
             <select 
               value={localGuests}
               onChange={(e) => setLocalGuests(e.target.value)}
-              className="text-[14px] text-[#2B2B2B] bg-transparent outline-none w-full appearance-none cursor-pointer mt-1"
+              className="text-[14px] text-foreground bg-transparent outline-none w-full appearance-none cursor-pointer mt-1"
             >
               <option value="" disabled>Add guests</option>
               {[...Array(maxGuests)].map((_, i) => (
@@ -257,7 +257,7 @@ export default function BookingCard({ property }) {
               ))}
             </select>
           </div>
-          <ChevronDown size={20} className="text-[#2B2B2B] absolute right-3 pointer-events-none" />
+          <ChevronDown size={20} className="text-foreground absolute right-3 pointer-events-none" />
         </div>
       </div>
 
@@ -265,28 +265,28 @@ export default function BookingCard({ property }) {
       {checkIn && checkOut && currentNights > 0 ? (
         <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between items-center text-[15px]">
-            <span className="text-[#2B2B2B] underline">{formattedPrice} x {currentNights} nights</span>
-            <span className="text-[#2B2B2B]">₹{(numericPrice * currentNights).toLocaleString("en-IN")}</span>
+            <span className="text-foreground underline">{formattedPrice} x {currentNights} nights</span>
+            <span className="text-foreground">₹{(numericPrice * currentNights).toLocaleString("en-IN")}</span>
           </div>
           {property?.cleaningFee > 0 && (
             <div className="flex justify-between items-center text-[15px]">
-              <span className="text-[#2B2B2B] underline">Cleaning fee</span>
-              <span className="text-[#2B2B2B]">₹{property.cleaningFee.toLocaleString("en-IN")}</span>
+              <span className="text-foreground underline">Cleaning fee</span>
+              <span className="text-foreground">₹{property.cleaningFee.toLocaleString("en-IN")}</span>
             </div>
           )}
           {property?.serviceFee > 0 && (
             <div className="flex justify-between items-center text-[15px]">
-              <span className="text-[#2B2B2B] underline">Service fee</span>
-              <span className="text-[#2B2B2B]">₹{property.serviceFee.toLocaleString("en-IN")}</span>
+              <span className="text-foreground underline">Service fee</span>
+              <span className="text-foreground">₹{property.serviceFee.toLocaleString("en-IN")}</span>
             </div>
           )}
           <div className="flex justify-between items-center text-[15px]">
-            <span className="text-[#2B2B2B] underline flex items-center gap-1">Taxes ({globalTaxRate}%) <Info size={12} /></span>
-            <span className="text-[#2B2B2B]">{formattedTaxes}</span>
+            <span className="text-foreground underline flex items-center gap-1">Taxes ({globalTaxRate}%) <Info size={12} /></span>
+            <span className="text-foreground">{formattedTaxes}</span>
           </div>
           <div className="border-t border-gray-200 my-2 pt-4 flex justify-between items-center text-[15px] font-bold">
-            <span className="text-[#2B2B2B]">Total</span>
-            <span className="text-[#2B2B2B]">{formattedTotal}</span>
+            <span className="text-foreground">Total</span>
+            <span className="text-foreground">{formattedTotal}</span>
           </div>
         </div>
       ) : (
@@ -302,7 +302,7 @@ export default function BookingCard({ property }) {
         onClick={handleBooking}
         disabled={buttonState.disabled}
         className={`w-full font-bold py-3.5 rounded-full transition text-[16px] shadow-sm flex justify-center items-center h-12 
-          ${buttonState.disabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#E8B65B] hover:bg-[#D89C2B] text-white'}`}
+          ${buttonState.disabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary hover:bg-[#D89C2B] text-white'}`}
       >
         {loading || checkingAvailability ? (
           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -311,7 +311,7 @@ export default function BookingCard({ property }) {
         )}
       </button>
 
-      <div className="text-center text-[13px] text-[#7B7468]">
+      <div className="text-center text-[13px] text-muted">
         You won't be charged yet
       </div>
     </div>

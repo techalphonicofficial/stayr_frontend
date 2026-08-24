@@ -64,49 +64,51 @@ export default function DestinationPanel({ onSelect }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="absolute top-[120%] left-0 w-[450px] max-h-[60vh] overflow-y-auto bg-white rounded-3xl shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-[#EFE7D8] p-6 z-50 origin-top-left"
+      className="absolute top-[120%] left-0 w-full md:w-[320px] bg-white rounded-3xl shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-border z-50 origin-top-left overflow-hidden"
     >
-      {/* Recent Searches */}
-      <div className="mb-6">
-        <h3 className="text-xs font-bold text-[#2B2B2B] uppercase mb-3">Recent searches</h3>
-        <div 
-          onClick={() => onSelect && onSelect("Delhi")}
-          className="flex items-center gap-4 p-2 -ml-2 rounded-xl hover:bg-[#F5F5F5] cursor-pointer transition"
-        >
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-            <MapPin size={20} className="text-[#2B2B2B]" />
-          </div>
-          <div>
-            <div className="text-[15px] font-semibold text-[#2B2B2B]">Delhi</div>
-            <div className="text-[13px] text-[#7B7468]">Any week • Add guests</div>
+      <div className="max-h-[60vh] overflow-y-auto p-4 md:p-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+        {/* Recent Searches */}
+        <div className="mb-6">
+          <h3 className="text-xs font-bold text-foreground uppercase mb-3">Recent searches</h3>
+          <div 
+            onClick={() => onSelect && onSelect("Delhi")}
+            className="flex items-center gap-4 p-2 -ml-2 rounded-xl hover:bg-[#F5F5F5] cursor-pointer transition"
+          >
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <MapPin size={20} className="text-foreground" />
+            </div>
+            <div>
+              <div className="text-[15px] font-semibold text-foreground">Delhi</div>
+              <div className="text-[13px] text-muted">Any week • Add guests</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Suggested */}
-      <div>
-        <h3 className="text-xs font-bold text-[#2B2B2B] uppercase mb-4">Suggested destinations</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {DESTINATIONS.map((dest) => (
-            <div 
-              key={dest.id}
-              onClick={() => onSelect && onSelect(dest.name)}
-              className="flex flex-col gap-2 p-2 -ml-2 rounded-xl hover:bg-[#F5F5F5] cursor-pointer transition group"
-            >
-              <div className="w-full aspect-video rounded-lg overflow-hidden relative border border-transparent group-hover:border-[#E8B65B] group-hover:shadow-md transition-all duration-300">
-                <Image 
-                  src={dest.img}
-                  alt={dest.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-500"
-                />
+        {/* Suggested */}
+        <div>
+          <h3 className="text-xs font-bold text-foreground uppercase mb-4">Suggested destinations</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {DESTINATIONS.map((dest) => (
+              <div 
+                key={dest.id}
+                onClick={() => onSelect && onSelect(dest.name)}
+                className="flex flex-col gap-2 p-2 -ml-2 rounded-xl hover:bg-[#F5F5F5] cursor-pointer transition group"
+              >
+                <div className="w-full aspect-video rounded-lg overflow-hidden relative border border-transparent group-hover:border-primary group-hover:shadow-md transition-all duration-300">
+                  <Image 
+                    src={dest.img}
+                    alt={dest.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                  />
+                </div>
+                <div>
+                  <div className="text-[14px] font-semibold text-foreground">{dest.name}</div>
+                  <div className="text-[12px] text-muted">{dest.desc}</div>
+                </div>
               </div>
-              <div>
-                <div className="text-[14px] font-semibold text-[#2B2B2B]">{dest.name}</div>
-                <div className="text-[12px] text-[#7B7468]">{dest.desc}</div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -10,7 +10,7 @@ import WhyStayrSection from "@/components/home/WhyStayrSection";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* New Hero Section */}

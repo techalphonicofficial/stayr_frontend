@@ -30,13 +30,13 @@ export default function PropertyModal({ isOpen, onClose, title, children }) {
         <div className="flex items-center p-4 border-b border-gray-200 shrink-0">
           <button 
             onClick={onClose}
-            className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition text-[#2B2B2B]"
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition text-foreground"
             aria-label="Close modal"
           >
             <X size={20} strokeWidth={2} />
           </button>
           {title && (
-            <h2 className="text-[16px] font-bold text-[#2B2B2B] ml-2">
+            <h2 className="text-[16px] font-bold text-foreground ml-2">
               {title}
             </h2>
           )}

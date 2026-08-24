@@ -32,7 +32,7 @@ export default function ImageGallery({ images = [] }) {
   return (
     <div className="w-full flex flex-col gap-6">
       {/* Action Buttons (Share/Save) - Desktop positioned relative to title, but shown here for layout flow */}
-      <div className="flex justify-end items-center gap-4 text-[14px] font-semibold underline text-[#2B2B2B]">
+      <div className="flex justify-end items-center gap-4 text-[14px] font-semibold underline text-foreground">
         <button className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-md transition">
           <Share size={16} /> Share
         </button>
@@ -72,7 +72,7 @@ export default function ImageGallery({ images = [] }) {
         {/* Show all photos button */}
         <button 
           onClick={() => setShowModal(true)}
-          className="absolute bottom-6 right-6 bg-white border border-[#2B2B2B] px-4 py-1.5 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-md hover:bg-gray-50 transition active:scale-95 z-10"
+          className="absolute bottom-6 right-6 bg-white border border-foreground px-4 py-1.5 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-md hover:bg-gray-50 transition active:scale-95 z-10"
         >
           <Grid size={16} />
           Show all photos

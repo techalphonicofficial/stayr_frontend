@@ -52,7 +52,7 @@ export default async function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-[#F6F4F0] pt-12 pb-6 border-t border-[#EFE7D8]">
+    <footer className="w-full bg-secondary pt-12 pb-6 border-t border-border">
       <Container>
         {/* Header / Logo */}
         <div className="mb-10 flex flex-col items-center text-center">
@@ -66,28 +66,33 @@ export default async function Footer() {
 
           {/* Slogan */}
           <div className="flex items-center justify-center gap-3 md:gap-4 mb-6">
-            <div className="w-8 md:w-12 h-[1px] bg-[#C8A165]"></div>
-            <span className="text-[#C8A165] text-[10px] md:text-[12px] font-bold tracking-[0.25em] uppercase">
+            <div className="w-8 md:w-12 h-[1px] bg-accent"></div>
+            <span className="text-accent text-[10px] md:text-[12px] font-bold tracking-[0.25em] uppercase">
               A STAY THAT STAYS WITH YOU
             </span>
-            <div className="w-8 md:w-12 h-[1px] bg-[#C8A165]"></div>
+            <div className="w-8 md:w-12 h-[1px] bg-accent"></div>
           </div>
 
-          <p className="text-[15px] font-bold text-[#2B2B2B]">
+          <p className="text-[15px] font-bold text-foreground">
             Real people, real support—available 24/7 before, during, and after your stay.
           </p>
         </div>
 
         {/* Link Columns */}
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 mb-12 w-full max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:flex md:flex-row md:justify-center gap-x-2 gap-y-10 mb-12 w-full max-w-5xl mx-auto">
           {footerColumns && footerColumns.length > 0 ? (
-            footerColumns.map((col) => (
-              <div key={col.id} className="flex flex-col items-center text-center flex-1 min-w-[200px]">
-                <h3 className="font-bold text-[#2B2B2B] mb-4">{col.title}</h3>
+            footerColumns.map((col, index, arr) => (
+              <div 
+                key={col.id} 
+                className={`flex flex-col items-center text-center md:flex-1 md:min-w-[200px] ${
+                  index === arr.length - 1 && arr.length % 2 !== 0 ? 'col-span-2 mx-auto' : 'col-span-1'
+                }`}
+              >
+                <h3 className="font-bold text-foreground mb-4">{col.title}</h3>
                 <ul className="flex flex-col items-center gap-3">
                   {col.links && col.links.map((link) => (
                     <li key={link.id}>
-                      <Link href={link.url} target={link.target || "_self"} className="text-[13px] text-[#2B2B2B] hover:text-[#E8B65B] transition-colors">
+                      <Link href={link.url} target={link.target || "_self"} className="text-[13px] text-foreground hover:text-primary transition-colors">
                         {link.title}
                       </Link>
                     </li>
@@ -98,36 +103,36 @@ export default async function Footer() {
           ) : (
             <>
               {/* Fallback Columns */}
-              <div className="flex flex-col items-center text-center flex-1 min-w-[200px]">
-                <h3 className="font-bold text-[#2B2B2B] mb-4">Explore Stayr</h3>
+              <div className="flex flex-col items-center text-center col-span-1 md:flex-1 md:min-w-[200px]">
+                <h3 className="font-bold text-foreground mb-4 text-[15px] md:text-base">Explore Stayr</h3>
                 <ul className="flex flex-col items-center gap-3">
                   {exploreLinks.map((link, i) => (
                     <li key={i}>
-                      <Link href={link.href} className="text-[13px] text-[#2B2B2B] hover:text-[#E8B65B] transition-colors">
+                      <Link href={link.href} className="text-[12px] md:text-[13px] text-foreground hover:text-primary transition-colors text-center block">
                         {link.label}
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="flex flex-col items-center text-center flex-1 min-w-[200px]">
-                <h3 className="font-bold text-[#2B2B2B] mb-4">Company</h3>
+              <div className="flex flex-col items-center text-center col-span-1 md:flex-1 md:min-w-[200px]">
+                <h3 className="font-bold text-foreground mb-4 text-[15px] md:text-base">Company</h3>
                 <ul className="flex flex-col items-center gap-3">
                   {companyLinks.map((link, i) => (
                     <li key={i}>
-                      <Link href={link.href} className="text-[13px] text-[#2B2B2B] hover:text-[#E8B65B] transition-colors">
+                      <Link href={link.href} className="text-[12px] md:text-[13px] text-foreground hover:text-primary transition-colors text-center block">
                         {link.label}
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="flex flex-col items-center text-center flex-1 min-w-[200px]">
-                <h3 className="font-bold text-[#2B2B2B] mb-4">Meet the Stayr family</h3>
+              <div className="flex flex-col items-center text-center col-span-2 mx-auto md:flex-1 md:min-w-[200px]">
+                <h3 className="font-bold text-foreground mb-4 text-[15px] md:text-base">Meet the Stayr family</h3>
                 <ul className="flex flex-col items-center gap-3">
                   {familyLinks.map((link, i) => (
                     <li key={i}>
-                      <Link href={link.href} className="text-[13px] text-[#2B2B2B] hover:text-[#E8B65B] transition-colors">
+                      <Link href={link.href} className="text-[12px] md:text-[13px] text-foreground hover:text-primary transition-colors text-center block">
                         {link.label}
                       </Link>
                     </li>
@@ -139,8 +144,8 @@ export default async function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="pt-6 border-t border-[#EFE7D8]/80 flex flex-col justify-center items-center gap-4 w-full px-4">
-          <p className="text-[12px] text-[#7B7468] text-center w-full max-w-4xl leading-relaxed">
+        <div className="pt-6 border-t border-border/80 flex flex-col justify-center items-center gap-4 w-full px-4">
+          <p className="text-[12px] text-muted text-center w-full max-w-4xl leading-relaxed">
             {copyrightText}
           </p>
 

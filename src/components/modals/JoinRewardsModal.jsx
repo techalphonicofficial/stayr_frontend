@@ -37,14 +37,14 @@ export default function JoinRewardsModal({ isOpen, onClose, onJoin }) {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-[450px] overflow-hidden flex flex-col relative z-10"
           >
             {/* Header */}
-            <div className="flex flex-row items-center justify-between p-4 border-b border-[#EFE7D8]">
+            <div className="flex flex-row items-center justify-between p-4 border-b border-border">
               <button 
                 onClick={onClose}
                 className="p-2 rounded-full hover:bg-black/5 transition absolute left-4"
               >
-                <X size={20} className="text-[#2B2B2B]" />
+                <X size={20} className="text-foreground" />
               </button>
-              <div className="w-full text-center font-bold text-[#2B2B2B]">
+              <div className="w-full text-center font-bold text-foreground">
                 Join Stayr Rewards
               </div>
             </div>
@@ -61,50 +61,50 @@ export default function JoinRewardsModal({ isOpen, onClose, onJoin }) {
                 />
               </div>
 
-              <p className="text-center text-[#7B7468] mb-6 text-[15px]">
+              <p className="text-center text-muted mb-6 text-[15px]">
                 Create your account to unlock member-only prices, earn StayrCash, and get exclusive perks.
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[13px] font-bold text-[#2B2B2B]">Full Name</label>
+                  <label className="text-[13px] font-bold text-foreground">Full Name</label>
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                     placeholder="e.g. Rahul Sharma" 
-                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-[#2B2B2B] focus:ring-1 focus:ring-[#2B2B2B] transition"
+                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[13px] font-bold text-[#2B2B2B]">Email Address</label>
+                  <label className="text-[13px] font-bold text-foreground">Email Address</label>
                   <input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="name@example.com" 
-                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-[#2B2B2B] focus:ring-1 focus:ring-[#2B2B2B] transition"
+                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[13px] font-bold text-[#2B2B2B]">Phone Number</label>
+                  <label className="text-[13px] font-bold text-foreground">Phone Number</label>
                   <input 
                     type="tel" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
                     placeholder="+91 98765 43210" 
-                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-[#2B2B2B] focus:ring-1 focus:ring-[#2B2B2B] transition"
+                    className="w-full px-4 py-3 border border-[#B0A89D] rounded-xl focus:outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition"
                   />
                 </div>
 
                 <button 
                   type="submit"
-                  className="w-full mt-4 bg-[#E8B65B] hover:bg-[#D89C2B] text-[#2B2B2B] font-bold py-3.5 rounded-xl text-[16px] transition-colors"
+                  className="w-full mt-4 bg-primary hover:bg-[#D89C2B] text-foreground font-bold py-3.5 rounded-xl text-[16px] transition-colors"
                 >
                   Join
                 </button>

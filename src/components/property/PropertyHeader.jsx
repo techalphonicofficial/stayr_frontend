@@ -13,11 +13,11 @@ export default function PropertyHeader({ property }) {
 
   return (
     <div className="flex flex-col gap-2 border-b border-gray-200 pb-6 mb-8 mt-6">
-      <h1 className="text-[26px] md:text-[32px] font-bold text-[#2B2B2B] leading-tight">
+      <h1 className="text-[26px] md:text-[32px] font-bold text-foreground leading-tight">
         {property.title}
       </h1>
       
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-[15px] text-[#2B2B2B]">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-[15px] text-foreground">
         <div className="flex items-center gap-1 font-semibold">
           <span className="text-[#0050FF]">★</span> {property.averageRating ? property.averageRating.toFixed(2) : "New"} 
         </div>
@@ -29,10 +29,10 @@ export default function PropertyHeader({ property }) {
           {property.totalReviews || 0} reviews
         </span>
         <span>·</span>
-        <span className="text-[#7B7468]">{property.city ? `${property.city}, ${property.country}` : property.location || "Varanasi, Uttar Pradesh, India"}</span>
+        <span className="text-muted">{property.city ? `${property.city}, ${property.country}` : property.location || "Varanasi, Uttar Pradesh, India"}</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-[15px] text-[#2B2B2B] mt-1">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-[15px] text-foreground mt-1">
         <span className="font-semibold">{property.propertyType || "Entire property"}</span>
         <span>·</span>
         <span>{property.maxGuests || 1} guests</span>

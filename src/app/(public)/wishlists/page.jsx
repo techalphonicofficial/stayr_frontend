@@ -58,8 +58,8 @@ export default function WishlistPage() {
           <div className="bg-pink-50 p-6 rounded-full mb-6">
             <HeartCrack className="w-16 h-16 text-[#FF385C]" />
           </div>
-          <h1 className="text-3xl font-bold text-[#2B2B2B] mb-4">Your wishlist is empty</h1>
-          <p className="text-[#7B7468] mb-8 text-lg">
+          <h1 className="text-3xl font-bold text-foreground mb-4">Your wishlist is empty</h1>
+          <p className="text-muted mb-8 text-lg">
             As you search, tap the heart icon to save your favourite places and Experiences to a wishlist.
           </p>
           <Link 
@@ -76,8 +76,8 @@ export default function WishlistPage() {
   return (
     <Container>
       <div className="py-10 md:py-16 min-h-[60vh]">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#2B2B2B] mb-2">Wishlists</h1>
-        <p className="text-[#7B7468] mb-10 text-lg">You have {displayItems.length} saved {displayItems.length === 1 ? 'property' : 'properties'}</p>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Wishlists</h1>
+        <p className="text-muted mb-10 text-lg">You have {displayItems.length} saved {displayItems.length === 1 ? 'property' : 'properties'}</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           {displayItems.map((item) => {

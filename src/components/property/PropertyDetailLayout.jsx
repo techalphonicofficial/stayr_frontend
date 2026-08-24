@@ -21,7 +21,7 @@ export default function PropertyDetailLayout({ children, sidebar }) {
            {/* Assuming sidebar is the BookingCard, we don't render the whole card here, just a mobile summary usually, but for simplicity we can just render the button or tell the user to scroll up. */}
            <button 
              onClick={() => router.push('/booking-success')}
-             className="w-full bg-[#E8B65B] hover:bg-[#D89C2B] transition text-white font-bold py-3.5 rounded-full shadow-sm"
+             className="w-full bg-primary hover:bg-[#D89C2B] transition text-white font-bold py-3.5 rounded-full shadow-sm"
            >
              Book now
            </button>

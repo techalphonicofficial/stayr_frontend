@@ -25,7 +25,7 @@ export default function ServiceDetail({ params }) {
 
   if (!service) {
     return (
-      <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Service not found</h1>
           <Link href="/services" className="text-primary hover:underline">
@@ -39,7 +39,7 @@ export default function ServiceDetail({ params }) {
   const provider = HOSTS.find(h => h.id === service.provider) || HOSTS[0];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <div className="min-h-screen bg-background">
       <Navbar flat />
       
       <main className="pt-24 pb-32">

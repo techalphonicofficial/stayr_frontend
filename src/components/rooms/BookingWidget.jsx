@@ -97,19 +97,19 @@ export default function BookingWidget({ propertyId, price = "₹12,000", rating 
   };
 
   return (
-    <div className="w-full bg-white border border-[#EFE7D8] rounded-xl shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6 sticky top-[100px]">
+    <div className="w-full bg-white border border-border rounded-xl shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-6 sticky top-[100px]">
       
       {/* Header: Price & Rating */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <span className="text-[22px] font-bold text-[#2B2B2B]">{price}</span>
-          <span className="text-[16px] text-[#2B2B2B]"> night</span>
+          <span className="text-[22px] font-bold text-foreground">{price}</span>
+          <span className="text-[16px] text-foreground"> night</span>
         </div>
-        <div className="flex items-center gap-1 text-[14px] font-semibold text-[#2B2B2B]">
-          <Star size={14} className="fill-[#2B2B2B]" />
+        <div className="flex items-center gap-1 text-[14px] font-semibold text-foreground">
+          <Star size={14} className="fill-foreground" />
           <span>{rating}</span>
-          <span className="text-[#7B7468]">·</span>
-          <span className="underline text-[#7B7468] hover:text-[#2B2B2B] cursor-pointer">
+          <span className="text-muted">·</span>
+          <span className="underline text-muted hover:text-foreground cursor-pointer">
             {reviews} reviews
           </span>
         </div>
@@ -155,7 +155,7 @@ export default function BookingWidget({ propertyId, price = "₹12,000", rating 
               <option key={n} value={n}>{n} {n === 1 ? 'guest' : 'guests'}</option>
             ))}
           </select>
-          <ChevronDown size={20} className="text-[#2B2B2B] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <ChevronDown size={20} className="text-foreground absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
@@ -174,7 +174,7 @@ export default function BookingWidget({ propertyId, price = "₹12,000", rating 
         <button 
           onClick={handleReserve}
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-[#E8B65B] to-[#D89C2B] text-white font-bold text-[16px] py-3.5 rounded-lg hover:brightness-95 transition shadow-sm active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+          className="w-full bg-gradient-to-r from-primary to-[#D89C2B] text-white font-bold text-[16px] py-3.5 rounded-lg hover:brightness-95 transition shadow-sm active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
         >
           {isLoading ? (
             <>
@@ -191,7 +191,7 @@ export default function BookingWidget({ propertyId, price = "₹12,000", rating 
       )}
 
       {/* Footer text */}
-      <div className="text-center text-[14px] text-[#7B7468] mt-4">
+      <div className="text-center text-[14px] text-muted mt-4">
         You won't be charged yet
       </div>
     </div>

@@ -18,7 +18,7 @@ export default function ServicesPage() {
   const allServices = SERVICES;
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <main className="flex flex-col">

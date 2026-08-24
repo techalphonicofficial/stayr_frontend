@@ -904,7 +904,7 @@ export default function PropertyForm({ initialData = null, isEdit = false }) {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="flex items-center text-[#E8B65B] text-sm font-bold bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100">
+                            <span className="flex items-center text-primary text-sm font-bold bg-yellow-50 px-2 py-0.5 rounded border border-yellow-100">
                               <Star className="w-3.5 h-3.5 mr-1 fill-current" /> {review.rating}
                             </span>
                             <button 

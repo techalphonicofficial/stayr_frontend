@@ -38,7 +38,7 @@ export default function LearnMorePage() {
     {
       name: "Gold",
       spend: "Spend ₹2,00,000/year",
-      color: "border-[#E8B65B] bg-[#FFFBF0]",
+      color: "border-primary bg-[#FFFBF0]",
       perks: [
         "20% off member prices",
         "Earn 3% in StayrCash",
@@ -50,7 +50,7 @@ export default function LearnMorePage() {
     {
       name: "Platinum",
       spend: "Spend ₹5,00,000/year",
-      color: "border-[#2B2B2B] bg-[#F3F4F6]",
+      color: "border-foreground bg-[#F3F4F6]",
       perks: [
         "25% off member prices",
         "Earn 5% in StayrCash",
@@ -77,7 +77,7 @@ export default function LearnMorePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8] pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <Navbar forceCompact={true} />
       
       {/* Hero Section */}
@@ -95,17 +95,17 @@ export default function LearnMorePage() {
           
           <Container className="relative h-full flex flex-col justify-center items-center text-center text-white">
             {!hasJoined && (
-              <div className="bg-[#2B2B2B]/80 backdrop-blur-md p-8 md:p-12 rounded-2xl max-w-3xl border border-white/20">
+              <div className="bg-foreground/80 backdrop-blur-md p-8 md:p-12 rounded-2xl max-w-3xl border border-white/20">
                 <div className="flex justify-center mb-4">
-                  <Sparkles className="w-12 h-12 text-[#E8B65B]" />
+                  <Sparkles className="w-12 h-12 text-primary" />
                 </div>
                 <h1 className="text-3xl md:text-5xl font-bold mb-4">Unlock the Best of India with Stayr Rewards</h1>
-                <p className="text-lg md:text-xl text-[#FFF6E6]">
+                <p className="text-lg md:text-xl text-secondary">
                   Earn StayrCash on every booking and unlock exclusive perks across our premium properties.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(true)}
-                  className="mt-8 bg-[#E8B65B] hover:bg-[#D89C2B] text-[#2B2B2B] font-bold py-4 px-10 rounded-full text-lg transition-colors"
+                  className="mt-8 bg-primary hover:bg-[#D89C2B] text-foreground font-bold py-4 px-10 rounded-full text-lg transition-colors"
                 >
                   Join for free
                 </button>
@@ -117,35 +117,35 @@ export default function LearnMorePage() {
 
       <Container>
         {/* Value Proposition */}
-        <div className="py-20 border-b border-[#EFE7D8]">
+        <div className="py-20 border-b border-border">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold text-[#2B2B2B] mb-4">How Stayr Rewards works</h2>
-            <p className="text-[#7B7468] text-lg">It's incredibly simple. The more you explore, the more rewarding your stays become.</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">How Stayr Rewards works</h2>
+            <p className="text-muted text-lg">It's incredibly simple. The more you explore, the more rewarding your stays become.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-[#FFF6E6] text-[#E8B65B] rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-secondary text-primary rounded-full flex items-center justify-center mb-6">
                 <Map size={32} strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-bold text-[#2B2B2B] mb-3">Explore India</h3>
-              <p className="text-[#7B7468]">Book incredible stays across India, from vibrant metros to serene getaways.</p>
+              <h3 className="text-xl font-bold text-foreground mb-3">Explore India</h3>
+              <p className="text-muted">Book incredible stays across India, from vibrant metros to serene getaways.</p>
             </div>
             
             <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-[#FFF6E6] text-[#E8B65B] rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-secondary text-primary rounded-full flex items-center justify-center mb-6">
                 <Coins size={32} strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-bold text-[#2B2B2B] mb-3">Earn StayrCash</h3>
-              <p className="text-[#7B7468]">Earn rewards on every eligible booking. 1 StayrCash equals ₹1. It's real value.</p>
+              <h3 className="text-xl font-bold text-foreground mb-3">Earn StayrCash</h3>
+              <p className="text-muted">Earn rewards on every eligible booking. 1 StayrCash equals ₹1. It's real value.</p>
             </div>
             
             <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-[#FFF6E6] text-[#E8B65B] rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-secondary text-primary rounded-full flex items-center justify-center mb-6">
                 <ShieldCheck size={32} strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-bold text-[#2B2B2B] mb-3">Unlock Tiers</h3>
-              <p className="text-[#7B7468]">Unlock Silver, Gold, and Platinum status for luxurious perks and higher earning rates.</p>
+              <h3 className="text-xl font-bold text-foreground mb-3">Unlock Tiers</h3>
+              <p className="text-muted">Unlock Silver, Gold, and Platinum status for luxurious perks and higher earning rates.</p>
             </div>
           </div>
         </div>
@@ -153,23 +153,23 @@ export default function LearnMorePage() {
         {/* Membership Tiers */}
         <div className="py-20">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold text-[#2B2B2B] mb-4">Elevate your status</h2>
-            <p className="text-[#7B7468] text-lg">Four tiers of unparalleled luxury travel benefits.</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Elevate your status</h2>
+            <p className="text-muted text-lg">Four tiers of unparalleled luxury travel benefits.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {tiers.map((tier, index) => (
               <div key={index} className={`border-2 rounded-2xl p-6 flex flex-col h-full ${tier.color}`}>
-                <h3 className="text-2xl font-bold text-[#2B2B2B] mb-1">{tier.name}</h3>
-                <p className="text-[#7B7468] font-medium text-sm mb-6 pb-6 border-b border-black/10">{tier.spend}</p>
+                <h3 className="text-2xl font-bold text-foreground mb-1">{tier.name}</h3>
+                <p className="text-muted font-medium text-sm mb-6 pb-6 border-b border-black/10">{tier.spend}</p>
                 
                 <ul className="flex flex-col gap-4 flex-grow">
                   {tier.perks.map((perk, pIndex) => (
                     <li key={pIndex} className="flex items-start gap-3">
-                      <div className="mt-1 shrink-0 bg-[#2B2B2B] text-white rounded-full p-[2px]">
+                      <div className="mt-1 shrink-0 bg-foreground text-white rounded-full p-[2px]">
                         <Check size={12} strokeWidth={3} />
                       </div>
-                      <span className="text-[#2B2B2B] text-[15px] leading-tight">{perk}</span>
+                      <span className="text-foreground text-[15px] leading-tight">{perk}</span>
                     </li>
                   ))}
                 </ul>
@@ -180,12 +180,12 @@ export default function LearnMorePage() {
 
         {/* FAQs */}
         <div className="py-16 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-[#2B2B2B] mb-8 text-center">Frequently asked questions</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-8 text-center">Frequently asked questions</h2>
           <div className="flex flex-col gap-4">
             {faqs.map((faq, index) => (
-              <div key={index} className="bg-white border border-[#EFE7D8] rounded-xl p-6">
-                <h3 className="text-lg font-bold text-[#2B2B2B] mb-3">{faq.q}</h3>
-                <p className="text-[#7B7468]">{faq.a}</p>
+              <div key={index} className="bg-white border border-border rounded-xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-3">{faq.q}</h3>
+                <p className="text-muted">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -211,14 +211,14 @@ export default function LearnMorePage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-[#2B2B2B] text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-md w-full border border-white/10"
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-foreground text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-md w-full border border-white/10"
           >
-            <div className="bg-[#E8B65B] text-[#2B2B2B] p-2 rounded-full shrink-0">
+            <div className="bg-primary text-foreground p-2 rounded-full shrink-0">
               <Check size={20} strokeWidth={3} />
             </div>
             <div>
               <p className="font-bold mb-1">Welcome to Stayr Rewards!</p>
-              <p className="text-sm text-[#FFF6E6]/80 leading-snug">
+              <p className="text-sm text-secondary/80 leading-snug">
                 Earn StayrCash on every booking and unlock exclusive perks across our premium properties.
               </p>
             </div>

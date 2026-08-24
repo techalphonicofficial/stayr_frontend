@@ -18,7 +18,7 @@ export default function MemberBanner() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="bg-[#2B2B2B] rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden group cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(232,182,91,0.2)] transition-shadow duration-500"
+          className="bg-foreground rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden group cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(232,182,91,0.2)] transition-shadow duration-500"
           whileHover={{ scale: 1.01 }}
         >
           {/* Sweeping shine effect */}
@@ -35,10 +35,10 @@ export default function MemberBanner() {
               animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
             >
-              <div className="absolute inset-0 bg-[#E8B65B] blur-md opacity-30 rounded-full animate-pulse"></div>
-              <Sparkles className="w-8 h-5 text-[#E8B65B] relative z-10" />
+              <div className="absolute inset-0 bg-primary blur-md opacity-30 rounded-full animate-pulse"></div>
+              <Sparkles className="w-8 h-5 text-primary relative z-10" />
             </motion.div>
-            <span className="text-[15px] md:text-[16px] font-medium group-hover:text-[#E8B65B] transition-colors duration-300">
+            <span className="text-[15px] md:text-[16px] font-medium group-hover:text-primary transition-colors duration-300">
               Members always get our best prices when signed in
             </span>
           </div>
@@ -47,13 +47,13 @@ export default function MemberBanner() {
           <div className="flex items-center gap-6 relative z-10">
             <motion.button 
               onClick={() => setIsAuthModalOpen(true)}
-              className="bg-[#E8B65B] text-[#2B2B2B] font-bold py-2 px-6 rounded-full shadow-[0_0_15px_rgba(232,182,91,0.4)] hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300"
+              className="bg-primary text-foreground font-bold py-2 px-6 rounded-full shadow-[0_0_15px_rgba(232,182,91,0.4)] hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               Sign in
             </motion.button>
-            <Link href="/learn-more" className="text-white font-medium hover:text-[#E8B65B] transition-colors duration-300 hover:underline">
+            <Link href="/learn-more" className="text-white font-medium hover:text-primary transition-colors duration-300 hover:underline">
               Learn more
             </Link>
           </div>

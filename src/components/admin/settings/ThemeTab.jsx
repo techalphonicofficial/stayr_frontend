@@ -2,59 +2,66 @@ import { useState, useEffect } from "react";
 import { Save, Palette, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { adminApi } from "@/lib/adminApi";
+import { SketchPicker } from "react-color";
 
 const DEFAULT_THEME = {
-  // Primary
-  "--brand-primary": "var(--brand-primary)",
-  "--brand-primary-hover": "var(--brand-primary-hover)",
+  // Primary Palette
+  "--brand-primary": "#E8B65B",
+  "--brand-primary-hover": "#D89C2B",
   "--brand-primary-light": "#FFB3C1",
-  "--brand-primary-border": "var(--brand-primary-hover)",
+  "--brand-primary-border": "#D89C2B",
   "--brand-secondary": "#222222",
   "--brand-secondary-hover": "#000000",
-  // Aliases
-  "--color-primary": "var(--brand-primary)",
-  "--color-primary-hover": "var(--brand-primary-hover)",
-  "--color-primary-light": "#FFB3C1",
-  "--color-secondary": "#222222",
-  "--color-secondary-hover": "#000000",
-  // Bootstrap
   "--bs-primary": "var(--brand-primary)",
-  "--bs-secondary": "#222222",
+  "--bs-secondary": "var(--brand-secondary)",
   "--bs-link-color": "var(--brand-primary)",
   "--bs-link-hover-color": "var(--brand-primary-hover)",
-  // Accent
-  "--color-accent": "#00a699",
-  "--color-accent-hover": "#00887a",
+  "--color-accent": "#F4D28C",
+  "--color-accent-hover": "#D89C2B",
+
   // Text
-  "--color-text-primary": "#222222",
-  "--color-text-secondary": "#717171",
+  "--color-text-primary": "#2B2B2B",
+  "--color-text-secondary": "#7B7468",
   "--color-text-muted": "#9ca3af",
+
   // Background
-  "--color-bg": "#ffffff",
-  "--color-bg-soft": "#f7f7f7",
-  "--color-bg-card": "#ffffff",
+  "--color-bg": "#FFFDF8",
+  "--color-bg-soft": "#FFF6E6",
+  "--color-bg-card": "#FFFFFF",
   "--color-bg-overlay": "rgba(0,0,0,0.5)",
+
   // Borders
-  "--color-border": "#e5e7eb",
+  "--color-border": "#EFE7D8",
   "--color-border-focus": "var(--brand-primary)",
+
+  // Extra colors
+  "--color-success": "#3FAF75",
+  "--color-error": "#E86A6A",
+  "--color-warning": "#F5A623",
+  "--color-info": "#6C8AE4",
+
   // Shadows
   "--shadow-xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-  "--shadow-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-  "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-  "--shadow-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  "--shadow-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+  "--shadow-sm": "0 2px 8px rgba(0, 0, 0, 0.04)",
+  "--shadow-md": "0 6px 20px rgba(0, 0, 0, 0.06)",
+  "--shadow-lg": "0 12px 40px rgba(0, 0, 0, 0.08)",
+  "--shadow-xl": "0 20px 60px rgba(0, 0, 0, 0.10)",
   "--shadow-card-hover": "0 10px 15px -3px rgba(0,0,0,0.1)",
+
   // Border radius
-  "--radius-sm": "0.125rem",
-  "--radius-md": "0.375rem",
-  "--radius-lg": "0.5rem",
-  "--radius-xl": "0.75rem",
-  "--radius-2xl": "1rem",
+  "--radius-sm": "10px",
+  "--radius-md": "14px",
+  "--radius-lg": "18px",
+  "--radius-xl": "24px",
+  "--radius-2xl": "32px",
   "--radius-full": "9999px",
+  "--radius-theme": "20px",
+
   // Transitions
-  "--transition-fast": "150ms ease-in-out",
-  "--transition-base": "250ms ease-in-out",
-  "--transition-slow": "350ms ease-in-out",
+  "--transition-fast": "150ms ease",
+  "--transition-base": "250ms ease",
+  "--transition-slow": "400ms ease",
+
   // Spacing
   "--space-1": "0.25rem",
   "--space-2": "0.5rem",
@@ -68,12 +75,14 @@ const DEFAULT_THEME = {
   "--space-16": "4rem",
   "--space-20": "5rem",
   "--space-24": "6rem",
+
   // Z-index
   "--z-base": "0",
   "--z-dropdown": "1000",
   "--z-sticky": "1020",
   "--z-modal": "1050",
   "--z-toast": "1100",
+
   // Gradients
   "--gradient-primary": "linear-gradient(to right, var(--brand-primary), var(--brand-primary-hover))",
   "--gradient-hero": "linear-gradient(to right, #222222, #444444)",
@@ -87,10 +96,8 @@ const GROUPS = [
     title: "PRIMARY PALETTE",
     keys: [
       "--brand-primary", "--brand-primary-hover", "--brand-primary-light", "--brand-primary-border",
-      "--brand-secondary", "--brand-secondary-hover",
-      "--color-primary", "--color-primary-hover", "--color-primary-light", "--color-secondary",
-      "--color-secondary-hover", "--bs-primary", "--bs-secondary", "--bs-link-color",
-      "--bs-link-hover-color", "--color-accent", "--color-accent-hover"
+      "--brand-secondary", "--brand-secondary-hover", "--color-accent", "--color-accent-hover",
+      "--bs-primary", "--bs-secondary", "--bs-link-color", "--bs-link-hover-color"
     ]
   },
   {
@@ -106,12 +113,16 @@ const GROUPS = [
     keys: ["--color-border", "--color-border-focus"]
   },
   {
+    title: "EXTRA COLORS",
+    keys: ["--color-success", "--color-error", "--color-warning", "--color-info"]
+  },
+  {
     title: "SHADOWS",
     keys: ["--shadow-xs", "--shadow-sm", "--shadow-md", "--shadow-lg", "--shadow-xl", "--shadow-card-hover"]
   },
   {
     title: "BORDER RADIUS",
-    keys: ["--radius-sm", "--radius-md", "--radius-lg", "--radius-xl", "--radius-2xl", "--radius-full"]
+    keys: ["--radius-sm", "--radius-md", "--radius-lg", "--radius-xl", "--radius-2xl", "--radius-full", "--radius-theme"]
   },
   {
     title: "TRANSITIONS",
@@ -139,6 +150,7 @@ export default function ThemeTab() {
   const [activeThemeId, setActiveThemeId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [displayColorPicker, setDisplayColorPicker] = useState({});
 
   useEffect(() => {
     fetchThemes();
@@ -245,6 +257,22 @@ export default function ThemeTab() {
     setVariables({ ...variables, [e.target.name]: e.target.value });
   };
 
+  const handleColorChange = (key, color) => {
+    let newValue = color.hex;
+    if (color.rgb.a < 1) {
+      newValue = `rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
+    }
+    setVariables({ ...variables, [key]: newValue });
+  };
+
+  const toggleColorPicker = (key) => {
+    setDisplayColorPicker({ ...displayColorPicker, [key]: !displayColorPicker[key] });
+  };
+
+  const closeColorPicker = (key) => {
+    setDisplayColorPicker({ ...displayColorPicker, [key]: false });
+  };
+
   const handleSave = async (e) => {
     e?.preventDefault();
     setSaving(true);
@@ -336,26 +364,30 @@ export default function ThemeTab() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
                   {groupKeys.map((key) => {
                     const value = variables[key];
-                    const isColor = /^#([0-9A-F]{3}){1,2}$/i.test(value) || value.startsWith('rgba') || value.startsWith('rgb');
-                    const hasValidHex = /^#([0-9A-F]{3}){1,2}$/i.test(value);
+                    // Any key containing 'color' is treated as a color field
+                    const isColorField = key.includes('color') || key.includes('brand') || key.includes('bs-');
                     
                     return (
-                      <div key={key} className="flex flex-col gap-2">
+                      <div key={key} className="flex flex-col gap-2 relative">
                         <label className="text-sm font-semibold text-gray-800">
                           {formatLabel(key)}
                         </label>
-                        <div className="flex items-center border border-gray-200 rounded-md bg-white focus-within:ring-1 focus-within:ring-black focus-within:border-black overflow-hidden shadow-sm h-10 transition-shadow">
-                          {isColor && (
-                             <div className="w-10 h-full shrink-0 border-r border-gray-200 bg-gray-100 flex items-center justify-center relative overflow-hidden group">
-                                <div className="w-6 h-6 rounded shadow-sm border border-black/10" style={{ backgroundColor: value }}></div>
-                                {hasValidHex && (
-                                  <input 
-                                    type="color" 
-                                    name={key} 
-                                    value={value} 
-                                    onChange={handleChange}
-                                    className="absolute -top-4 -left-4 w-20 h-20 cursor-pointer opacity-0"
-                                  />
+                        <div className="flex items-center border border-gray-200 rounded-md bg-white focus-within:ring-1 focus-within:ring-black focus-within:border-black overflow-visible shadow-sm h-10 transition-shadow">
+                          {isColorField && (
+                             <div className="w-10 h-full shrink-0 border-r border-gray-200 bg-gray-100 flex items-center justify-center relative">
+                                <div 
+                                  className="w-6 h-6 rounded shadow-sm border border-black/10 cursor-pointer" 
+                                  style={{ backgroundColor: value || 'transparent' }}
+                                  onClick={() => toggleColorPicker(key)}
+                                ></div>
+                                {displayColorPicker[key] && (
+                                  <div className="absolute top-12 left-0 z-50">
+                                    <div className="fixed inset-0" onClick={() => closeColorPicker(key)} />
+                                    <SketchPicker 
+                                      color={value} 
+                                      onChange={(color) => handleColorChange(key, color)} 
+                                    />
+                                  </div>
                                 )}
                              </div>
                           )}

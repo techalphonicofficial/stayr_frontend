@@ -82,7 +82,7 @@ export default function AuthModal({ isOpen, onClose }) {
               onClick={onClose}
               className="absolute top-4 left-4 p-2 rounded-full hover:bg-black/5 transition z-20"
             >
-              <X size={20} className="text-[#2B2B2B]" />
+              <X size={20} className="text-foreground" />
             </button>
 
             {/* Body */}
@@ -95,7 +95,7 @@ export default function AuthModal({ isOpen, onClose }) {
                 className="w-auto h-12 object-contain mb-4"
               />
 
-              <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-6">
+              <h2 className="text-[22px] font-bold text-foreground mb-6">
                 {isLogin ? "Log in" : "Sign up"}
               </h2>
 
@@ -103,41 +103,41 @@ export default function AuthModal({ isOpen, onClose }) {
                 {errorMsg && <div className="text-red-500 text-sm font-semibold">{errorMsg}</div>}
 
                 {!isLogin && (
-                  <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-[#2B2B2B] focus-within:ring-1 focus-within:ring-[#2B2B2B] transition">
+                  <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground transition">
                     <input
                       type="text"
                       placeholder="Full Name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468]"
+                      className="w-full p-4 outline-none text-foreground placeholder:text-muted"
                     />
                   </div>
                 )}
 
-                <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-[#2B2B2B] focus-within:ring-1 focus-within:ring-[#2B2B2B] transition">
+                <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground transition">
                   <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468]"
+                    className="w-full p-4 outline-none text-foreground placeholder:text-muted"
                   />
                 </div>
 
-                <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-[#2B2B2B] focus-within:ring-1 focus-within:ring-[#2B2B2B] transition">
+                <div className="border border-[#B0A89D] rounded-xl overflow-hidden focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground transition">
                   <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-4 outline-none text-[#2B2B2B] placeholder:text-[#7B7468]"
+                    className="w-full p-4 outline-none text-foreground placeholder:text-muted"
                   />
                 </div>
 
                 <button
                   onClick={handleAuth}
                   disabled={loading}
-                  className="w-full py-4 bg-[#E8B65B] hover:bg-[#D89C2B] text-white font-bold rounded-xl transition shadow-sm text-lg flex justify-center items-center"
+                  className="w-full py-4 bg-primary hover:bg-[#D89C2B] text-white font-bold rounded-xl transition shadow-sm text-lg flex justify-center items-center"
                 >
                   {loading ? "Processing..." : "Continue"}
                 </button>
@@ -154,9 +154,9 @@ export default function AuthModal({ isOpen, onClose }) {
               </div>
 
               <div className="flex flex-row items-center gap-4 w-full my-6">
-                <div className="flex-1 h-[1px] bg-[#EFE7D8]"></div>
-                <div className="text-sm text-[#7B7468]">or</div>
-                <div className="flex-1 h-[1px] bg-[#EFE7D8]"></div>
+                <div className="flex-1 h-[1px] bg-border"></div>
+                <div className="text-sm text-muted">or</div>
+                <div className="flex-1 h-[1px] bg-border"></div>
               </div>
 
               <div className="flex flex-row items-center justify-center gap-4 w-full">

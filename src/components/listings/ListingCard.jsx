@@ -7,6 +7,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1599661559929-23d24263b652?auto=format&fit=crop&w=800&q=80",
@@ -41,24 +42,36 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
 
     try {
       await wishlist.toggleSavedProperty(id);
+      
+      // If it wasn't saved before this click, it means we just added it.
+      if (!isSaved) {
+        toast.success("Added to wish list");
+      } else {
+        toast.success("Removed from wish list", {
+          iconTheme: {
+            primary: '#7B7468',
+            secondary: '#2B2B2B',
+          },
+        });
+      }
     } catch (error) {
       if (error.message.includes("401") || error.message.toLowerCase().includes("unauthorized")) {
         router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
       } else {
-        alert(error.message || "Failed to save property");
+        toast.error(error.message || "Failed to save property");
       }
     }
   };
 
   return (
-    <Link href={`/property/${id}`} className="block w-full cursor-pointer h-full">
+    <Link href={`/property/${id}?title=${encodeURIComponent(title)}`} className="block w-full cursor-pointer h-full">
       <motion.div 
         className="flex flex-col gap-3 w-full h-full p-2 rounded-2xl transition-colors group"
         whileHover={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         {/* Image Container */}
-        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30 transition-all duration-300">
+        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-primary/30 transition-all duration-300">
           <Image
             src={imgSrc}
             alt={title}
@@ -79,7 +92,7 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
           <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
             {guestFavourite ? (
               <div className="bg-white/95 backdrop-blur-sm px-2 h-6 rounded-full shadow-sm inline-flex items-center justify-center overflow-hidden max-w-[70%]">
-                <span className="text-[11px] font-bold text-[#2B2B2B] whitespace-nowrap leading-none truncate">Guest favourite</span>
+                <span className="text-[11px] font-bold text-foreground whitespace-nowrap leading-none truncate">Guest favourite</span>
               </div>
             ) : (
               <div></div> // Spacer
@@ -95,7 +108,7 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
 
           {/* Deal Badge */}
           {discountText && (
-            <div className="absolute bottom-3 left-3 bg-[#E8B65B] text-[#2B2B2B] px-3 py-1 rounded-md shadow-md z-10">
+            <div className="absolute bottom-3 left-3 bg-primary text-foreground px-3 py-1 rounded-md shadow-md z-10">
               <span className="text-[12px] font-bold">{discountText}</span>
             </div>
           )}
@@ -103,16 +116,16 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
 
         {/* Details */}
         <div className="flex flex-col px-1">
-          <h3 className="font-semibold text-[#2B2B2B] text-[15px] truncate group-hover:text-[#E8B65B] transition-colors duration-300">
+          <h3 className="font-semibold text-foreground text-[15px] truncate group-hover:text-primary transition-colors duration-300">
             {title}
           </h3>
-          <p className="text-[#7B7468] text-[14px]">
+          <p className="text-muted text-[14px]">
             {originalPrice && <span className="line-through mr-1 text-gray-400">{originalPrice}</span>}
-            <span className={originalPrice ? "font-bold text-[#2B2B2B]" : ""}>{price}</span>
+            <span className={originalPrice ? "font-bold text-foreground" : ""}>{price}</span>
             {" "}for {nights} nights • ★ {rating} {reviewCount ? `(${reviewCount})` : ''}
           </p>
           {topReview && (
-            <p className="text-[#7B7468] text-[13px] mt-1 line-clamp-1 italic text-ellipsis overflow-hidden">
+            <p className="text-muted text-[13px] mt-1 line-clamp-1 italic text-ellipsis overflow-hidden">
               "{typeof topReview === 'string' ? topReview : topReview.comment}"
             </p>
           )}

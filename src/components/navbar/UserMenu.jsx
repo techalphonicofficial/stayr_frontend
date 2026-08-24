@@ -101,7 +101,6 @@ export default function UserMenu() {
                     </div>
                     <div onClick={() => { setIsOpen(false); router.push('/wishlists'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Wishlists</div>
                     <div onClick={() => { setIsOpen(false); router.push('/trips'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Trips</div>
-                    <div onClick={() => { setIsOpen(false); router.push('/messages'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Messages</div>
                     <div onClick={() => { setIsOpen(false); router.push('/profile'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Profile</div>
                     <hr className="border-border my-2" />
                     <div onClick={handleLogout} className="px-4 py-3 hover:bg-secondary transition text-primary">Log out</div>

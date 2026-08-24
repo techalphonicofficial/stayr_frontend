@@ -8,11 +8,11 @@ export default function AboutProperty({ title, description }) {
 
   return (
     <div className="py-8 border-b border-gray-200">
-      <h2 className="text-[22px] font-bold text-[#2B2B2B] mb-4">About this property</h2>
+      <h2 className="text-[22px] font-bold text-foreground mb-4">About this property</h2>
       
-      <h3 className="text-[17px] font-bold text-[#2B2B2B] mb-2">{title}</h3>
+      <h3 className="text-[17px] font-bold text-foreground mb-2">{title}</h3>
       
-      <div className={`text-[15px] text-[#2B2B2B] leading-relaxed relative ${expanded ? "" : "max-h-[100px] overflow-hidden"}`}>
+      <div className={`text-[15px] text-foreground leading-relaxed relative ${expanded ? "" : "max-h-[100px] overflow-hidden"}`}>
         <p>{description}</p>
         
         {/* Gradient overlay when collapsed */}

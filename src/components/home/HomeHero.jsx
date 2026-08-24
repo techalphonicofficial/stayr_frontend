@@ -50,7 +50,7 @@ function TypewriterText({ phrases }) {
   }, [charIndex, isDeleting, phraseIndex, phrases]);
 
   return (
-    <span className="inline-block text-[#E8B65B] text-xl md:text-3xl lg:text-5xl mt-2 md:mt-4">
+    <span className="inline-block text-primary text-xl md:text-3xl lg:text-5xl mt-2 md:mt-4">
       {phrases[phraseIndex].substring(0, charIndex)}
       <span className={`inline-block ${blink ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}>|</span>
     </span>
@@ -104,7 +104,7 @@ export default function HomeHero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="inline-block bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1 mb-6 text-sm font-semibold flex items-center gap-2"
         >
-          <span className="text-[#E8B65B]">★</span> Handpicked stays
+          <span className="text-primary">★</span> Handpicked stays
         </motion.div>
         
         <motion.h1 
@@ -144,7 +144,7 @@ export default function HomeHero() {
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 <motion.div 
-                  className="text-3xl bg-white/10 rounded-full w-12 h-12 flex items-center justify-center border border-white/20 flex-shrink-0 relative overflow-hidden group-hover:bg-[#E8B65B]/30 group-hover:border-[#E8B65B] transition-colors duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_20px_rgba(232,182,91,0.4)]"
+                  className="text-3xl bg-white/10 rounded-full w-12 h-12 flex items-center justify-center border border-white/20 flex-shrink-0 relative overflow-hidden group-hover:bg-primary/30 group-hover:border-primary transition-colors duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_20px_rgba(232,182,91,0.4)]"
                   animate={{ y: [0, -4, 0] }}
                   transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", delay: index * 0.2 }}
                 >
@@ -157,7 +157,7 @@ export default function HomeHero() {
                   <span className="relative z-10 group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
                 </motion.div>
                 <div className="flex flex-col">
-                  <span className="text-white font-bold text-sm group-hover:text-[#E8B65B] transition-colors duration-300">{item.title}</span>
+                  <span className="text-white font-bold text-sm group-hover:text-primary transition-colors duration-300">{item.title}</span>
                   <span className="text-white/70 text-xs">{item.description}</span>
                 </div>
               </motion.div>

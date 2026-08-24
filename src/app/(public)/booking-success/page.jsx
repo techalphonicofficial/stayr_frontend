@@ -13,27 +13,27 @@ function SuccessContent() {
   const bookingId = searchParams.get("bookingId");
 
   return (
-    <div className="flex flex-col items-center text-center mt-20 p-8 bg-white border border-[#EFE7D8] rounded-xl shadow-[0_6px_16px_rgba(0,0,0,0.12)] max-w-2xl mx-auto">
+    <div className="flex flex-col items-center text-center mt-20 p-8 bg-white border border-border rounded-xl shadow-[0_6px_16px_rgba(0,0,0,0.12)] max-w-2xl mx-auto">
       <CheckCircle size={64} className="text-[#3FAF75] mb-6" />
-      <h1 className="text-[32px] md:text-[40px] font-bold text-[#2B2B2B] leading-tight mb-4">
+      <h1 className="text-[32px] md:text-[40px] font-bold text-foreground leading-tight mb-4">
         Payment Successful!
       </h1>
-      <p className="text-[18px] text-[#7B7468] mb-8">
+      <p className="text-[18px] text-muted mb-8">
         Your booking has been confirmed. You will receive an email shortly with your reservation details.
       </p>
       
       {bookingId && (
         <div className="mb-8 p-4 bg-gray-50 rounded-lg w-full">
-          <p className="text-[#7B7468] text-sm">Booking Reference ID</p>
-          <p className="text-[#2B2B2B] font-mono font-medium">{bookingId}</p>
+          <p className="text-muted text-sm">Booking Reference ID</p>
+          <p className="text-foreground font-mono font-medium">{bookingId}</p>
         </div>
       )}
 
       <div className="flex flex-col sm:flex-row gap-4 w-full">
-        <Link href="/" className="flex-1 bg-gradient-to-r from-[#E8B65B] to-[#D89C2B] text-white font-bold text-[16px] py-4 rounded-lg hover:brightness-95 transition shadow-sm active:scale-[0.98]">
+        <Link href="/" className="flex-1 bg-gradient-to-r from-primary to-[#D89C2B] text-white font-bold text-[16px] py-4 rounded-lg hover:brightness-95 transition shadow-sm active:scale-[0.98]">
           Explore More Places
         </Link>
-        <Link href="/profile" className="flex-1 bg-white text-[#2B2B2B] border-2 border-[#E8B65B] font-bold text-[16px] py-4 rounded-lg hover:bg-gray-50 transition shadow-sm active:scale-[0.98]">
+        <Link href="/profile" className="flex-1 bg-white text-foreground border-2 border-primary font-bold text-[16px] py-4 rounded-lg hover:bg-gray-50 transition shadow-sm active:scale-[0.98]">
           View My Bookings
         </Link>
       </div>
@@ -43,7 +43,7 @@ function SuccessContent() {
 
 export default function BookingSuccessPage() {
   return (
-    <div className="min-h-screen bg-[#FFFDF8] pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <Navbar forceCompact={true} />
       
       <motion.div 

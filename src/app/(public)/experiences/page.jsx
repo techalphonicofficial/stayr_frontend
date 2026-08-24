@@ -29,7 +29,7 @@ export default async function ExperiencesPage() {
   const activeStory = await getActiveStory();
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <main className="flex flex-col">

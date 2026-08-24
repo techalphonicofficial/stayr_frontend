@@ -60,9 +60,9 @@ export default function ShareModal({ isOpen, onClose, property }) {
           >
             <div className="p-4 flex items-center justify-between border-b border-gray-100">
               <div className="w-8"></div> {/* Spacer for centering */}
-              <h2 className="font-bold text-[#2B2B2B] text-[18px]">Share this place</h2>
+              <h2 className="font-bold text-foreground text-[18px]">Share this place</h2>
               <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition w-8 h-8 flex items-center justify-center">
-                <X size={18} className="text-[#2B2B2B]" />
+                <X size={18} className="text-foreground" />
               </button>
             </div>
 
@@ -78,7 +78,7 @@ export default function ShareModal({ isOpen, onClose, property }) {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-[14px] text-[#2B2B2B]">
+                    <p className="text-[14px] text-foreground">
                       {property.propertyType || "Rental unit"} in {property.location || "Location"} · ★{property.rating} · {property.bedrooms} bedrooms · {property.guests} guests
                     </p>
                   </div>
@@ -92,8 +92,8 @@ export default function ShareModal({ isOpen, onClose, property }) {
                     onClick={opt.action}
                     className="flex items-center gap-4 p-4 border border-gray-300 rounded-xl hover:border-black transition text-left"
                   >
-                    <opt.icon size={22} className="text-[#2B2B2B] shrink-0" strokeWidth={1.5} />
-                    <span className="font-semibold text-[15px] text-[#2B2B2B]">{opt.label}</span>
+                    <opt.icon size={22} className="text-foreground shrink-0" strokeWidth={1.5} />
+                    <span className="font-semibold text-[15px] text-foreground">{opt.label}</span>
                   </button>
                 ))}
               </div>

@@ -28,10 +28,10 @@ export default function SearchSection({
     >
       <div className={`px-6 py-3 flex flex-row items-center ${hasSearchButton ? "justify-between" : ""}`}>
         <div>
-          <motion.div layout className="text-xs font-bold text-[#2B2B2B]">
+          <motion.div layout className="text-xs font-bold text-foreground">
             {title}
           </motion.div>
-          <motion.div layout className={`text-sm ${isActive ? "text-[#2B2B2B]" : "text-[#7B7468]"}`}>
+          <motion.div layout className={`text-sm ${isActive ? "text-foreground" : "text-muted"}`}>
             {subtitle}
           </motion.div>
         </div>

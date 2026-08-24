@@ -29,7 +29,7 @@ export default function ExperienceDetail({ params }) {
 
   if (!experience) {
     return (
-      <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Experience not found</h1>
           <Link href="/experiences" className="text-primary hover:underline">
@@ -43,7 +43,7 @@ export default function ExperienceDetail({ params }) {
   const host = HOSTS.find(h => h.id === experience.host) || HOSTS[0]; // fallback to first host if not found (e.g. for Originals)
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <div className="min-h-screen bg-background">
       <Navbar flat />
       
       <main className="pt-24 pb-32">

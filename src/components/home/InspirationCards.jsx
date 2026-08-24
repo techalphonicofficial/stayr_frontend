@@ -46,12 +46,12 @@ export default function InspirationCards() {
             {cards.map((card) => (
               <motion.div 
                 key={card.id} 
-                className="flex flex-col bg-white border border-[#EFE7D8] rounded-2xl overflow-hidden shadow-sm group cursor-pointer transition-colors"
+                className="flex flex-col bg-white border border-border rounded-2xl overflow-hidden shadow-sm group cursor-pointer transition-colors"
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 {/* Outer wrapper for card hover effects */}
-                <div className="flex flex-col h-full rounded-2xl transition-all duration-300 group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30">
+                <div className="flex flex-col h-full rounded-2xl transition-all duration-300 group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-primary/30">
                   
                   {/* Image Half */}
                   <div className="relative w-full aspect-[16/10] overflow-hidden">
@@ -71,15 +71,15 @@ export default function InspirationCards() {
 
                   {/* Content Half */}
                   <div className="flex flex-col flex-grow p-5 z-20 bg-white">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#7B7468] mb-1.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted mb-1.5">
                       {card.tag}
                     </span>
-                    <h3 className="text-[15px] font-semibold text-[#2B2B2B] leading-snug mb-5 flex-grow group-hover:text-[#E8B65B] transition-colors duration-300">
+                    <h3 className="text-[15px] font-semibold text-foreground leading-snug mb-5 flex-grow group-hover:text-primary transition-colors duration-300">
                       {card.title}
                     </h3>
                     <Link
                       href={card.link}
-                      className="self-start px-5 py-2 rounded-full border-2 border-[#EFE7D8] text-[#2B2B2B] font-bold text-sm transition-all duration-300 group-hover:border-[#E8B65B] group-hover:bg-[#E8B65B] shadow-sm"
+                      className="self-start px-5 py-2 rounded-full border-2 border-border text-foreground font-bold text-sm transition-all duration-300 group-hover:border-primary group-hover:bg-primary shadow-sm"
                     >
                       {card.btnText}
                     </Link>

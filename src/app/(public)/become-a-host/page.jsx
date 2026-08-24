@@ -18,7 +18,7 @@ export default function BecomeAHostPage() {
         <HostLoginBackground />
 
         {/* Header Overlay */}
-        <div className="absolute top-0 left-0 right-0 h-20 px-6 flex items-center justify-between z-20 bg-white/90 backdrop-blur-md border-b border-[#EFE7D8]/50">
+        <div className="absolute top-0 left-0 right-0 h-20 px-6 flex items-center justify-between z-20 bg-white/90 backdrop-blur-md border-b border-border/50">
           <Link href="/" className="flex items-center">
             <Image
               src="/brand-logo.png"
@@ -28,7 +28,7 @@ export default function BecomeAHostPage() {
               className="w-auto h-8 object-contain"
             />
           </Link>
-          <span className="font-bold text-[#2B2B2B] hidden md:block">
+          <span className="font-bold text-foreground hidden md:block">
             Ready to earn?
           </span>
         </div>

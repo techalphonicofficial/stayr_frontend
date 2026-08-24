@@ -52,17 +52,17 @@ export default function PerfectPlaceSection() {
         >
 
           {/* Header */}
-          <h2 className="text-[24px] md:text-[32px] font-bold text-[#2B2B2B] mb-6 md:mb-8">
+          <h2 className="text-[24px] md:text-[32px] font-bold text-foreground mb-6 md:mb-8">
             Find your perfect place to stay
           </h2>
 
           {/* Custom Tab Row - Mobile Optimized */}
-          <div className="flex flex-row items-center gap-1 md:gap-2 mb-8 md:mb-10 overflow-x-auto scrollbar-hide pb-2 border-b border-[#EFE7D8]">
+          <div className="flex flex-row items-center gap-1 md:gap-2 mb-8 md:mb-10 overflow-x-auto scrollbar-hide pb-2 border-b border-border">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex flex-col items-center justify-center min-w-[75px] md:min-w-[120px] px-2 md:px-4 py-3 md:py-4 transition-colors duration-300 ${activeTab === tab.id ? "text-[#0050FF]" : "text-[#7B7468] hover:text-[#2B2B2B]"
+                className={`relative flex flex-col items-center justify-center min-w-[75px] md:min-w-[120px] px-2 md:px-4 py-3 md:py-4 transition-colors duration-300 ${activeTab === tab.id ? "text-[#0050FF]" : "text-muted hover:text-foreground"
                   }`}
               >
                 <div className="mb-1 md:mb-2 scale-[0.85] md:scale-100">
@@ -105,7 +105,7 @@ export default function PerfectPlaceSection() {
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
                     {/* Image Container - Landscape 4:3 */}
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-[#E8B65B]/30 transition-all duration-300">
+                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-[0_10px_40px_rgba(232,182,91,0.25)] group-hover:border group-hover:border-primary/30 transition-all duration-300">
                       <Image
                         src={imageToUse}
                         alt={listing.title}
@@ -123,7 +123,7 @@ export default function PerfectPlaceSection() {
 
                       {/* Premier Host Badge */}
                     <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">
-                      <span className="text-[10px] font-bold text-[#2B2B2B] uppercase tracking-wider">Premier Host</span>
+                      <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">Premier Host</span>
                     </div>
 
                     {/* Heart Button */}
@@ -137,19 +137,19 @@ export default function PerfectPlaceSection() {
 
                     {/* Left Column */}
                     <div className="flex flex-col max-w-[65%] px-1">
-                      <h3 className="font-semibold text-[#2B2B2B] text-[15px] leading-snug truncate group-hover:text-[#E8B65B] transition-colors duration-300">
+                      <h3 className="font-semibold text-foreground text-[15px] leading-snug truncate group-hover:text-primary transition-colors duration-300">
                         {listing.title}
                       </h3>
-                      <p className="text-[#7B7468] text-[13px] mt-0.5">
+                      <p className="text-muted text-[13px] mt-0.5">
                         {listing.bedrooms || 3} bedrooms
                       </p>
 
                       {/* Reviews */}
                       <div className="flex items-center gap-1.5 mt-3">
-                        <div className="bg-[#128859] w-[18px] h-[18px] rounded flex items-center justify-center">
+                        <div className="bg-success w-[18px] h-[18px] rounded flex items-center justify-center">
                           <span className="text-white text-[12px] leading-none font-bold pb-[1px]">✓</span>
                         </div>
-                        <span className="text-[#128859] text-[12px] font-bold">
+                        <span className="text-success text-[12px] font-bold">
                           {listing.totalReviews || 15} reviews
                         </span>
                       </div>
@@ -157,11 +157,11 @@ export default function PerfectPlaceSection() {
 
                     {/* Right Column (Price Details) */}
                     <div className="flex flex-col items-end text-right">
-                      <span className="font-bold text-[#2B2B2B] text-[16px]">{priceDisplay}</span>
-                      <span className="text-[#7B7468] text-[11px] mt-0.5">
+                      <span className="font-bold text-foreground text-[16px]">{priceDisplay}</span>
+                      <span className="text-muted text-[11px] mt-0.5">
                         {formattedTotal} for {nights} nights
                       </span>
-                      <span className="text-[#7B7468] text-[11px] mt-0.5">
+                      <span className="text-muted text-[11px] mt-0.5">
                         Nov 6 - Nov 9
                       </span>
                     </div>
@@ -177,7 +177,7 @@ export default function PerfectPlaceSection() {
           <div className="mt-12 text-center md:text-left">
             <Link
               href={`/s/${activeTab}/homes`}
-              className="text-[#2B2B2B] font-semibold hover:underline text-[15px]"
+              className="text-foreground font-semibold hover:underline text-[15px]"
             >
               View more properties →
             </Link>

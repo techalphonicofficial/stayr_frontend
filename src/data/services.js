@@ -101,7 +101,7 @@ export const OCCASION_PACKAGES = [
   {
     id: "pkg-2",
     title: "Birthday Celebration",
-    image: "https://images.unsplash.com/photo-1530103862679-de30e8dc3c4c?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800",
     includes: ["Balloons & Decor", "Custom Cake", "Private Chef", "Mixologist"],
     price: "From ₹8,500"
   },

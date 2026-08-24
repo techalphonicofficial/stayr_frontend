@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Grid, Heart, Share, ChevronLeft, ChevronRight, X } from "lucide-react";
 import ShareModal from "../modals/ShareModal";
+import { toast } from "react-hot-toast";
 
 export default function PropertyGallery({ images = [], property }) {
   const displayImages = images.length >= 5 ? images : [
@@ -22,6 +23,11 @@ export default function PropertyGallery({ images = [], property }) {
 
   const handleSave = () => {
     setIsSaved(!isSaved);
+    if (!isSaved) {
+      toast.success("Saved to wishlists!");
+    } else {
+      toast.success("Removed from wishlists!");
+    }
   };
 
   useEffect(() => {
@@ -46,7 +52,7 @@ export default function PropertyGallery({ images = [], property }) {
   return (
     <div className="w-full flex flex-col gap-4">
       {/* Action Buttons */}
-      <div className="flex justify-end items-center gap-4 text-[14px] font-semibold underline text-[#2B2B2B]">
+      <div className="flex justify-end items-center gap-4 text-[14px] font-semibold underline text-foreground">
         <button onClick={handleShare} className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-md transition">
           <Share size={16} /> Share
         </button>
@@ -85,7 +91,7 @@ export default function PropertyGallery({ images = [], property }) {
         {/* Show all photos button */}
         <button 
           onClick={() => { setCurrentIndex(0); setShowModal(true); }}
-          className="absolute bottom-6 right-6 bg-white border border-[#2B2B2B] px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-md hover:bg-gray-50 transition active:scale-95 z-10"
+          className="absolute bottom-6 right-6 bg-white border border-foreground px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-md hover:bg-gray-50 transition active:scale-95 z-10"
         >
           <Grid size={16} />
           Show all photos

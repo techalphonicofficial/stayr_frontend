@@ -87,43 +87,46 @@ export default function PermissionsPage() {
 
   const columns = [
     {
-      header: 'Permission Name',
+      header: <span className="text-amber-500">PERMISSION NAME</span>,
       accessor: 'name',
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <KeySquare className="h-4 w-4 text-gray-400" />
-          <span className="font-mono text-sm text-gray-900 font-medium">{row.name}</span>
+          <div className="p-1.5 rounded-full bg-gray-50 border border-gray-200 shadow-sm">
+            <KeySquare className="h-4 w-4 text-amber-500" />
+          </div>
+          <span className="font-semibold text-gray-700">{row.name}</span>
         </div>
       )
     },
     {
-      header: 'Module',
+      header: <span className="text-amber-500">MODULE</span>,
       accessor: 'module',
       cell: (row) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-xs font-semibold text-amber-500 border border-gray-200">
+          <div className="w-1.5 h-1.5 bg-amber-500 rounded-sm"></div>
           {row.module?.name || 'Unknown'}
         </span>
       )
     },
     {
-      header: 'Created At',
+      header: <span className="text-amber-500">CREATED AT</span>,
       accessor: 'createdAt',
-      cell: (row) => new Date(row.createdAt).toLocaleDateString()
+      cell: (row) => <span className="text-amber-500 text-sm font-medium">{new Date(row.createdAt).toLocaleDateString()}</span>
     },
     {
-      header: 'Actions',
+      header: <span className="text-amber-500">ACTIONS</span>,
       cell: (row) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleOpenModal(row)}
-            className="text-gray-500 hover:text-[var(--brand-primary)] transition-colors"
+            className="p-1.5 border border-blue-200 rounded text-blue-500 hover:bg-blue-50 transition-colors"
             title="Edit Permission"
           >
             <Edit2 className="h-4 w-4" />
           </button>
           <button
             onClick={() => { setSelectedPermission(row); setIsDeleteModalOpen(true); }}
-            className="text-gray-500 hover:text-red-600 transition-colors"
+            className="p-1.5 border border-red-200 rounded text-red-500 hover:bg-red-50 transition-colors"
             title="Delete Permission"
           >
             <Trash2 className="h-4 w-4" />
@@ -138,11 +141,11 @@ export default function PermissionsPage() {
       <div className="mb-4 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Permission Management</h2>
-          <p className="text-sm text-gray-500 mt-1">Define granular permissions and assign them to various system modules.</p>
+          <p className="text-sm text-amber-500 mt-1">Define granular permissions and assign them to various system modules.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+          className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
         >
           <Plus className="w-4 h-4" />
           Create New Permission

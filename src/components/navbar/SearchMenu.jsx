@@ -114,7 +114,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
         <motion.div
           layoutId={containerLayoutId}
           transition={morphTransition}
-          className={`flex flex-row items-center border rounded-full relative origin-center transition-colors duration-200 ${activePanel ? "bg-[#EBEBEB] border-transparent" : "bg-white border-[#EFE7D8] shadow-lg"
+          className={`flex flex-col md:flex-row md:items-center border rounded-3xl md:rounded-full relative origin-center transition-colors duration-200 ${activePanel ? "bg-[#F5F5F5] md:bg-[#EBEBEB] border-transparent" : "bg-white border-border shadow-lg"
             }`}
           style={{ width: "850px", maxWidth: "100%" }}
         >
@@ -128,7 +128,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Search destinations"
-                  className="bg-transparent outline-none w-full text-sm text-[#2B2B2B] placeholder:text-[#7B7468]"
+                  className="bg-transparent outline-none w-full text-sm text-foreground placeholder:text-muted"
                   autoFocus
                 />
               ) : (location || "Search destinations")
@@ -138,11 +138,10 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
             onHover={() => setHoveredSection("where")}
             onHoverEnd={() => setHoveredSection(null)}
             onClick={() => setActivePanel("where")}
-            className="flex-[1.5]"
+            className="flex-[1.5] w-full md:w-auto"
           />
-          <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
-
-          <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
+          <div className="hidden md:block w-[1px] h-10 bg-border z-0"></div>
+          <div className="md:hidden w-full h-[1px] bg-border z-0"></div>
 
           {/* When */}
           <SearchSection
@@ -160,9 +159,10 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
             onHover={() => setHoveredSection("when")}
             onHoverEnd={() => setHoveredSection(null)}
             onClick={() => setActivePanel("when")}
-            className="flex-[2]"
+            className="flex-[2] w-full md:w-auto"
           />
-          <div className="w-[1px] h-10 bg-[#EFE7D8] z-0"></div>
+          <div className="hidden md:block w-[1px] h-10 bg-border z-0"></div>
+          <div className="md:hidden w-full h-[1px] bg-border z-0"></div>
 
           {/* Who */}
           <SearchSection
@@ -174,7 +174,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
             onHover={() => setHoveredSection("who")}
             onHoverEnd={() => setHoveredSection(null)}
             onClick={() => setActivePanel("who")}
-            className="flex-[1.5]"
+            className="flex-[1.5] w-full md:w-auto"
             hasSearchButton={true}
             searchButton={
               <motion.button
@@ -187,7 +187,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
                   if (onClose) onClose();
                   router.push(`/s/${location || "Anywhere"}/homes`);
                 }}
-                className={`h-12 bg-[#E8B65B] hover:bg-[#D89C2B] rounded-full text-white transition-all duration-200 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ${activePanel ? "w-[120px]" : "w-12"
+                className={`h-12 bg-primary hover:bg-[#D89C2B] rounded-full text-white transition-all duration-200 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ${activePanel ? "w-[120px]" : "w-12"
                   }`}
               >
                 <Search size={20} strokeWidth={3} className="flex-shrink-0" />
@@ -243,7 +243,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
       transition={morphTransition}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="border border-[#EFE7D8] w-full md:w-auto py-2 px-2 rounded-full shadow-sm hover:shadow-md transition-colors transition-shadow cursor-pointer bg-white origin-center relative z-50"
+      className="border border-border w-full md:w-auto py-2 px-2 rounded-full shadow-sm hover:shadow-md transition-colors transition-shadow cursor-pointer bg-white origin-center relative z-50"
       onClick={onExpand}
     >
       <motion.div
@@ -251,19 +251,19 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
         whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
         className="flex flex-row items-center justify-between w-full h-full"
       >
-        <div className="text-sm font-semibold pl-4 pr-6 text-[#2B2B2B] whitespace-nowrap">
+        <div className="text-sm font-semibold pl-4 pr-6 text-foreground whitespace-nowrap">
           {location || "Anywhere"}
         </div>
-        <div className="hidden sm:block text-sm font-semibold px-6 border-x border-[#EFE7D8] flex-1 text-center text-[#2B2B2B] whitespace-nowrap">
+        <div className="hidden sm:block text-sm font-semibold px-6 border-x border-border flex-1 text-center text-foreground whitespace-nowrap">
           Any week
         </div>
-        <div className="text-sm pl-6 text-[#7B7468] flex flex-row items-center gap-3 whitespace-nowrap">
+        <div className="text-sm pl-6 text-muted flex flex-row items-center gap-3 whitespace-nowrap">
           <div className="hidden sm:block">{guestText}</div>
           <motion.div
             layoutId={buttonLayoutId}
             layout
             transition={morphTransition}
-            className="w-8 h-8 bg-[#E8B65B] hover:bg-[#D89C2B] rounded-full text-white transition-colors transition-shadow flex items-center justify-center shadow-md origin-center flex-shrink-0"
+            className="w-8 h-8 bg-primary hover:bg-[#D89C2B] rounded-full text-white transition-colors transition-shadow flex items-center justify-center shadow-md origin-center flex-shrink-0"
           >
             <Search size={14} strokeWidth={3} />
           </motion.div>

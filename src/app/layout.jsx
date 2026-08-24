@@ -1,4 +1,5 @@
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,6 +43,25 @@ export default async function RootLayout({ children }) {
       <body className="font-sans min-h-full flex flex-col">
         <style dangerouslySetInnerHTML={{ __html: themeStyles || "" }} />
         {children}
+        <Toaster 
+          position="bottom-center" 
+          toastOptions={{
+            style: {
+              background: '#2B2B2B',
+              color: '#fff',
+              borderRadius: '999px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: '600'
+            },
+            success: {
+              iconTheme: {
+                primary: '#E8B65B',
+                secondary: '#2B2B2B',
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

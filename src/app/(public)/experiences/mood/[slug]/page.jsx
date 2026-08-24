@@ -50,7 +50,7 @@ export default async function MoodPage({ params }) {
   const moodExperiences = getPersonalizedExperiences(mood.id);
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <ScrollToTop />
       <Navbar />
 
