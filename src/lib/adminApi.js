@@ -148,6 +148,10 @@ export const adminApi = {
     method: 'PUT',
     body: JSON.stringify({ rejectionReason })
   }),
+  requestChangesProperty: (id, rejectionReason) => fetchAdminAPI(`/api/admin/properties/${id}/request-changes`, {
+    method: 'PUT',
+    body: JSON.stringify({ rejectionReason })
+  }),
   
   // Bookings
   getBookings: (query = '') => fetchAdminAPI(`/api/admin/bookings${query}`),
@@ -413,4 +417,25 @@ export const adminApi = {
   createExperienceStory: (data) => fetchAdminAPI('/api/experience-stories', { method: 'POST', body: JSON.stringify(data) }),
   updateExperienceStory: (id, data) => fetchAdminAPI(`/api/experience-stories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteExperienceStory: (id) => fetchAdminAPI(`/api/experience-stories/${id}`, { method: 'DELETE' }),
+
+  // Real Estate Sale Moderation
+  getAdminSaleListings: (query = '') => {
+    const q = query ? (query.startsWith('?') ? query : `?${query}`) : '';
+    return fetchAdminAPI(`/api/admin/sale-listings${q}`);
+  },
+  approveSaleListing: (id, notes) => fetchAdminAPI(`/api/admin/sale-listings/${id}/approve`, {
+    method: 'PUT',
+    body: JSON.stringify({ notes })
+  }),
+  rejectSaleListing: (id, reason) => fetchAdminAPI(`/api/admin/sale-listings/${id}/reject`, {
+    method: 'PUT',
+    body: JSON.stringify({ reason })
+  }),
+  requestChangesSaleListing: (id, feedback) => fetchAdminAPI(`/api/admin/sale-listings/${id}/request-changes`, {
+    method: 'PUT',
+    body: JSON.stringify({ feedback })
+  }),
+  deleteSaleListing: (id) => fetchAdminAPI(`/api/admin/sale-listings/${id}`, {
+    method: 'DELETE'
+  }),
 };

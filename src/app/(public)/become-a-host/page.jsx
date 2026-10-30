@@ -28,9 +28,17 @@ export default function BecomeAHostPage() {
               className="w-auto h-8 object-contain"
             />
           </Link>
-          <span className="font-bold text-foreground hidden md:block">
-            Ready to earn?
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="font-bold text-foreground hidden md:block">
+              Ready to earn?
+            </span>
+            <Link
+              href="/become-a-host/wizard"
+              className="px-4 py-2 rounded-xl bg-[#FF385C] hover:bg-[#E00B41] text-white font-bold text-sm shadow transition"
+            >
+              Listing Wizard
+            </Link>
+          </div>
         </div>
 
         {/* Centered Modal */}

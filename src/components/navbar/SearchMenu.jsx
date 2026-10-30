@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useTransform, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import SearchSection from "./search/SearchSection";
@@ -10,9 +10,16 @@ import DestinationPanel from "./search/DestinationPanel";
 import DatePanel from "./search/DatePanel";
 import GuestPanel from "./search/GuestPanel";
 
-export default function SearchMenu({ isExpanded = false, animateLayout = true, onExpand, onClose, defaultActivePanel = null }) {
-  const containerLayoutId = animateLayout ? "search-container" : undefined;
-  const buttonLayoutId = animateLayout ? "search-button" : undefined;
+export default function SearchMenu({
+  progress = null,
+  isExpanded = false,
+  isSearchOverride = false,
+  onExpand,
+  onClose,
+  defaultActivePanel = null,
+}) {
+  const fallbackProgress = useMotionValue(0);
+  const activeProgress = progress || fallbackProgress;
 
   const [activePanel, setActivePanel] = useState(defaultActivePanel);
   const [hoveredSection, setHoveredSection] = useState(null);
@@ -24,7 +31,7 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
     adults: 0,
     children: 0,
     infants: 0,
-    pets: 0
+    pets: 0,
   });
 
   const [dateRange, setDateRange] = useState({ start: null, end: null });
@@ -40,8 +47,6 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
-        // Only close the active panel, don't collapse the navbar.
-        // The navbar's own backdrop handles full collapse.
         setActivePanel(null);
       }
     };
@@ -54,7 +59,9 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
     };
 
     if (activePanel) {
-      document.body.style.overflow = "hidden";
+      if (!progress) {
+        document.body.style.overflow = "hidden";
+      }
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEscKey);
     } else {
@@ -66,57 +73,197 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [activePanel]);
+  }, [activePanel, onClose]);
 
-  // If navbar collapses, ensure panels close
   useEffect(() => {
-    if (!isExpanded) {
+    if (defaultActivePanel && activePanel !== defaultActivePanel) {
+      setActivePanel(defaultActivePanel);
+    } else if (!isSearchOverride && progress && progress.get() > 0.3 && activePanel !== null) {
       setActivePanel(null);
     }
-  }, [isExpanded]);
+  }, [defaultActivePanel, isSearchOverride, progress, activePanel]);
 
-  useEffect(() => {
-    if (isExpanded && defaultActivePanel && !activePanel) {
-      setActivePanel(defaultActivePanel);
+  // When scrolling down in desktop mode, close any open panel
+  useMotionValueEvent(activeProgress, "change", (latest) => {
+    if (progress && latest > 0.08 && activePanel && !isSearchOverride) {
+      setActivePanel(null);
     }
-  }, [isExpanded, defaultActivePanel]);
+  });
 
   const updateGuests = (type, value) => {
-    setGuests(prev => ({ ...prev, [type]: value }));
+    setGuests((prev) => ({ ...prev, [type]: value }));
   };
 
   const guestCount = guests.adults + guests.children;
-  const guestText = guestCount > 0
-    ? `${guestCount} guest${guestCount > 1 ? 's' : ''}${guests.infants ? `, ${guests.infants} infant${guests.infants > 1 ? 's' : ''}` : ''}`
-    : "Add guests";
+  const guestText =
+    guestCount > 0
+      ? `${guestCount} guest${guestCount > 1 ? "s" : ""}${
+          guests.infants ? `, ${guests.infants} infant${guests.infants > 1 ? "s" : ""}` : ""
+        }`
+      : "Add guests";
 
-  const morphTransition = { duration: 0.35, ease: "easeInOut" };
+  // Desktop Scroll-Driven Transforms
+  // Interpolating directly from progress (0 = expanded, 1 = compact)
+  const searchLeft = useTransform(activeProgress, [0, 1], ["calc(50% + 55px)", "calc(50% + 20px)"]);
+  const searchWidth = useTransform(activeProgress, [0, 1], ["850px", "390px"]);
+  const searchHeight = useTransform(activeProgress, [0, 1], ["66px", "48px"]);
+  const searchTop = useTransform(activeProgress, [0, 1], ["86px", "16px"]);
+  const searchShadow = useTransform(
+    activeProgress,
+    [0, 1],
+    ["0 6px 20px rgba(0,0,0,0.08)", "0 2px 8px rgba(0,0,0,0.08)"]
+  );
 
-  if (isExpanded) {
-    return (
-      <div ref={menuRef} className="relative z-50">
-        {/* Background Overlay (dimmer) when a panel is open */}
-        <AnimatePresence>
-          {activePanel && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/20 z-[-1]"
-              onClick={() => {
-                setActivePanel(null);
-                if (onClose) onClose();
-              }}
+  const expandedOpacity = useTransform(activeProgress, [0, 0.35], [1, 0]);
+  const expandedScale = useTransform(activeProgress, [0, 0.35], [1, 0.95]);
+  const expandedPointerEvents = useTransform(activeProgress, (p) =>
+    p > 0.3 ? "none" : "auto"
+  );
+
+  const compactOpacity = useTransform(activeProgress, [0.45, 0.85], [0, 1]);
+  const compactScale = useTransform(activeProgress, [0.45, 0.85], [0.92, 1]);
+  const compactPointerEvents = useTransform(activeProgress, (p) =>
+    p < 0.5 ? "none" : "auto"
+  );
+
+  // If used on Mobile (no progress motion value passed)
+  if (!progress) {
+    if (isExpanded) {
+      return (
+        <div ref={menuRef} className="relative z-50 p-4 bg-white rounded-3xl">
+          <div className="flex flex-col gap-2">
+            <SearchSection
+              id="where"
+              title="Where"
+              subtitle={
+                activePanel === "where" ? (
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Search destinations"
+                    className="bg-transparent outline-none w-full text-sm text-foreground placeholder:text-muted"
+                    autoFocus
+                  />
+                ) : (
+                  location || "Search destinations"
+                )
+              }
+              isActive={activePanel === "where"}
+              onClick={() => setActivePanel("where")}
             />
-          )}
-        </AnimatePresence>
+            <div className="w-full h-[1px] bg-border my-1"></div>
+            <SearchSection
+              id="when"
+              title="When"
+              subtitle={
+                dateRange.start && dateRange.end
+                  ? `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`
+                  : dateRange.start
+                  ? formatDate(dateRange.start)
+                  : "Add dates"
+              }
+              isActive={activePanel === "when"}
+              onClick={() => setActivePanel("when")}
+            />
+            <div className="w-full h-[1px] bg-border my-1"></div>
+            <SearchSection
+              id="who"
+              title="Who"
+              subtitle={guestText}
+              isActive={activePanel === "who"}
+              onClick={() => setActivePanel("who")}
+              hasSearchButton={true}
+              searchButton={
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActivePanel(null);
+                    if (onClose) onClose();
+                    router.push(`/s/${location || "Anywhere"}/homes`);
+                  }}
+                  className="h-10 px-4 bg-primary text-white rounded-full font-bold text-sm flex items-center gap-2"
+                >
+                  <Search size={16} strokeWidth={3} />
+                  <span>Search</span>
+                </button>
+              }
+            />
+          </div>
 
+          <AnimatePresence>
+            {activePanel === "where" && (
+              <DestinationPanel
+                key="panel-where"
+                onSelect={(dest) => {
+                  setLocation(dest);
+                  setActivePanel("when");
+                }}
+              />
+            )}
+            {activePanel === "when" && (
+              <DatePanel
+                key="panel-date"
+                dateRange={dateRange}
+                onDateRangeChange={(range) => setDateRange(range)}
+              />
+            )}
+            {activePanel === "who" && (
+              <GuestPanel key="panel-who" guests={guests} updateGuests={updateGuests} />
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="border border-border w-full py-2 px-3 rounded-full shadow-sm cursor-pointer bg-white"
+        onClick={() => onExpand && onExpand("where")}
+      >
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="text-sm font-semibold pl-2 text-foreground">{location || "Anywhere"}</div>
+          <div className="w-8 h-8 bg-primary rounded-full text-white flex items-center justify-center">
+            <Search size={14} strokeWidth={3} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // DESKTOP MORPHING UNIFIED SEARCH BAR
+  return (
+    <div ref={menuRef} className="contents">
+      {/* The Single Physical Morphing Search Pill */}
+      <motion.div
+        style={{
+          left: searchLeft,
+          top: searchTop,
+          width: searchWidth,
+          height: searchHeight,
+          boxShadow: searchShadow,
+        }}
+        onClick={(e) => {
+          if (progress && progress.get() > 0.4) {
+            e.stopPropagation();
+            if (onExpand) onExpand("where");
+          }
+        }}
+        className={`absolute -translate-x-1/2 z-50 rounded-full border bg-white transition-colors duration-200 cursor-pointer ${
+          activePanel
+            ? "bg-[#F5F5F5] md:bg-[#EBEBEB] border-transparent"
+            : "bg-white border-border hover:shadow-md"
+        } ${activePanel ? "overflow-visible" : "overflow-hidden"}`}
+      >
+        {/* Layer 1: Expanded Search Bar (Where | When | Who + Big Button) */}
         <motion.div
-          layoutId={containerLayoutId}
-          transition={morphTransition}
-          className={`flex flex-col md:flex-row md:items-center border rounded-3xl md:rounded-full relative origin-center transition-colors duration-200 ${activePanel ? "bg-[#F5F5F5] md:bg-[#EBEBEB] border-transparent" : "bg-white border-border shadow-lg"
-            }`}
-          style={{ width: "850px", maxWidth: "100%" }}
+          style={{
+            opacity: expandedOpacity,
+            scale: expandedScale,
+            pointerEvents: expandedPointerEvents,
+          }}
+          className="absolute inset-0 flex items-center justify-between w-full h-full cursor-default"
         >
           <SearchSection
             id="where"
@@ -127,44 +274,56 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Search destinations"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      setActivePanel(null);
+                      if (onClose) onClose();
+                      router.push(`/s/${encodeURIComponent(location || "Anywhere")}/homes`);
+                    }
+                  }}
+                  placeholder="Search destinations, villas, pool, vibes..."
                   className="bg-transparent outline-none w-full text-sm text-foreground placeholder:text-muted"
                   autoFocus
                 />
-              ) : (location || "Search destinations")
+              ) : (
+                location || "Search destinations"
+              )
             }
             isActive={activePanel === "where"}
             isHovered={hoveredSection === "where"}
             onHover={() => setHoveredSection("where")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel("where")}
-            className="flex-[1.5] w-full md:w-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePanel("where");
+            }}
+            className="flex-[1.5] h-full flex items-center"
           />
-          <div className="hidden md:block w-[1px] h-10 bg-border z-0"></div>
-          <div className="md:hidden w-full h-[1px] bg-border z-0"></div>
+          <div className="w-[1px] h-8 bg-border z-0 flex-shrink-0"></div>
 
-          {/* When */}
           <SearchSection
             id="when"
             title="When"
             subtitle={
-              dateRange.start && dateRange.end 
-                ? `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}` 
-                : dateRange.start 
-                  ? formatDate(dateRange.start) 
-                  : "Add dates"
+              dateRange.start && dateRange.end
+                ? `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`
+                : dateRange.start
+                ? formatDate(dateRange.start)
+                : "Add dates"
             }
             isActive={activePanel === "when"}
             isHovered={hoveredSection === "when"}
             onHover={() => setHoveredSection("when")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel("when")}
-            className="flex-[2] w-full md:w-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePanel("when");
+            }}
+            className="flex-[2] h-full flex items-center"
           />
-          <div className="hidden md:block w-[1px] h-10 bg-border z-0"></div>
-          <div className="md:hidden w-full h-[1px] bg-border z-0"></div>
+          <div className="w-[1px] h-8 bg-border z-0 flex-shrink-0"></div>
 
-          {/* Who */}
           <SearchSection
             id="who"
             title="Who"
@@ -173,102 +332,136 @@ export default function SearchMenu({ isExpanded = false, animateLayout = true, o
             isHovered={hoveredSection === "who"}
             onHover={() => setHoveredSection("who")}
             onHoverEnd={() => setHoveredSection(null)}
-            onClick={() => setActivePanel("who")}
-            className="flex-[1.5] w-full md:w-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePanel("who");
+            }}
+            className="flex-[1.5] h-full flex items-center"
             hasSearchButton={true}
             searchButton={
-              <motion.button
-                layoutId={buttonLayoutId}
-                layout
-                transition={morphTransition}
+              <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setActivePanel(null); // Execute search
+                  setActivePanel(null);
                   if (onClose) onClose();
                   router.push(`/s/${location || "Anywhere"}/homes`);
                 }}
-                className={`h-12 bg-primary hover:bg-[#D89C2B] rounded-full text-white transition-all duration-200 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ${activePanel ? "w-[120px]" : "w-12"
-                  }`}
+                className={`h-12 bg-primary hover:bg-[#D89C2B] rounded-full text-white transition-all duration-300 flex items-center justify-center shadow-md flex-shrink-0 z-30 overflow-hidden ml-4 mr-1 ${
+                  activePanel ? "w-[120px] px-4 gap-2" : "w-12"
+                }`}
               >
                 <Search size={20} strokeWidth={3} className="flex-shrink-0" />
-                <AnimatePresence>
-                  {activePanel && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0, marginLeft: 0 }}
-                      animate={{ opacity: 1, width: "auto", marginLeft: 8 }}
-                      exit={{ opacity: 0, width: 0, marginLeft: 0 }}
-                      className="font-bold whitespace-nowrap overflow-hidden"
-                    >
-                      Search
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
+                {activePanel && (
+                  <span className="font-bold whitespace-nowrap overflow-hidden text-sm">
+                    Search
+                  </span>
+                )}
+              </button>
             }
           />
         </motion.div>
 
-        <AnimatePresence>
-          {activePanel === "where" && (
-            <DestinationPanel 
-              key="panel-where" 
-              onSelect={(dest) => {
-                setLocation(dest);
-                setActivePanel("when");
-              }} 
-            />
-          )}
-          {activePanel === "when" && (
-            <DatePanel 
-              key="panel-date" 
-              dateRange={dateRange}
-              onDateRangeChange={(range) => {
-                setDateRange(range);
-                // Optionally move to checkout if start is selected but end is not,
-                // but usually the date panel stays open until closed.
-              }}
-            />
-          )}
-          {activePanel === "who" && <GuestPanel key="panel-who" guests={guests} updateGuests={updateGuests} />}
-        </AnimatePresence>
-
-      </div>
-    );
-  }
-
-  // Collapsed State
-  return (
-    <motion.div
-      layoutId={containerLayoutId}
-      transition={morphTransition}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="border border-border w-full md:w-auto py-2 px-2 rounded-full shadow-sm hover:shadow-md transition-colors transition-shadow cursor-pointer bg-white origin-center relative z-50"
-      onClick={onExpand}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
-        className="flex flex-row items-center justify-between w-full h-full"
-      >
-        <div className="text-sm font-semibold pl-4 pr-6 text-foreground whitespace-nowrap">
-          {location || "Anywhere"}
-        </div>
-        <div className="hidden sm:block text-sm font-semibold px-6 border-x border-border flex-1 text-center text-foreground whitespace-nowrap">
-          Any week
-        </div>
-        <div className="text-sm pl-6 text-muted flex flex-row items-center gap-3 whitespace-nowrap">
-          <div className="hidden sm:block">{guestText}</div>
-          <motion.div
-            layoutId={buttonLayoutId}
-            layout
-            transition={morphTransition}
-            className="w-8 h-8 bg-primary hover:bg-[#D89C2B] rounded-full text-white transition-colors transition-shadow flex items-center justify-center shadow-md origin-center flex-shrink-0"
+        {/* Layer 2: Compact Search Pill (Anywhere | Any week | Add guests + Small Button) */}
+        <motion.div
+          style={{
+            opacity: compactOpacity,
+            scale: compactScale,
+            pointerEvents: compactPointerEvents,
+          }}
+          className="absolute inset-0 flex items-center justify-between w-full h-full cursor-pointer px-2 select-none"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onExpand) onExpand("where");
+          }}
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onExpand) onExpand("where");
+            }}
+            className="text-sm font-semibold pl-4 pr-3 text-foreground whitespace-nowrap truncate max-w-[120px] hover:text-primary transition-colors"
           >
-            <Search size={14} strokeWidth={3} />
-          </motion.div>
-        </div>
+            {location || "Anywhere"}
+          </div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onExpand) onExpand("when");
+            }}
+            className="text-sm font-semibold px-4 border-x border-border text-center text-foreground whitespace-nowrap hover:text-primary transition-colors"
+          >
+            Any week
+          </div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onExpand) onExpand("who");
+            }}
+            className="text-sm pl-3 pr-2 text-muted flex items-center gap-3 whitespace-nowrap hover:text-primary transition-colors"
+          >
+            <span className="truncate max-w-[90px]">{guestText}</span>
+            <div className="w-8 h-8 bg-primary hover:bg-[#D89C2B] rounded-full text-white flex items-center justify-center shadow-md flex-shrink-0 transition-colors">
+              <Search size={14} strokeWidth={3} />
+            </div>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      {/* Dropdown Panels rendered directly underneath the expanded search bar */}
+      <AnimatePresence>
+        {activePanel === "where" && (
+          <motion.div
+            className="absolute -translate-x-1/2 w-[850px] max-w-[95vw] pointer-events-none z-50"
+            style={{ top: "158px", left: searchLeft }}
+          >
+            <div className="pointer-events-auto">
+              <DestinationPanel
+                key="panel-where"
+                searchQuery={location}
+                onSelect={(dest) => {
+                  setLocation(dest);
+                  setActivePanel("when");
+                }}
+                onPropertySelect={(property) => {
+                  setActivePanel(null);
+                  if (onClose) onClose();
+                  router.push(`/property/${property.id}`);
+                }}
+                onSearchAll={(term) => {
+                  setActivePanel(null);
+                  if (onClose) onClose();
+                  router.push(`/s/${encodeURIComponent(term || location || "Anywhere")}/homes`);
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
+        {activePanel === "when" && (
+          <motion.div
+            className="absolute -translate-x-1/2 w-[850px] max-w-[95vw] pointer-events-none z-50"
+            style={{ top: "158px", left: searchLeft }}
+          >
+            <div className="pointer-events-auto flex justify-center">
+              <DatePanel
+                key="panel-date"
+                dateRange={dateRange}
+                onDateRangeChange={(range) => setDateRange(range)}
+              />
+            </div>
+          </motion.div>
+        )}
+        {activePanel === "who" && (
+          <motion.div
+            className="absolute -translate-x-1/2 w-[850px] max-w-[95vw] pointer-events-none z-50"
+            style={{ top: "158px", left: searchLeft }}
+          >
+            <div className="pointer-events-auto flex justify-end">
+              <GuestPanel key="panel-who" guests={guests} updateGuests={updateGuests} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

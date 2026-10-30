@@ -59,6 +59,7 @@ export default function InspirationCards() {
                       src={card.image}
                       alt={card.tag}
                       fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     {/* Subtle shine effect on hover */}

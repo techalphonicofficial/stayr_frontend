@@ -73,7 +73,7 @@ export default function Policies({ houseRules = [], importantInfo = [], cancella
                 <div className="flex flex-col gap-1">
                   <h4 className="font-bold text-foreground text-[15px]">Partial refund</h4>
                   <p className="text-[15px] text-muted leading-relaxed">
-                    If you cancel your reservation before Aug 14 at 11:59pm you'll get a refund of 50% of the amount paid (minus the service fee). Times are based on the property's local time.
+                    If you cancel your reservation before Aug 14 at 11:59pm you&apos;ll get a refund of 50% of the amount paid (minus the service fee). Times are based on the property&apos;s local time.
                   </p>
                 </div>
               </div>
@@ -86,7 +86,7 @@ export default function Policies({ houseRules = [], importantInfo = [], cancella
                 <div className="flex flex-col gap-1">
                   <h4 className="font-bold text-foreground text-[15px]">No refund</h4>
                   <p className="text-[15px] text-muted leading-relaxed">
-                    After that, you won't get a refund.
+                    After that, you won&apos;t get a refund.
                   </p>
                 </div>
               </div>
@@ -95,7 +95,7 @@ export default function Policies({ houseRules = [], importantInfo = [], cancella
             <div className="flex flex-col gap-1">
               <h4 className="font-bold text-foreground text-[15px]">Partial refund</h4>
               <p className="text-[15px] text-muted">
-                If you cancel your reservation before Aug 14 at 11:59pm you'll get a refund of 50% of the amount.
+                If you cancel your reservation before Aug 14 at 11:59pm you&apos;ll get a refund of 50% of the amount.
               </p>
             </div>
           )}

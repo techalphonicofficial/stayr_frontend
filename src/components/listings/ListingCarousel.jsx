@@ -29,32 +29,39 @@ export default function ListingCarousel({
   useEffect(() => {
     const fetchProps = async () => {
       try {
-        // Fetch properties without the location filter so we always get the dummy data
-        const json = await propertyApi.getProperties({ limit: 8 });
+        // Fetch properties matching the location first
+        const json = await propertyApi.getProperties({ search: location, limit: 8 });
         
         let fetchedListings = [];
         if (json && json.success) fetchedListings = json.data;
         else if (json && Array.isArray(json)) fetchedListings = json;
         
-        // If DB is sparse, duplicate the properties to fill the carousel
-        if (fetchedListings.length > 0 && fetchedListings.length < 8) {
-           const duplicated = [];
-           while (duplicated.length < 8) {
-             duplicated.push(...fetchedListings);
+        // If DB has fewer than 8 properties for this location, fetch general properties to fill the carousel
+        if (fetchedListings.length < 8) {
+           const fallbackJson = await propertyApi.getProperties({ limit: 8 });
+           let fallbackListings = [];
+           if (fallbackJson && fallbackJson.success) fallbackListings = fallbackJson.data;
+           else if (fallbackJson && Array.isArray(fallbackJson)) fallbackListings = fallbackJson;
+           
+           const existingIds = new Set(fetchedListings.map(l => l.id));
+           for (const fb of fallbackListings) {
+             if (fetchedListings.length >= 8) break;
+             if (!existingIds.has(fb.id)) {
+               fetchedListings.push(fb);
+               existingIds.add(fb.id);
+             }
            }
-           fetchedListings = duplicated.slice(0, 8);
         }
 
-        // Tailor the properties to match the requested location prop
+        // Tailor properties, preserving the actual title if available
         const tailoredListings = fetchedListings.map((listing, index) => {
-           // Create a realistic title based on the location
            const categories = ["Premium Apartment", "Luxury Villa", "Cozy Studio", "Modern Loft"];
            const category = categories[index % categories.length];
            
            return {
              ...listing,
              uniqueKey: `${listing.id}-${location}-${index}`, // Use this for React key only
-             title: `${category} in ${location}`
+             title: listing.title || `${category} in ${location}`
            };
         });
 

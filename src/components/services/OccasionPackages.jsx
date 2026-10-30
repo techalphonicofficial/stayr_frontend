@@ -34,9 +34,10 @@ export default function OccasionPackages() {
                   src={pkg.image}
                   alt={pkg.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover group-hover:scale-105 transition duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity: 1,y-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <h3 className="absolute bottom-6 left-6 text-2xl font-bold font-heading text-white">
                   {pkg.title}
                 </h3>

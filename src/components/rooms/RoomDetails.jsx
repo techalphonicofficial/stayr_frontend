@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Wifi, Car, Key, Tv, Wind, Waves, Coffee, Bath, Dog, Fan, X } from "lucide-react";
+import { Wifi, Car, Key, Tv, Wind, Coffee, Bath, Dog, Fan, X } from "lucide-react";
 
 // Helper to map amenity names to icons
 const getAmenityDetails = (name) => {

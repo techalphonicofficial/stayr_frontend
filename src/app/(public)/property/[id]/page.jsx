@@ -71,12 +71,30 @@ export default function PropertyPage({ params, searchParams }) {
                            
   const taxRate = propertyData.bookingSettings?.taxRate || 0; 
   
-  const houseRules = propertyData.houseRules?.length > 0 ? propertyData.houseRules : [
-    "Check-in after 2:00 PM", 
-    "Checkout before 11:00 AM", 
-    "No smoking", 
-    "No parties or events"
-  ];
+  const houseRules = (() => {
+    if (Array.isArray(propertyData.houseRules) && propertyData.houseRules.length > 0) {
+      return propertyData.houseRules;
+    }
+    if (propertyData.houseRules && typeof propertyData.houseRules === 'object') {
+      const list = [];
+      if (propertyData.houseRules.quietHoursStart) {
+        list.push(`Quiet hours: ${propertyData.houseRules.quietHoursStart} to ${propertyData.houseRules.quietHoursEnd || '08:00'}`);
+      }
+      list.push(propertyData.houseRules.petsAllowed ? "Pets allowed" : "No pets allowed");
+      list.push(propertyData.houseRules.smokingAllowed ? "Smoking allowed" : "No smoking");
+      list.push(propertyData.houseRules.partiesAllowed ? "Parties or events allowed" : "No parties or events");
+      if (Array.isArray(propertyData.houseRules.customRules)) {
+        list.push(...propertyData.houseRules.customRules);
+      }
+      return list;
+    }
+    return [
+      "Check-in after 2:00 PM", 
+      "Checkout before 11:00 AM", 
+      "No smoking", 
+      "No parties or events"
+    ];
+  })();
   
   const importantInfo = propertyData.importantInformation?.length > 0 ? propertyData.importantInformation : [
     "Extra charges may apply depending on the number of guests.", 

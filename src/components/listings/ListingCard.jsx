@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useWishlist } from "@/context/WishlistContext";
 import { useRouter } from "next/navigation";
@@ -33,6 +33,12 @@ export default function ListingCard({ id, image, title, price, originalPrice, di
   const fallbackImage = FALLBACK_IMAGES[imageIndex];
 
   const [imgSrc, setImgSrc] = useState(image || fallbackImage);
+
+  useEffect(() => {
+    if (image) {
+      setImgSrc(image);
+    }
+  }, [image]);
 
   const handleHeartClick = async (e) => {
     e.preventDefault(); // Prevent Link navigation

@@ -27,7 +27,7 @@ export async function fetchAPI(endpoint, options = {}) {
   let data;
   try {
     data = await response.json();
-  } catch (err) {
+  } catch {
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
@@ -44,6 +44,20 @@ export async function fetchAPI(endpoint, options = {}) {
 // PROPERTIES API
 // ----------------------------------------------------------------------------
 export const propertyApi = {
+  vectorSearch: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    return fetchAPI(`/api/properties/search/vector${queryString ? `?${queryString}` : ''}`, { cache: 'no-store' });
+  },
+  getLiveSuggestions: async (query = '', limit = 5) => {
+    if (!query || query.trim() === '') return { suggestions: [], properties: [] };
+    return fetchAPI(`/api/properties/search/live?q=${encodeURIComponent(query)}&limit=${limit}`, { cache: 'no-store' });
+  },
   getProperties: async (queryParams = {}) => {
     const searchParams = new URLSearchParams();
     Object.entries(queryParams).forEach(([key, value]) => {
@@ -62,6 +76,73 @@ export const propertyApi = {
   getPropertyBySlug: async (slug) => {
     return fetchAPI(`/api/properties/slug/${slug}`, { next: { revalidate: 60 } });
   },
+  // Host Property APIs
+  getMyProperties: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    return fetchAPI(`/api/properties/host/my-properties${queryString ? `?${queryString}` : ''}`, { cache: 'no-store' });
+  },
+  getManageProperty: async (id) => {
+    return fetchAPI(`/api/properties/manage/${id}`, { cache: 'no-store' });
+  },
+  createDraftProperty: async (data = {}) => {
+    return fetchAPI('/api/properties/draft', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  updateDraftProperty: async (id, data) => {
+    return fetchAPI(`/api/properties/${id}/draft`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  },
+  submitForReview: async (id) => {
+    return fetchAPI(`/api/properties/${id}/submit-for-review`, {
+      method: 'POST'
+    });
+  },
+  toggleListingStatus: async (id, action) => {
+    return fetchAPI(`/api/properties/${id}/toggle-status`, {
+      method: 'PUT',
+      body: JSON.stringify({ action })
+    });
+  },
+  uploadPropertyImages: async (propertyId, formData) => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const res = await fetch(`${API_URL}/api/properties/${propertyId}/images`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || data.error || 'Failed to upload images');
+    }
+    return data;
+  },
+  deletePropertyImage: async (propertyId, imageId) => {
+    return fetchAPI(`/api/properties/${propertyId}/images/${imageId}`, {
+      method: 'DELETE'
+    });
+  },
+  setFeaturedImage: async (propertyId, imageId) => {
+    return fetchAPI(`/api/properties/${propertyId}/featured-image`, {
+      method: 'PUT',
+      body: JSON.stringify({ imageId })
+    });
+  },
+  reorderPropertyImages: async (propertyId, imageIds) => {
+    return fetchAPI(`/api/properties/${propertyId}/images/reorder`, {
+      method: 'PUT',
+      body: JSON.stringify({ imageIds })
+    });
+  }
 };
 
 // ----------------------------------------------------------------------------
@@ -194,6 +275,138 @@ export const wishlistApi = {
     return fetchAPI('/api/wishlist/toggle', {
       method: 'POST',
       body: JSON.stringify({ propertyId })
+    });
+  }
+};
+
+// ----------------------------------------------------------------------------
+// REAL ESTATE BUY & SELL PROPERTIES API
+// ----------------------------------------------------------------------------
+export const salePropertyApi = {
+  getSaleListings: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    const endpoint = `/api/sale-listings${queryString ? `?${queryString}` : ''}`;
+    return fetchAPI(endpoint, { cache: 'no-store' });
+  },
+  getSaleListingBySlug: async (slug) => {
+    return fetchAPI(`/api/sale-listings/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+  },
+  getMySaleListings: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    return fetchAPI(`/api/sale-listings/seller/my-listings${queryString ? `?${queryString}` : ''}`, { cache: 'no-store' });
+  },
+  getManageSaleListing: async (id) => {
+    return fetchAPI(`/api/sale-listings/manage/${id}`, { cache: 'no-store' });
+  },
+  createDraft: async (data = {}) => {
+    return fetchAPI('/api/sale-listings/draft', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  updateDraft: async (id, data) => {
+    return fetchAPI(`/api/sale-listings/${id}/draft`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  },
+  submitForReview: async (id, data = { confirmAccuracy: true }) => {
+    return fetchAPI(`/api/sale-listings/${id}/submit-for-review`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  toggleStatus: async (id, action) => {
+    return fetchAPI(`/api/sale-listings/${id}/toggle-status`, {
+      method: 'PUT',
+      body: JSON.stringify({ action })
+    });
+  },
+  deleteSaleListing: async (id) => {
+    return fetchAPI(`/api/sale-listings/${id}`, {
+      method: 'DELETE'
+    });
+  },
+  uploadImages: async (saleListingId, formData) => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const res = await fetch(`${API_URL}/api/sale-listings/${saleListingId}/images`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || data.error || 'Failed to upload images');
+    }
+    return data;
+  },
+  deleteImage: async (saleListingId, imageId) => {
+    return fetchAPI(`/api/sale-listings/${saleListingId}/images/${imageId}`, {
+      method: 'DELETE'
+    });
+  },
+  reorderImages: async (saleListingId, imageIds) => {
+    return fetchAPI(`/api/sale-listings/${saleListingId}/images/reorder`, {
+      method: 'PUT',
+      body: JSON.stringify({ imageIds })
+    });
+  },
+  toggleSave: async (saleListingId) => {
+    return fetchAPI('/api/sale-listings/saved/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ saleListingId })
+    });
+  },
+  getSavedListings: async () => {
+    return fetchAPI('/api/sale-listings/saved', { cache: 'no-store' });
+  }
+};
+
+// ----------------------------------------------------------------------------
+// SALE INQUIRIES & REPORTS API
+// ----------------------------------------------------------------------------
+export const saleInquiryApi = {
+  createInquiry: async (data) => {
+    return fetchAPI('/api/sale-inquiries', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  getMySentInquiries: async () => {
+    return fetchAPI('/api/sale-inquiries/my-inquiries', { cache: 'no-store' });
+  },
+  getSellerInquiries: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    return fetchAPI(`/api/sale-inquiries/seller-inquiries${queryString ? `?${queryString}` : ''}`, { cache: 'no-store' });
+  },
+  updateInquiryStatus: async (id, status, notes) => {
+    return fetchAPI(`/api/sale-inquiries/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, notes })
+    });
+  },
+  reportListing: async (listingId, data) => {
+    return fetchAPI(`/api/sale-inquiries/${listingId}/report`, {
+      method: 'POST',
+      body: JSON.stringify(data)
     });
   }
 };

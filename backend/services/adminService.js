@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import cloudinary from '../config/cloudinary.js';
 
 export const getDashboardStats = async () => {
   const [
@@ -15,7 +16,11 @@ export const getDashboardStats = async () => {
     completedBookings,
     activeUsers,
     inactiveUsers,
-    unreadNotifications
+    unreadNotifications,
+    totalSaleListings,
+    publishedSaleListings,
+    pendingSaleListings,
+    totalSaleInquiries
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: 'Guest' } }),
@@ -31,6 +36,10 @@ export const getDashboardStats = async () => {
     prisma.user.count({ where: { isActive: true } }),
     prisma.user.count({ where: { isActive: false } }),
     prisma.notification.count({ where: { isRead: false } }),
+    prisma.saleListing.count(),
+    prisma.saleListing.count({ where: { status: 'Published' } }),
+    prisma.saleListing.count({ where: { status: 'PendingReview' } }),
+    prisma.saleInquiry.count(),
   ]);
 
   const payments = await prisma.payment.aggregate({
@@ -81,7 +90,11 @@ export const getDashboardStats = async () => {
     averagePropertyRating,
     activeUsers,
     inactiveUsers,
-    unreadNotifications
+    unreadNotifications,
+    totalSaleListings,
+    publishedSaleListings,
+    pendingSaleListings,
+    totalSaleInquiries
   };
 };
 
@@ -191,6 +204,9 @@ export const getProperties = async (query) => {
   if (query.category) where.category = query.category;
   if (query.status) where.status = query.status;
   if (query.hostId) where.hostId = query.hostId;
+  if (query.isApproved !== undefined) {
+    where.isApproved = query.isApproved === 'true' || query.isApproved === true;
+  }
   
   if (query.minPrice || query.maxPrice) {
     where.pricePerNight = {};
@@ -249,16 +265,34 @@ export const getPropertyById = async (id) => {
 };
 
 export const approveProperty = async (id) => {
+  const existing = await prisma.property.findUnique({
+    where: { id },
+    include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } }
+  });
+  const featuredImage = existing?.featuredImage || existing?.images?.[0]?.url || null;
+
   return prisma.property.update({
     where: { id },
-    data: { isApproved: true, rejectionReason: null }
+    data: {
+      isApproved: true,
+      status: 'Published',
+      rejectionReason: null,
+      ...(featuredImage && !existing?.featuredImage ? { featuredImage } : {})
+    }
   });
 };
 
 export const rejectProperty = async (id, reason) => {
   return prisma.property.update({
     where: { id },
-    data: { isApproved: false, rejectionReason: reason }
+    data: { isApproved: false, status: 'Rejected', rejectionReason: reason }
+  });
+};
+
+export const requestChangesProperty = async (id, reason) => {
+  return prisma.property.update({
+    where: { id },
+    data: { isApproved: false, status: 'ChangesRequested', rejectionReason: reason }
   });
 };
 
@@ -706,3 +740,226 @@ export const getUserAnalytics = async () => {
 // Trigger nodemon restart
 
 // Restart nodemon 2
+
+
+// ==========================================
+// Real Estate Sale Listing Moderation
+// ==========================================
+export const getAdminSaleListings = async (query = {}) => {
+  const { status, category, city, search, page = 1, limit = 20 } = query;
+  const where = {};
+
+  if (status && status !== 'all') {
+    where.status = status;
+  }
+  if (category) {
+    where.category = category;
+  }
+  if (city) {
+    where.city = { contains: city };
+  }
+  if (search) {
+    where.OR = [
+      { title: { contains: search } },
+      { city: { contains: search } },
+      { state: { contains: search } },
+      { locality: { contains: search } },
+      { propertyType: { contains: search } },
+    ];
+  }
+
+  const skip = (Math.max(1, parseInt(page, 10)) - 1) * parseInt(limit, 10);
+  const take = parseInt(limit, 10);
+
+  const [total, saleListings] = await Promise.all([
+    prisma.saleListing.count({ where }),
+    prisma.saleListing.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            profileImage: true,
+            isVerified: true
+          }
+        },
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        },
+        _count: {
+          select: {
+            inquiries: true,
+            savedBy: true,
+            reports: true
+          }
+        }
+      }
+    })
+  ]);
+
+  return { total, saleListings, page: parseInt(page, 10), limit: take };
+};
+
+export const approveSaleListing = async (id, adminId, notes) => {
+  const listing = await prisma.saleListing.findUnique({
+    where: { id },
+    include: { seller: true }
+  });
+
+  if (!listing) {
+    const error = new Error('Sale listing not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const updated = await prisma.saleListing.update({
+    where: { id },
+    data: {
+      status: 'Published',
+      isApproved: true,
+      isVerified: true,
+      verifiedAt: new Date(),
+      verifiedById: adminId,
+      reviewedAt: new Date(),
+      reviewedById: adminId,
+      rejectionReason: null,
+    },
+    include: {
+      seller: { select: { id: true, name: true, email: true } },
+      images: true
+    }
+  });
+
+  await prisma.notification.create({
+    data: {
+      recipientId: listing.sellerId,
+      senderId: adminId,
+      type: 'SALE_LISTING_APPROVED',
+      title: 'Listing Approved & Live!',
+      message: `Congratulations! Your real estate listing "${listing.title}" has been approved and is now live on Stayr.`,
+      entityType: 'SaleListing',
+      entityId: listing.id,
+      metadata: { slug: listing.slug || listing.id, notes: notes || null }
+    }
+  }).catch(e => console.error('Failed to create notification', e));
+
+  return updated;
+};
+
+export const rejectSaleListing = async (id, adminId, reason) => {
+  const listing = await prisma.saleListing.findUnique({
+    where: { id },
+    include: { seller: true }
+  });
+
+  if (!listing) {
+    const error = new Error('Sale listing not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const updated = await prisma.saleListing.update({
+    where: { id },
+    data: {
+      status: 'Rejected',
+      isApproved: false,
+      reviewedAt: new Date(),
+      reviewedById: adminId,
+      rejectionReason: reason || 'Does not meet listing guidelines',
+    },
+    include: {
+      seller: { select: { id: true, name: true, email: true } },
+      images: true
+    }
+  });
+
+  await prisma.notification.create({
+    data: {
+      recipientId: listing.sellerId,
+      senderId: adminId,
+      type: 'SALE_LISTING_REJECTED',
+      title: 'Listing Review Update',
+      message: `Your listing "${listing.title}" could not be approved. Reason: ${reason || 'Does not meet guidelines.'}`,
+      entityType: 'SaleListing',
+      entityId: listing.id,
+      metadata: { reason: reason || null }
+    }
+  }).catch(e => console.error('Failed to create notification', e));
+
+  return updated;
+};
+
+export const requestChangesSaleListing = async (id, adminId, feedback) => {
+  const listing = await prisma.saleListing.findUnique({
+    where: { id },
+    include: { seller: true }
+  });
+
+  if (!listing) {
+    const error = new Error('Sale listing not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const updated = await prisma.saleListing.update({
+    where: { id },
+    data: {
+      status: 'ChangesRequested',
+      isApproved: false,
+      reviewedAt: new Date(),
+      reviewedById: adminId,
+      rejectionReason: feedback || 'Please update listing details',
+    },
+    include: {
+      seller: { select: { id: true, name: true, email: true } },
+      images: true
+    }
+  });
+
+  await prisma.notification.create({
+    data: {
+      recipientId: listing.sellerId,
+      senderId: adminId,
+      type: 'BOOKING_INQUIRY',
+      title: 'Changes Requested on Listing',
+      message: `Feedback received on "${listing.title}": ${feedback}. Please edit and re-submit for review.`,
+      entityType: 'SaleListing',
+      entityId: listing.id,
+      metadata: { feedback: feedback || null }
+    }
+  }).catch(e => console.error('Failed to create notification', e));
+
+  return updated;
+};
+
+export const deleteSaleListing = async (id) => {
+  const listing = await prisma.saleListing.findUnique({
+    where: { id },
+    include: { images: true }
+  });
+
+  if (!listing) {
+    const error = new Error('Sale listing not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Delete associated images in cloudinary if publicId is present
+  for (const img of listing.images || []) {
+    if (img.publicId) {
+      try {
+        await cloudinary.uploader.destroy(img.publicId);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  }
+
+  return await prisma.saleListing.delete({ where: { id } });
+};

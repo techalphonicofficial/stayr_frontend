@@ -95,7 +95,10 @@ export default function PerfectPlaceSection() {
               const total = numericPrice * nights;
               const formattedTotal = "₹" + total.toLocaleString("en-IN");
               const priceDisplay = "₹" + numericPrice.toLocaleString("en-IN");
-              const imageToUse = listing.featuredImage || listing.images?.[0]?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80";
+              let imageToUse = listing.featuredImage || listing.images?.[0]?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80";
+              if (typeof imageToUse === "string" && imageToUse.includes("placeholder.com")) {
+                imageToUse = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80";
+              }
 
               return (
                 <Link href={`/property/${listing.id}`} key={listing.id} className="block w-full cursor-pointer h-full">

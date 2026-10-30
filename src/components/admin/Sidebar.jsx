@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, Home, CheckSquare,
   Calendar, CreditCard, Star, Bell,
-  BarChart, Settings, LogOut, X, RefreshCw, FileText, ChevronDown, ChevronRight, ShieldCheck, Map
+  BarChart, Settings, LogOut, X, RefreshCw, FileText, ChevronDown, ChevronRight, ShieldCheck, Map, Building2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,7 +24,9 @@ const menuItems = [
     ]
   },
   { name: 'Properties', href: '/admin/properties', icon: Home },
+  { name: 'Sale Properties', href: '/admin/sale-properties', icon: Building2 },
   { name: 'Approvals', href: '/admin/property-approvals', icon: CheckSquare },
+  { name: 'Sale Approvals', href: '/admin/sale-approvals', icon: CheckSquare },
   { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
   { name: 'Payments', href: '/admin/payments', icon: CreditCard },
   { name: 'Refunds', href: '/admin/refunds', icon: RefreshCw },

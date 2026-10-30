@@ -56,8 +56,8 @@ export default function HostLoginCard() {
 
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = "/profile"; // Go to dashboard
-      }, 1500);
+        window.location.href = "/become-a-host/wizard";
+      }, 1200);
 
     } catch (err) {
       setError(err.message || "Something went wrong.");
@@ -76,8 +76,8 @@ export default function HostLoginCard() {
 
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = "/profile";
-      }, 1500);
+        window.location.href = "/become-a-host/wizard";
+      }, 1200);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -89,7 +89,7 @@ export default function HostLoginCard() {
     if (isLoading) {
       return (
         <div className="flex justify-center items-center h-32">
-          <Loader2 className="animate-spin text-[#E00B41]" size={32} />
+          <Loader2 className="animate-spin text-[#FF385C]" size={32} />
         </div>
       );
     }
@@ -97,43 +97,55 @@ export default function HostLoginCard() {
     if (success) {
       return (
         <div className="flex flex-col items-center text-center gap-4 py-8">
-          <CheckCircle2 className="text-green-500 w-16 h-16 mb-2" />
+          <CheckCircle2 className="text-emerald-500 w-16 h-16 mb-2" />
           <h2 className="text-[22px] font-bold text-foreground">Welcome, Host!</h2>
-          <p className="text-muted">Your account is ready. Redirecting to your dashboard...</p>
+          <p className="text-muted">Opening your property listing wizard...</p>
         </div>
       );
     }
 
     if (user) {
-      if (user.role === 'Host' || user.role === 'Admin') {
-        return (
-          <div className="flex flex-col items-center text-center gap-4 py-8">
-            <h2 className="text-[22px] font-bold text-foreground">You are already a Host!</h2>
-            <p className="text-muted">Manage your listings from your profile dashboard.</p>
-            <button 
-              onClick={() => router.push("/profile")}
-              className="mt-4 w-full py-4 bg-[#E00B41] hover:bg-[#C00032] text-white font-bold rounded-xl transition shadow-sm text-lg"
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        );
-      }
-
       return (
-        <div className="flex flex-col items-center text-center gap-4 py-4">
-          <h2 className="text-[22px] font-bold text-foreground">Ready to earn, {user.name}?</h2>
-          <p className="text-muted mb-4">Upgrade your account to become a Host and start listing your properties.</p>
-          
-          {error && <div className="w-full p-3 bg-red-50 text-red-600 rounded-lg text-sm mb-4">{error}</div>}
+        <div className="flex flex-col items-center text-center gap-4 py-4 w-full">
+          <h2 className="text-[22px] font-bold text-foreground">
+            {user.role === 'Host' || user.role === 'Admin' ? `Welcome back, ${user.name}!` : `Ready to host, ${user.name}?`}
+          </h2>
+          <p className="text-muted mb-2 text-sm">
+            {user.role === 'Host' || user.role === 'Admin'
+              ? "Create a new property listing or manage your existing listings from your host dashboard."
+              : "Start earning by listing your place on Stayr. Takes only 5 minutes to set up."}
+          </p>
 
+          {error && <div className="w-full p-3 bg-red-50 text-red-600 rounded-lg text-sm mb-2">{error}</div>}
+
+          {/* Primary Action: Start Listing */}
           <button 
-            onClick={handleUpgradeOnly}
+            onClick={() => {
+              if (user.role === 'Host' || user.role === 'Admin') {
+                router.push("/become-a-host/wizard");
+              } else {
+                handleUpgradeOnly();
+              }
+            }}
             disabled={isSubmitting}
-            className="w-full py-4 bg-[#E00B41] hover:bg-[#C00032] text-white font-bold rounded-xl transition shadow-sm text-lg disabled:opacity-70 flex justify-center items-center"
+            className="w-full py-4 bg-[#FF385C] hover:bg-[#E00B41] text-white font-bold rounded-xl transition shadow-md text-base disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer"
           >
-            {isSubmitting ? <Loader2 className="animate-spin" /> : "Become a Host"}
+            {isSubmitting ? (
+              <Loader2 className="animate-spin w-5 h-5" />
+            ) : (
+              <span>Start Listing Your Property</span>
+            )}
           </button>
+
+          {/* Secondary Action: Host Dashboard */}
+          {(user.role === 'Host' || user.role === 'Admin') && (
+            <button 
+              onClick={() => router.push("/host/dashboard")}
+              className="w-full py-3 border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold rounded-xl transition text-sm cursor-pointer"
+            >
+              Go to Host Dashboard
+            </button>
+          )}
         </div>
       );
     }

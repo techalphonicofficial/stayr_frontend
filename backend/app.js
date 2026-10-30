@@ -23,6 +23,8 @@ import crmSettingsRoutes from './routes/crmSettingsRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import experienceStoryRoutes from './routes/experienceStoryRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import saleListingRoutes from './routes/saleListingRoutes.js';
+import saleInquiryRoutes from './routes/saleInquiryRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
@@ -38,8 +40,26 @@ const swaggerDocument = JSON.parse(
 app.use(helmet());
 
 // Enable CORS (Should be configured before other middlewares and routes)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      /^http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true
 }));
 
@@ -87,6 +107,8 @@ app.use('/api/admin/footer', footerRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/experience-stories', experienceStoryRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/sale-listings', saleListingRoutes);
+app.use('/api/sale-inquiries', saleInquiryRoutes);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

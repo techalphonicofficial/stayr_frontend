@@ -18,7 +18,24 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'loremflickr.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/listing-wizard',
+        destination: '/become-a-host/wizard',
+        permanent: false,
+      },
+    ];
   },
 };
 

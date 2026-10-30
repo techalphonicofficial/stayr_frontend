@@ -64,14 +64,6 @@ export default function BookingCard({ property }) {
     fetchTaxes();
   }, []);
 
-  // Handle Date Selection and Availability
-  useEffect(() => {
-    // Validate checkout constraints when checkIn changes
-    if (checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
-       setCheckOut("");
-       setIsAvailable(null);
-    }
-  }, [checkIn, checkOut]);
 
   useEffect(() => {
     const checkPropertyAvailability = async () => {
@@ -228,7 +220,14 @@ export default function BookingCard({ property }) {
               type="date" 
               value={checkIn}
               min={todayStr}
-              onChange={(e) => setCheckIn(e.target.value)}
+              onChange={(e) => {
+                const newIn = e.target.value;
+                setCheckIn(newIn);
+                if (checkOut && new Date(checkOut) <= new Date(newIn)) {
+                  setCheckOut("");
+                  setIsAvailable(null);
+                }
+              }}
               className="text-[14px] text-foreground bg-transparent outline-none w-full cursor-pointer mt-1"
             />
           </div>
@@ -312,7 +311,7 @@ export default function BookingCard({ property }) {
       </button>
 
       <div className="text-center text-[13px] text-muted">
-        You won't be charged yet
+        You won&apos;t be charged yet
       </div>
     </div>
   );

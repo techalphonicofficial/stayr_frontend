@@ -7,6 +7,22 @@ generator client {
   engineType = "library"
 }
 
+
+enum SaleCategory {
+  Residential
+  Commercial
+}
+
+enum SaleListingStatus {
+  Draft
+  PendingReview
+  Published
+  ChangesRequested
+  Rejected
+  Sold
+  Withdrawn
+}
+
 // --------------------------------------------------
 // ENUMS
 // --------------------------------------------------
@@ -31,7 +47,11 @@ enum PropertyCategory {
 
 enum PropertyStatus {
   Draft
+  PendingReview
   Published
+  Rejected
+  ChangesRequested
+  Unlisted
 }
 
 enum BookingStatus {
@@ -65,6 +85,9 @@ enum NotificationType {
   PROPERTY_UPDATED
   PROPERTY_APPROVED
   PROPERTY_REJECTED
+  SALE_INQUIRY_RECEIVED
+  SALE_LISTING_APPROVED
+  SALE_LISTING_REJECTED
   SYSTEM
 }
 
@@ -99,7 +122,14 @@ model User {
 
   accessRoleId      String?
   accessRole        AccessRole?    @relation(fields: [accessRoleId], references: [id], onDelete: SetNull)
-  wishlists         Wishlist[]
+    wishlists         Wishlist[]
+
+  // Real Estate Buy & Sell Relations
+  saleListings      SaleListing[]      @relation("SellerListings")
+  sellerInquiries   SaleInquiry[]      @relation("SellerInquiries")
+  buyerInquiries    SaleInquiry[]      @relation("BuyerInquiries")
+  savedSaleListings SavedSaleListing[] @relation("UserSavedSales")
+  saleReports       SaleListingReport[] @relation("SaleReports")
 }
 
 model Property {
@@ -615,4 +645,162 @@ model Wishlist {
 
   @@unique([userId, propertyId])
   @@index([userId])
+}
+
+
+// --------------------------------------------------
+// REAL ESTATE BUY & SELL MODELS
+// --------------------------------------------------
+
+model SaleListing {
+  id                  String             @id @default(uuid())
+  sellerId            String
+  title               String
+  slug                String             @unique
+  description         String             @db.Text
+  category            SaleCategory       @default(Residential)
+  propertyType        String
+  status              SaleListingStatus  @default(Draft)
+  price               Float
+  priceNegotiable     Boolean            @default(false)
+  additionalCharges   String?
+  possessionStatus    String?
+  availableFrom       DateTime?
+
+  // Explicit Area Measurement
+  area                Float
+  areaUnit            String             @default("sq ft")
+  carpetArea          Float?
+  builtUpArea         Float?
+  superBuiltUpArea    Float?
+  plotArea            Float?
+
+  // Space Configuration (where relevant)
+  bedrooms            Int?
+  bhk                 String?
+  bathrooms           Int?
+  balconies           Int?
+  furnishingStatus    String?
+  floor               Int?
+  totalFloors         Int?
+  propertyAge         String?
+  parking             String?
+  facingDirection     String?
+
+  // Location
+  address             String
+  locality            String?
+  city                String
+  state               String
+  country             String             @default("India")
+  postalCode          String?
+  latitude            Float?
+  longitude           Float?
+
+  // Media & Amenities
+  featuredImage       String?
+  amenities           Json?
+
+  // Ownership & Moderation Details
+  ownershipType       String?
+  sellerType          String?
+  reraNumber          String?
+  isVerified          Boolean            @default(false)
+  isApproved          Boolean            @default(false)
+  rejectionReason     String?            @db.Text
+  verifiedAt          DateTime?
+  verifiedById        String?
+  reviewedAt          DateTime?
+  reviewedById        String?
+
+  viewsCount          Int                @default(0)
+  inquiriesCount      Int                @default(0)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  // Relations
+  seller              User               @relation("SellerListings", fields: [sellerId], references: [id], onDelete: Cascade)
+  images              SaleListingImage[]
+  inquiries           SaleInquiry[]
+  savedBy             SavedSaleListing[]
+  reports             SaleListingReport[]
+
+  @@index([price])
+  @@index([city])
+  @@index([propertyType])
+  @@index([category])
+  @@index([status])
+  @@index([isApproved])
+  @@index([bedrooms])
+  @@index([area])
+  @@fulltext([title, description, city, country])
+}
+
+model SaleListingImage {
+  id            String      @id @default(uuid())
+  saleListingId String
+  url           String
+  publicId      String?
+  caption       String?
+  isPrimary     Boolean     @default(false)
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  saleListing   SaleListing @relation(fields: [saleListingId], references: [id], onDelete: Cascade)
+
+  @@index([saleListingId])
+}
+
+model SaleInquiry {
+  id                     String      @id @default(uuid())
+  saleListingId          String
+  sellerId               String
+  buyerId                String?
+  name                   String
+  email                  String
+  phone                  String
+  message                String      @db.Text
+  inquiryType            String      @default("General")
+  preferredContactMethod String      @default("Phone")
+  status                 String      @default("New")
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  saleListing            SaleListing @relation(fields: [saleListingId], references: [id], onDelete: Cascade)
+  seller                 User        @relation("SellerInquiries", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer                  User?       @relation("BuyerInquiries", fields: [buyerId], references: [id], onDelete: SetNull)
+
+  @@index([saleListingId])
+  @@index([sellerId])
+  @@index([buyerId])
+}
+
+model SavedSaleListing {
+  id            String      @id @default(uuid())
+  userId        String
+  saleListingId String
+  createdAt     DateTime    @default(now())
+
+  user          User        @relation("UserSavedSales", fields: [userId], references: [id], onDelete: Cascade)
+  saleListing   SaleListing @relation(fields: [saleListingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, saleListingId])
+  @@index([userId])
+  @@index([saleListingId])
+}
+
+model SaleListingReport {
+  id            String      @id @default(uuid())
+  saleListingId String
+  reporterId    String
+  reason        String
+  details       String?     @db.Text
+  status        String      @default("Open")
+  createdAt     DateTime    @default(now())
+
+  saleListing   SaleListing @relation(fields: [saleListingId], references: [id], onDelete: Cascade)
+  reporter      User        @relation("SaleReports", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([saleListingId])
+  @@index([status])
 }

@@ -6,7 +6,6 @@ import TrustBanner from "@/components/home/TrustBanner";
 import DiscountedStays from "@/components/home/DiscountedStays";
 import InspirationCards from "@/components/home/InspirationCards";
 import HomeHero from "@/components/home/HomeHero";
-import WhyStayrSection from "@/components/home/WhyStayrSection";
 
 export default function Home() {
   return (
@@ -17,9 +16,6 @@ export default function Home() {
       <div className="pt-[180px]">
         <HomeHero />
       </div>
-      
-      {/* New Why Stayr Section */}
-      <WhyStayrSection />
 
       <div className="pt-0">
         {/* Main Content */}

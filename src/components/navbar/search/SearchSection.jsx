@@ -1,13 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export default function SearchSection({
-  id,
   title,
   subtitle,
   isActive,
-  isHovered,
   onHover,
   onHoverEnd,
   onClick,
@@ -15,29 +11,32 @@ export default function SearchSection({
   hasSearchButton = false,
   searchButton }) {
   return (
-    <motion.div
-      layout
+    <div
       onMouseEnter={onHover}
       onMouseLeave={onHoverEnd}
       onClick={onClick}
-      className={`relative cursor-pointer transition-colors duration-200 ${className} ${
+      className={`relative cursor-pointer transition-all duration-200 ${className} ${
         isActive 
           ? "bg-white shadow-[0_6px_20px_rgba(0,0,0,0.15)] z-20 rounded-full" 
           : "hover:bg-[#EBEBEB] rounded-full z-10"
       }`}
     >
-      <div className={`px-6 py-3 flex flex-row items-center ${hasSearchButton ? "justify-between" : ""}`}>
-        <div>
-          <motion.div layout className="text-xs font-bold text-foreground">
+      <div className={`w-full py-3 flex flex-row items-center justify-between ${hasSearchButton ? "pl-6 pr-2" : "px-6"}`}>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-bold text-foreground">
             {title}
-          </motion.div>
-          <motion.div layout className={`text-sm ${isActive ? "text-foreground" : "text-muted"}`}>
+          </div>
+          <div className={`text-sm ${isActive ? "text-foreground" : "text-muted"} truncate`}>
             {subtitle}
-          </motion.div>
+          </div>
         </div>
         
-        {hasSearchButton && searchButton}
+        {hasSearchButton && (
+          <div className="ml-6 sm:ml-8 shrink-0 flex items-center">
+            {searchButton}
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 }

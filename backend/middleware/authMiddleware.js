@@ -52,3 +52,26 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+// Optional auth - populates req.user if token is valid, but does not block if unauthenticated
+export const optionalAuth = asyncHandler(async (req, res, next) => {
+  let token;
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  } else if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await prisma.user.findUnique({
+        where: { id: decoded.id }
+      });
+    } catch (err) {
+      // Valid to continue without user
+    }
+  }
+  next();
+});
+

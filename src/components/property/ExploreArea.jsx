@@ -1,5 +1,5 @@
 import { MapPin } from "lucide-react";
-import Image from "next/image";
+
 
 export default function ExploreArea({ location, nearbyPlaces }) {
   const attractions = nearbyPlaces && nearbyPlaces.length > 0 ? nearbyPlaces : [

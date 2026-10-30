@@ -92,6 +92,12 @@ export const rejectProperty = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: 'Property rejected', data: formatWithId(property) });
 });
 
+export const requestChangesProperty = asyncHandler(async (req, res) => {
+  const { rejectionReason } = req.body;
+  const property = await adminService.requestChangesProperty(req.params.id, rejectionReason);
+  res.status(200).json({ success: true, message: 'Changes requested from host', data: formatWithId(property) });
+});
+
 export const deleteProperty = asyncHandler(async (req, res) => {
   await adminService.deleteProperty(req.params.id);
   res.status(200).json({ success: true, message: 'Property deleted successfully' });
@@ -217,4 +223,33 @@ export const getPropertyAnalytics = asyncHandler(async (req, res) => {
 export const getUserAnalytics = asyncHandler(async (req, res) => {
   const data = await adminService.getUserAnalytics();
   res.status(200).json({ success: true, data });
+});
+
+
+// ==========================================
+// Real Estate Sale Moderation Controllers
+// ==========================================
+export const getAdminSaleListings = asyncHandler(async (req, res) => {
+  const result = await adminService.getAdminSaleListings(req.query);
+  res.status(200).json({ success: true, count: result.saleListings.length, total: result.total, data: result.saleListings, page: result.page, limit: result.limit });
+});
+
+export const approveSaleListing = asyncHandler(async (req, res) => {
+  const listing = await adminService.approveSaleListing(req.params.id, req.user.id, req.body.notes);
+  res.status(200).json({ success: true, message: 'Sale listing approved successfully', data: listing });
+});
+
+export const rejectSaleListing = asyncHandler(async (req, res) => {
+  const listing = await adminService.rejectSaleListing(req.params.id, req.user.id, req.body.reason);
+  res.status(200).json({ success: true, message: 'Sale listing rejected', data: listing });
+});
+
+export const requestChangesSaleListing = asyncHandler(async (req, res) => {
+  const listing = await adminService.requestChangesSaleListing(req.params.id, req.user.id, req.body.feedback);
+  res.status(200).json({ success: true, message: 'Changes requested from seller', data: listing });
+});
+
+export const deleteSaleListing = asyncHandler(async (req, res) => {
+  const listing = await adminService.deleteSaleListing(req.params.id);
+  res.status(200).json({ success: true, message: 'Sale listing deleted successfully', data: listing });
 });

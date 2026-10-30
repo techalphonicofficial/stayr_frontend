@@ -192,7 +192,7 @@ export default function BookingWidget({ propertyId, price = "₹12,000", rating 
 
       {/* Footer text */}
       <div className="text-center text-[14px] text-muted mt-4">
-        You won't be charged yet
+        You won&apos;t be charged yet
       </div>
     </div>
   );

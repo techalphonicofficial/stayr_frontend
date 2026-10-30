@@ -231,3 +231,54 @@ export const setFeaturedImage = asyncHandler(async (req, res) => {
     },
   });
 });
+
+// @desc    Reorder property images
+// @route   PUT /api/properties/:id/images/reorder
+// @access  Private (Host/Admin)
+export const reorderPropertyImages = asyncHandler(async (req, res) => {
+  const { id: propertyId } = req.params;
+  const { imageIds } = req.body;
+
+  let property = await prisma.property.findUnique({
+    where: { id: propertyId },
+    include: { images: true, amenities: true }
+  });
+
+  if (!property) {
+    res.status(404);
+    throw new Error('Property not found');
+  }
+
+  if (!checkOwnershipOrAdmin(property, req.user)) {
+    res.status(401);
+    throw new Error('Not authorized to modify this property');
+  }
+
+  if (Array.isArray(imageIds)) {
+    for (let i = 0; i < imageIds.length; i++) {
+      const imgId = imageIds[i];
+      await prisma.propertyImage.updateMany({
+        where: { id: imgId, propertyId },
+        data: { sortOrder: i }
+      });
+    }
+  }
+
+  property = await prisma.property.findUnique({
+    where: { id: propertyId },
+    include: {
+      images: { orderBy: { sortOrder: 'asc' } },
+      amenities: true
+    }
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      ...property,
+      _id: property.id,
+      images: property.images
+    }
+  });
+});
+

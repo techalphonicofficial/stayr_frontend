@@ -62,10 +62,10 @@ export default function UserMenu() {
       <div className="relative" ref={menuRef}>
         <div className="flex flex-row items-center gap-3">
           <div 
-            onClick={() => router.push('/become-a-host')}
+            onClick={() => router.push(user && (user.role === 'Host' || user.role === 'Admin') ? '/host/dashboard' : '/become-a-host')}
             className="hidden md:block text-sm font-semibold py-3 px-4 rounded-full hover:bg-secondary transition cursor-pointer text-primary"
           >
-            Become a Host
+            {user && (user.role === 'Host' || user.role === 'Admin') ? 'Switch to hosting' : 'Become a Host'}
           </div>
 
           <div 
@@ -99,6 +99,16 @@ export default function UserMenu() {
                     <div className="px-4 py-2 font-bold text-foreground text-sm border-b border-border mb-1 break-all">
                       Hi, {user.name}
                     </div>
+                    {user && (user.role === 'Host' || user.role === 'Admin') && (
+                      <div onClick={() => { setIsOpen(false); router.push('/host/dashboard'); }} className="px-4 py-3 hover:bg-secondary transition font-bold text-[#FF385C] flex items-center justify-between">
+                        <span>Host Dashboard</span>
+                        <span className="text-[10px] bg-red-100 text-[#FF385C] font-extrabold px-2 py-0.5 rounded-full">HOST</span>
+                      </div>
+                    )}
+                    <div onClick={() => { setIsOpen(false); router.push('/sell/dashboard'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-emerald-700 flex items-center justify-between">
+                      <span>Seller Dashboard</span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full">BUY & SELL</span>
+                    </div>
                     <div onClick={() => { setIsOpen(false); router.push('/wishlists'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Wishlists</div>
                     <div onClick={() => { setIsOpen(false); router.push('/trips'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Trips</div>
                     <div onClick={() => { setIsOpen(false); router.push('/profile'); }} className="px-4 py-3 hover:bg-secondary transition font-semibold text-primary">Profile</div>
@@ -117,11 +127,30 @@ export default function UserMenu() {
                 <div 
                   onClick={() => {
                     setIsOpen(false);
+                    router.push('/sell');
+                  }} 
+                  className="px-4 py-3 hover:bg-secondary transition text-primary font-medium flex items-center justify-between"
+                >
+                  <span>Sell a Property</span>
+                  <span className="text-[10px] bg-red-100 text-[#FF385C] font-bold px-1.5 py-0.5 rounded">NEW</span>
+                </div>
+                <div 
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push('/become-a-host/wizard');
+                  }} 
+                  className="px-4 py-3 hover:bg-secondary transition text-primary font-medium"
+                >
+                  List rental property
+                </div>
+                <div 
+                  onClick={() => {
+                    setIsOpen(false);
                     router.push('/become-a-host');
                   }} 
                   className="px-4 py-3 hover:bg-secondary transition text-primary"
                 >
-                  Stayr your home
+                  Become a Host Info
                 </div>
                 <div 
                   onClick={() => {

@@ -50,7 +50,7 @@ export default function ListYourPropertyPage() {
             </StaggerContainer>
             
             <AnimatedSection delay={0.4} className="mt-20 text-center">
-              <Link href="/become-a-host" className="inline-block bg-[var(--color-primary)] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-md hover:shadow-xl">
+              <Link href="/become-a-host/wizard" className="inline-block bg-[#FF385C] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#E00B41] transition-colors shadow-md hover:shadow-xl cursor-pointer">
                 Get started today
               </Link>
             </AnimatedSection>

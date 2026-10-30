@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Grid, Heart, Share, X, ChevronLeft } from "lucide-react";
+import { Grid, Heart, Share, ChevronLeft } from "lucide-react";
 
 export default function ImageGallery({ images = [] }) {
   // We expect an array of at least 5 images for the full layout

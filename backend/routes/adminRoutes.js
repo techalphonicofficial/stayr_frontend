@@ -35,6 +35,7 @@ router.get('/properties', validation.validateDashboardQuery, adminController.get
 router.get('/properties/:id', validation.validateAdminIdParam, adminController.getPropertyById);
 router.put('/properties/:id/approve', validation.validateAdminIdParam, adminController.approveProperty);
 router.put('/properties/:id/reject', validation.validateAdminIdParam, validation.validateAdminRejectProperty, adminController.rejectProperty);
+router.put('/properties/:id/request-changes', validation.validateAdminIdParam, validation.validateAdminRejectProperty, adminController.requestChangesProperty);
 router.delete('/properties/:id', validation.validateAdminIdParam, adminController.deleteProperty);
 
 // =========================
@@ -73,5 +74,14 @@ router.get('/analytics/revenue', adminController.getRevenueAnalytics);
 router.get('/analytics/bookings', adminController.getBookingAnalytics);
 router.get('/analytics/properties', adminController.getPropertyAnalytics);
 router.get('/analytics/users', adminController.getUserAnalytics);
+
+// =========================
+// Real Estate Sale Moderation
+// =========================
+router.get('/sale-listings', adminController.getAdminSaleListings);
+router.put('/sale-listings/:id/approve', adminController.approveSaleListing);
+router.put('/sale-listings/:id/reject', adminController.rejectSaleListing);
+router.put('/sale-listings/:id/request-changes', adminController.requestChangesSaleListing);
+router.delete('/sale-listings/:id', adminController.deleteSaleListing);
 
 export default router;

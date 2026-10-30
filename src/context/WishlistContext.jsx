@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { wishlistApi } from "@/lib/api";
 
 const WishlistContext = createContext();
@@ -9,7 +9,7 @@ export function WishlistProvider({ children }) {
   const [savedPropertyIds, setSavedPropertyIds] = useState(new Set());
   const [isWishlistLoading, setIsWishlistLoading] = useState(true);
 
-  const fetchWishlist = async () => {
+  const fetchWishlist = useCallback(async () => {
     try {
       const res = await wishlistApi.getWishlist();
       if (res?.success) {
@@ -17,17 +17,17 @@ export function WishlistProvider({ children }) {
         setSavedPropertyIds(new Set(ids));
       }
     } catch (err) {
-      console.error("Failed to fetch wishlist:", err.message);
+      if (!err.message?.includes('Not authorized') && !err.message?.includes('401')) {
+        console.error("Failed to fetch wishlist:", err.message);
+      }
     } finally {
       setIsWishlistLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // Check if user is logged in (you can optimize this to only run if auth token exists)
-    // Here we just attempt to fetch, if it fails due to auth it fails gracefully.
     fetchWishlist();
-  }, []);
+  }, [fetchWishlist]);
 
   const toggleSavedProperty = async (propertyId) => {
     // Optimistic UI update
